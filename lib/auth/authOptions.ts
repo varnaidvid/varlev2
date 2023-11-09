@@ -9,19 +9,9 @@ const authOptions: NextAuthOptions = {
     },
     providers: [
         CredentialsProvider({
-            name: 'Credentials',
-            credentials: {
-                email: {
-                    label: 'Email',
-                    type: 'email',
-                    placeholder: 'example@example.com',
-                },
-                password: {
-                    label: 'Password',
-                    type: 'password',
-                },
-            },
-            async authorize(credentials) {
+            name: 'credentials',
+            credentials: {},
+            async authorize(credentials: any) {
                 if (!credentials?.email || !credentials?.password) {
                     return null;
                 }

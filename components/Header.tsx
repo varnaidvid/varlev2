@@ -1,31 +1,45 @@
 'use client';
 
-import { signIn, signOut } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { Button } from './ui/button';
+import { getServerSession } from 'next-auth';
+import toast from 'react-hot-toast';
 
-const Header = () => (
-  <header className="flex p-12 py-6 bg-blue-400 text-white">
-    <div className="flex-1">
-      <Link href="/">NextJS Auth Demo</Link>
-    </div>
-    <nav className="flex-1">
-      <ul className="flex justify-between">
-        <li>
-          <button type="button" onClick={() => signIn()}>
-            Sign Inw
-          </button>
-        </li>
-        <li>
-          <Link href="/auth/signup">Sign Up</Link>
-        </li>
-        <li>
-          <button type="button" onClick={() => signOut()}>
-            Sign Out
-          </button>
-        </li>
-      </ul>
-    </nav>
-  </header>
-);
+const Header = () => {
+  const { data: session, status } = useSession();
+
+  return (
+    <header className="flex p-12 py-6 bg-blue-400 text-white items-center">
+      <div className="flex-1">
+        <Link href="/">VarleV2</Link>
+      </div>
+      <div className="flex-2">
+        {!session && status != 'loading' ? (
+          <>
+            <Button variant={'ghost'}>
+              <Link href="/bejelentkezes">Bejelentkezés</Link>
+            </Button>
+            <Button variant={'ghost'}>
+              <Link href="/regisztracio">Regisztráció</Link>
+            </Button>
+          </>
+        ) : status != 'loading' ? (
+          <Button
+            variant={'ghost'}
+            onClick={() => {
+              toast.success('Sikeres kijelentkezés!');
+              signOut({ redirect: false, callbackUrl: '/' });
+            }}
+          >
+            Kijelentkezés
+          </Button>
+        ) : (
+          ''
+        )}
+      </div>
+    </header>
+  );
+};
 
 export default Header;
