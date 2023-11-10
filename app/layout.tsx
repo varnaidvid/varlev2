@@ -10,7 +10,10 @@ import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
 
-const poppins = Poppins({ weight: ['400', '700'], subsets: ['latin'] });
+const poppins = Poppins({
+  weight: ['400', '500', '600', '700', '800'],
+  subsets: ['latin'],
+});
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();

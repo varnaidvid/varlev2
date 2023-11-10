@@ -4,6 +4,31 @@ import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+import { FileText } from '@phosphor-icons/react';
+import Dropzone from 'react-dropzone';
+import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
+
 const formSchema = z.object({
   // field for .txt file upload
   file: z
@@ -32,18 +57,150 @@ const formSchema = z.object({
 // }
 
 export default function FeladatLetrehozas() {
-  const form = useForm({
+  const [uploadedQuestions, setUploadedQuestions] = useState<
+    { words: string[]; year: number }[]
+  >([]);
+
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
     // ✅ This will be type-safe and validated.
-    console.log(data);
+    console.log(values);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target == null) return;
+      const text = e.target.result;
+      console.log('File content:', text); // Process or use the text as needed
+      // split text into lines
+      if (!text) return;
+      const lines = text.toString().split('\n');
+      console.log(lines);
+
+      //remove /r from lines
+      const linesWithoutR = lines.map((line) => line.replace('\r', ''));
+      console.log(linesWithoutR);
+
+      //  question object:  {
+      //     words: ["word1", "word2", "word3", "word4"],
+      //     year: 6,
+      //   }
+      // go through lines and create question objects. check if the line is valid (contains 4 words and a number))
+      linesWithoutR.map((line) => {
+        const words = line.split(' ');
+        if (words.length !== 5) return;
+        const year = parseInt(words[4]);
+        if (isNaN(year)) return;
+        // check if year is between 5 and 8
+        if (year < 5 || year > 8) return;
+        const question = {
+          words: words.slice(0, 4),
+          year,
+        };
+        setUploadedQuestions((prev) => [...prev, question]);
+      });
+    };
+    reader.onerror = (e) => {
+      console.error('File reading error:', e);
+    };
+    reader.readAsText(values.file); // Read the file as text
   };
 
   return (
-    <div>
-      <h1>Feladatok letrehozasa</h1>
+    <div className="flex flex-col items-center gap-16 py-8 px-6">
+      <h1>Feladatok létrehozása</h1>
+      <Form {...form}>
+        <form className="w-full">
+          <FormItem>
+            <Dropzone
+              accept={{
+                'text/plain': ['.txt'],
+              }}
+              multiple={false}
+              maxSize={20000000}
+              onDrop={(acceptedFiles) => {
+                const file = acceptedFiles[0];
+                form.setValue('file', file);
+                form.handleSubmit(onSubmit)();
+              }}
+            >
+              {({ getRootProps, getInputProps }) => (
+                <div
+                  {...getRootProps({
+                    className: cn(
+                      'p-3 mb-4 flex flex-col items-center justify-center w-full rounded-xl cursor-pointer border-[2px] border-border border-dashed'
+                    ),
+                  })}
+                >
+                  <div className="flex items-center gap-3 mt-2 mb-2 flex-col">
+                    <FileText
+                      size={64}
+                      weight="light"
+                      className="text-neutral-400"
+                    />
+                    <FormLabel className="font-semibold text-center leading-tight text-muted-foreground">
+                      Kattintson a böngészéshez
+                      <br /> húzzon ide egy TXT fájlt!
+                      <input {...getInputProps()} />
+                    </FormLabel>
+                    <span className="text-xs text-neutral-400">TXT</span>
+                  </div>
+                </div>
+              )}
+            </Dropzone>
+          </FormItem>
+        </form>
+      </Form>
+
+      {/* table example:
+      <Table>
+  <TableCaption>A list of your recent invoices.</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead className="w-[100px]">Invoice</TableHead>
+      <TableHead>Status</TableHead>
+      <TableHead>Method</TableHead>
+      <TableHead className="text-right">Amount</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="font-medium">INV001</TableCell>
+      <TableCell>Paid</TableCell>
+      <TableCell>Credit Card</TableCell>
+      <TableCell className="text-right">$250.00</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+
+      */}
+      <div className="flex flex-col items-center gap-8 w-full">
+        <h3>Beimportált feladatok:</h3>
+        {/* map the uploaded questions into a table */}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-medium">1. Szó</TableHead>
+              <TableHead className="font-medium">2. Szó</TableHead>
+              <TableHead className="font-medium">3. Szó</TableHead>
+              <TableHead className="font-medium">4. Szó</TableHead>
+              <TableHead className="font-medium">Évfolyam</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {uploadedQuestions.map((question) => (
+              <TableRow>
+                <TableCell>{question.words[0]}</TableCell>
+                <TableCell>{question.words[1]}</TableCell>
+                <TableCell>{question.words[2]}</TableCell>
+                <TableCell>{question.words[3]}</TableCell>
+                <TableCell>{question.year}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
