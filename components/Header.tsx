@@ -3,7 +3,6 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { getServerSession } from 'next-auth';
 import toast from 'react-hot-toast';
 
 const Header = () => {
@@ -14,7 +13,11 @@ const Header = () => {
       <div className="flex-1">
         <Link href="/">VarleV2</Link>
       </div>
-      <div className="flex-2">
+      <div className="flex-1">
+        <Link href="/">Server-Side</Link>
+        <Link href="/client-side">Client-Side</Link>
+      </div>
+      <div className="flex-1">
         {!session && status != 'loading' ? (
           <>
             <Button variant={'ghost'}>
