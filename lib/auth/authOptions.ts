@@ -40,9 +40,9 @@ const authOptions: NextAuthOptions = {
             return {
                 ...session,
                 user: {
-                    ...session.user,
-                    id: token.id,
-
+                    id: session.user.id,
+                    username: session.user.username,
+                    role: session.user.role,
                     randomKey: "randomKey", // any value can be added here to session
                 },
             };

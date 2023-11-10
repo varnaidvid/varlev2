@@ -28,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "types/**/*.ts",
-    "app/regisztracio"
+    "app/regisztracio",
+    "prisma/seed.ts"
   ],
   "exclude": ["node_modules"]
 }

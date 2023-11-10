@@ -3,7 +3,6 @@
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import toast from 'react-hot-toast';
 
 const Header = () => {
   const { data: session, status } = useSession();
@@ -31,8 +30,10 @@ const Header = () => {
           <Button
             variant={'ghost'}
             onClick={() => {
-              toast.success('Sikeres kijelentkezés!');
-              signOut({ redirect: false, callbackUrl: '/' });
+              signOut({
+                redirect: true,
+                callbackUrl: '/msg=Sikeres kijelentkezés&type=success',
+              });
             }}
           >
             Kijelentkezés
