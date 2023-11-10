@@ -109,6 +109,8 @@ export default function usersDataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
+            {/* while there is no data show Loading... in 5 row */}
+
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

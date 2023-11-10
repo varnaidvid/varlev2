@@ -1,29 +1,30 @@
 'use client';
 
+import SignUpForm from '@/components/webmester/signUpForm';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import columns from '@/components/webmester/dataTableColumns';
 import { useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
 import UsersDataTable from '@/components/webmester/usersDataTable';
-import {
-  GearSix,
-  CaretRight,
-  PlusCircle,
-  UserCirclePlus,
-  UserList,
-  Gauge,
-} from '@phosphor-icons/react';
+import { GearSix, CaretRight, Gauge, Monitor } from '@phosphor-icons/react';
 import Link from 'next/link';
-import SignUpForm from '@/components/webmester/signUpForm';
-import { Button } from '@/components/ui/button';
 
-export default function UserPage() {
+export default function BemutatkozoPage() {
   return (
     <main className="mt-32">
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Fiók létrehozása
+          Bemutatkozás szerkeszése
         </h1>
 
         <div className="flex items-center gap-4">
@@ -32,13 +33,13 @@ export default function UserPage() {
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-
-          <Link href="/webmester/felhasznalok">
+          {/* <Link href="/webmester/regisztracio">
             <Button variant="default">
               {' '}
-              <UserList className="w-6 h-6 mr-2" color="white" /> Felhasználók
+              <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új fiók
+              létrehozása
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
 
@@ -51,15 +52,15 @@ export default function UserPage() {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/webmester/regisztracio">
+        <Link href="/webmester/beallitasok">
           <div className="flex items-center gap-[2px] hover:underline">
-            <UserCirclePlus className="h-6 w-6" /> Regisztráció
+            <Monitor className="h-6 w-6" /> Bemutatkozás szerkesztése
           </div>
         </Link>
       </span>
 
       <div className="mt-14">
-        <SignUpForm />
+        <h1>BEMUTATKOZÁS MARKDOWN EDITOR</h1>
       </div>
     </main>
   );

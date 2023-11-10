@@ -35,7 +35,7 @@ export function DataTableColumnHeader<TData, TValue>({
   return (
     <div
       className={
-        className ? className + ' -mr-4' : cn('flex items-center space-x-2')
+        className ? className + ' -mr-5' : cn('flex items-center space-x-2')
       }
     >
       <DropdownMenu>
@@ -55,7 +55,7 @@ export function DataTableColumnHeader<TData, TValue>({
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
             <ArrowUp className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             Növekvő

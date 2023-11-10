@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           value={{
             color: 'black',
             size: 32,
-            weight: 'bold',
+            weight: 'regular',
             mirrored: false,
           }}
         >

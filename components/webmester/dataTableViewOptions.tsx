@@ -21,6 +21,12 @@ interface DataTableViewOptionsProps<TData> {
 export default function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
+  const columnMap = {
+    username: 'Fh. név',
+    role: 'Szerepkör',
+    createdAt: 'Dátum',
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,7 +40,7 @@ export default function DataTableViewOptions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>Oszlopok</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
@@ -46,11 +52,11 @@ export default function DataTableViewOptions<TData>({
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {/* @ts-ignore */}
+                {columnMap[column.id]}
               </DropdownMenuCheckboxItem>
             );
           })}
