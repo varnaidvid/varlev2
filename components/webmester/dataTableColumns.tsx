@@ -17,6 +17,18 @@ import {
 import { DataTableColumnHeader } from './dataTableColumnHeader';
 import { Checkbox } from '@/components/ui/checkbox';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import toast from 'react-hot-toast';
+
+import { updateUser, updateUserRole } from '@/lib/actions';
+
 const columns: ColumnDef<User>[] = [
   {
     id: 'select',
@@ -49,17 +61,33 @@ const columns: ColumnDef<User>[] = [
       <DataTableColumnHeader column={column} title="Szerepkör" />
     ),
     cell: ({ row }) => {
-      const role = row.getValue('role');
+      const role = row.getValue('role') as string;
+      const username = row.getValue('username') as string;
 
-      const roleMap = {
-        webmester: 'Webmester',
-        zsuri: 'Zsűri tag',
-        tanar: 'Tanár',
-        diak: 'Diák',
-      };
-
-      // @ts-ignore
-      return <div>{roleMap[role]}</div>;
+      return (
+        <Select
+          defaultValue={role}
+          onValueChange={async (value) => {
+            const user = await updateUserRole(username, value);
+            if (user) {
+              toast.success(
+                `Sikeresen frissítette a szerepkörét ${username}-nek`,
+                { duration: 5000 }
+              );
+            }
+          }}
+        >
+          <SelectTrigger className="w-max border-none justify-start gap-1">
+            <SelectValue defaultValue={role} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="webmester">Webmester</SelectItem>
+            <SelectItem value="zsuri">Zsűri</SelectItem>
+            <SelectItem value="tanar">Tanár</SelectItem>
+            <SelectItem value="diak">Diák</SelectItem>
+          </SelectContent>
+        </Select>
+      );
     },
   },
   {
@@ -84,6 +112,27 @@ const columns: ColumnDef<User>[] = [
     },
   },
   {
+    accessorKey: 'updatedAt',
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        className="text-right"
+        title="Utoljára frissítve"
+      />
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue('updatedAt'));
+      const formatted = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+  {
     id: 'actions',
     cell: ({ row }) => {
       const payment = row.original;
@@ -97,7 +146,7 @@ const columns: ColumnDef<User>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(payment.id)}
             >

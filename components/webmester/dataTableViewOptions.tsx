@@ -25,6 +25,7 @@ export default function DataTableViewOptions<TData>({
     username: 'Fh. név',
     role: 'Szerepkör',
     createdAt: 'Dátum',
+    updatedAt: 'Frissítve',
   };
 
   return (
