@@ -5,6 +5,8 @@ import authOptions from '@/lib/auth/authOptions';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+import pieChart from '@/components/pieChart';
+
 import {
   Table,
   TableBody,
@@ -48,6 +50,7 @@ export default function Home() {
       year2: '31',
       year3: '22',
       year4: '17',
+      sum: '99',
     },
     {
       name: 'Sanyi',
@@ -55,6 +58,7 @@ export default function Home() {
       year2: '33',
       year3: '15',
       year4: '9',
+      sum: '81',
     },
     {
       name: 'Tündi',
@@ -62,6 +66,7 @@ export default function Home() {
       year2: '21',
       year3: '11',
       year4: '5',
+      sum: '57',
     },
   ];
 
@@ -109,7 +114,7 @@ export default function Home() {
 
       <div className="my-10">
         <h1 className="mb-2">Aktivitás</h1>
-        <div>
+        <div className="flex flex-row">
           <Table>
             <TableCaption>Kiadott feladatok száma évfolyamonként</TableCaption>
             <TableHeader>
@@ -119,6 +124,7 @@ export default function Home() {
                 <TableHead>Évfolyam II.</TableHead>
                 <TableHead>Évfolyam III.</TableHead>
                 <TableHead>Évfolyam IIII.</TableHead>
+                <TableHead>Összesen</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -129,10 +135,14 @@ export default function Home() {
                   <TableCell>{name.year2}</TableCell>
                   <TableCell>{name.year3}</TableCell>
                   <TableCell>{name.year4}</TableCell>
+                  <TableCell>{name.sum}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+          <div className="ml-5">
+            {pieChart(leaderboard[0], leaderboard[1], leaderboard[2])}
+          </div>
         </div>
       </div>
 
