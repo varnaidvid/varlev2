@@ -22,7 +22,7 @@ async function main() {
         create: {
             username: 'zsuri-zsuri',
             password: zsuriPwd,
-            role: 'tanar',
+            role: 'zsuri',
         },
     })
     const tanar = await prisma.user.upsert({

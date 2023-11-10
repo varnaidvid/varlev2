@@ -8,34 +8,10 @@ import Header from '@/components/Header';
 import { IconContext } from '@phosphor-icons/react';
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
-import { useSearchParams } from 'next/navigation';
 
 const poppins = Poppins({ weight: ['400', '700'], subsets: ['latin'] });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  const searchParams = useSearchParams();
-  const [needToCall, setNeedToCall] = useState(false);
-
-  const useEffectOnce = () => {
-    console.log(needToCall);
-    console.log(searchParams.get('msg'));
-
-    if (needToCall) {
-      if (searchParams.get('msg')) {
-        if (searchParams.get('type') === 'error')
-          toast.error(searchParams.get('msg'));
-        if (searchParams.get('type') === 'success')
-          toast.success(searchParams.get('msg'));
-      }
-    } else {
-      setNeedToCall(true);
-    }
-  };
-
-  useEffect(() => {
-    useEffectOnce();
-  }, [needToCall]);
-
   return (
     <html lang="en">
       <body className={poppins.className}>
