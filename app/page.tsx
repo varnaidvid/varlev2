@@ -141,7 +141,28 @@ export default function Home() {
             </TableBody>
           </Table>
           <div className="ml-5">
-            {pieChart(leaderboard[0], leaderboard[1], leaderboard[2])}
+            // Chart helye
+          </div>
+        </div>
+        <div className="my-6">
+          <h3>Évfolyamonként</h3>
+          <div className="flex flex-col my-2">
+            <div className="flex flex-row">
+              <span>Évfolyam I.</span>
+              // Chart helye
+            </div>
+            <div className="flex flex-row">
+              <span>Évfolyam II.</span>
+              // Chart helye
+            </div>
+            <div className="flex flex-row">
+              <span>Évfolyam III.</span>
+              // Chart helye
+            </div>
+            <div className="flex flex-row">
+              <span>Évfolyam IIII.</span>
+              // Chart helye
+            </div>
           </div>
         </div>
       </div>
