@@ -12,20 +12,19 @@ const authOptions: NextAuthOptions = {
             name: 'credentials',
             credentials: {},
             async authorize(credentials: any) {
-                if (!credentials?.email || !credentials?.password) {
+                if (!credentials?.username || !credentials?.password) {
                     return null;
                 }
 
                 const user = await prisma.user.findUniqueOrThrow({
-                    where: { email: credentials.email },
+                    where: { username: credentials.username },
                 });
 
                 if (await compare(credentials.password, user.password)) {
                     return {
                         id: user.id,
-                        email: user.email,
-                        name: user.username,
-                        isAdmin: user.isAdmin,
+                        username: user.username,
+                        role: user.role,
                     };
                 }
 
@@ -35,23 +34,27 @@ const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         session: ({ session, token }) => {
+            // to debug session refresh
             console.log("Session Callback", { session, token });
+
             return {
                 ...session,
                 user: {
                     ...session.user,
                     id: token.id,
-                    randomKey: "randomKey",
+
+                    randomKey: "randomKey", // any value can be added here to session
                 },
             };
         },
         jwt: ({ token, user }) => {
+            // to debug token refresh
             console.log("JWT Callback", { token, user });
+
             if (user) {
                 return {
                     ...token,
                     id: user.id,
-                    randomKey: "randomKey",
                 };
             }
             return token;

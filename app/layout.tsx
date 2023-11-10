@@ -1,16 +1,39 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import './globals.css';
 import { Poppins } from 'next/font/google';
 import AuthProvider from '@/lib/auth/providers';
 import Header from '@/components/Header';
 import { IconContext } from '@phosphor-icons/react';
 import { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { useSearchParams } from 'next/navigation';
 
 const poppins = Poppins({ weight: ['400', '700'], subsets: ['latin'] });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const searchParams = useSearchParams();
+
+  const useEffectOnce = () => {
+    const [needToCall, setNeedToCall] = useState(false);
+
+    useEffect(() => {
+      if (needToCall) {
+        if (searchParams.get('msg')) {
+          if (searchParams.get('type') === 'error')
+            toast.error(searchParams.get('msg'));
+          if (searchParams.get('type') === 'success')
+            toast.success(searchParams.get('msg'));
+        }
+      } else {
+        setNeedToCall(true);
+      }
+    }, [needToCall]);
+  };
+
+  useEffectOnce();
+
   return (
     <html lang="en">
       <body className={poppins.className}>

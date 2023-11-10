@@ -24,7 +24,7 @@ const SignInPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
@@ -45,7 +45,7 @@ const SignInPage = () => {
     event.stopPropagation();
 
     signIn('credentials', {
-      email: formData.email,
+      username: formData.username,
       password: formData.password,
       callbackUrl: '/',
       redirect: false,
@@ -80,28 +80,31 @@ const SignInPage = () => {
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Bejelentkezés</CardTitle>
-          <CardDescription>Add meg email címed és jelszavad</CardDescription>
+          <CardDescription>
+            Add meg a felhasználóneved és a jelszavad belépéshez
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit}>
+          <CardContent>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Felhasználónév</Label>
                 <Input
-                  id="email"
-                  placeholder="name@example.com"
-                  type="email"
-                  name="email"
+                  id="username"
+                  placeholder="Gipsz-Jakab"
+                  type="text"
+                  name="username"
                   autoCapitalize="none"
-                  autoComplete="email"
+                  autoComplete="username"
                   autoCorrect="off"
+                  required
                   disabled={isLoading}
-                  value={formData.email}
+                  value={formData.username}
                   onChange={handleInputChanged}
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Jelszó</Label>
                 <Input
                   id="password"
                   placeholder="********"
@@ -110,29 +113,23 @@ const SignInPage = () => {
                   autoCapitalize="none"
                   autoComplete="password"
                   autoCorrect="off"
+                  required
                   disabled={isLoading}
                   value={formData.password}
                   onChange={handleInputChanged}
                 />
               </div>
             </div>
-            <Button disabled={isLoading} className="w-full mt-6">
+          </CardContent>
+          <CardFooter>
+            <Button disabled={isLoading} className="w-full">
               {isLoading && (
                 <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
               )}
               Bejelentkezés
             </Button>
-          </form>
-        </CardContent>
-        <CardFooter>
-          <span className="text-gray-600">Nincs még fiókod?</span>
-          <Link
-            href="/regisztracio"
-            className="text-blue-600 hover:underline ml-1"
-          >
-            Hozd létre fiókod!
-          </Link>
-        </CardFooter>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   );
