@@ -14,25 +14,27 @@ const poppins = Poppins({ weight: ['400', '700'], subsets: ['latin'] });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const searchParams = useSearchParams();
+  const [needToCall, setNeedToCall] = useState(false);
 
   const useEffectOnce = () => {
-    const [needToCall, setNeedToCall] = useState(false);
+    console.log(needToCall);
+    console.log(searchParams.get('msg'));
 
-    useEffect(() => {
-      if (needToCall) {
-        if (searchParams.get('msg')) {
-          if (searchParams.get('type') === 'error')
-            toast.error(searchParams.get('msg'));
-          if (searchParams.get('type') === 'success')
-            toast.success(searchParams.get('msg'));
-        }
-      } else {
-        setNeedToCall(true);
+    if (needToCall) {
+      if (searchParams.get('msg')) {
+        if (searchParams.get('type') === 'error')
+          toast.error(searchParams.get('msg'));
+        if (searchParams.get('type') === 'success')
+          toast.success(searchParams.get('msg'));
       }
-    }, [needToCall]);
+    } else {
+      setNeedToCall(true);
+    }
   };
 
-  useEffectOnce();
+  useEffect(() => {
+    useEffectOnce();
+  }, [needToCall]);
 
   return (
     <html lang="en">

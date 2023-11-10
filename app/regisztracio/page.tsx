@@ -16,10 +16,19 @@ import {
 import Link from 'next/link';
 import { ChangeEvent, MouseEvent, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 const SignUpPage = () => {
   const router = useRouter();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      toast.error('Hozzáférés megtagadva');
+      redirect('/');
+    },
+  });
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState({
     email: '',
