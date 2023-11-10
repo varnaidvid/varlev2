@@ -24,7 +24,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { FileText } from '@phosphor-icons/react';
+import { CloudArrowUp, FileText } from '@phosphor-icons/react';
 import Dropzone from 'react-dropzone';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -107,6 +107,22 @@ export default function FeladatLetrehozas() {
     reader.readAsText(values.file); // Read the file as text
   };
 
+  const insertQuestions = async () => {
+    const questionsFormatted = uploadedQuestions.map((question) => {
+      return question.words.join(' ') + ' ' + question.year;
+    });
+
+    const res = await fetch('/api/insert-questions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ questions: questionsFormatted }),
+    });
+    console.log(res);
+    setUploadedQuestions([]);
+  };
+
   return (
     <div className="flex flex-col items-center gap-16 py-8 px-6">
       <h1>Feladatok létrehozása</h1>
@@ -153,30 +169,18 @@ export default function FeladatLetrehozas() {
         </form>
       </Form>
 
-      {/* table example:
-      <Table>
-  <TableCaption>A list of your recent invoices.</TableCaption>
-  <TableHeader>
-    <TableRow>
-      <TableHead className="w-[100px]">Invoice</TableHead>
-      <TableHead>Status</TableHead>
-      <TableHead>Method</TableHead>
-      <TableHead className="text-right">Amount</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-    <TableRow>
-      <TableCell className="font-medium">INV001</TableCell>
-      <TableCell>Paid</TableCell>
-      <TableCell>Credit Card</TableCell>
-      <TableCell className="text-right">$250.00</TableCell>
-    </TableRow>
-  </TableBody>
-</Table>
-
-      */}
       <div className="flex flex-col items-center gap-8 w-full">
-        <h3>Beimportált feladatok:</h3>
+        <div className="flex justify-between w-full">
+          <h3>Beimportált feladatok:</h3>
+          <Button
+            size={'lg'}
+            disabled={uploadedQuestions.length === 0}
+            onClick={insertQuestions}
+          >
+            Feladatok feltöltése
+            <CloudArrowUp size={20} weight="bold" className="ml-3" />
+          </Button>
+        </div>
         {/* map the uploaded questions into a table */}
         <Table>
           <TableHeader>

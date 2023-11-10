@@ -20,7 +20,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={poppins.className}>
         <IconContext.Provider
           value={{
-            color: 'black',
             size: 32,
             weight: 'bold',
             mirrored: false,
