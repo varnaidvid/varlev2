@@ -1,5 +1,6 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
 import { getServerSession } from 'next-auth';
 import authOptions from '@/lib/auth/authOptions';
 import { useEffect } from 'react';
@@ -7,6 +8,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 
+import { Button } from '@/components/ui/button';
 import MyPieChart from '@/components/Chart';
 
 import {
@@ -29,13 +31,15 @@ import {
 } from '@/components/ui/card';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     // Improvement idea: append the name of the user to the greeting
     // Example: Jó reggelt, {name}!
 
     switch (true) {
-      case currentHour >= 5 && currentHour < 12:
+      case currentHour >= 3 && currentHour < 12:
         return 'Jó reggelt!';
       case currentHour >= 12 && currentHour < 18:
         return 'Jó napot!';
@@ -125,7 +129,7 @@ export default function Home() {
       <div className="my-10">
         <h1 className="mb-2">Aktivitás</h1>
         <div className="flex flex-row">
-          <div className='w-3/4'>
+          <div className="w-3/4">
             <Table>
               <TableCaption>
                 Kiadott feladatok száma évfolyamonként
@@ -179,9 +183,9 @@ export default function Home() {
 
         <div className="my-12">
           <h3 className="mb-2">Évfolyamonkénti aktivitás</h3>
-          <div className="flex flex-row my-2 justify-between">
+          <div className="flex flex-row my-2 justify-between mt-6">
             <div className="flex flex-col text-center">
-              <span>Évfolyam I.</span>
+              <span className="font-bold">Évfolyam I.</span>
               {isClient && (
                 <MyPieChart
                   data={[
@@ -202,7 +206,7 @@ export default function Home() {
               )}
             </div>
             <div className="flex flex-col text-center">
-              <span>Évfolyam II.</span>
+              <span className="font-bold">Évfolyam II.</span>
               {isClient && (
                 <MyPieChart
                   data={[
@@ -223,7 +227,7 @@ export default function Home() {
               )}
             </div>
             <div className="flex flex-col text-center">
-              <span>Évfolyam III.</span>
+              <span className="font-bold">Évfolyam III.</span>
               {isClient && (
                 <MyPieChart
                   data={[
@@ -244,7 +248,7 @@ export default function Home() {
               )}
             </div>
             <div className="flex flex-col text-center">
-              <span>Évfolyam IIII.</span>
+              <span className="font-bold">Évfolyam IIII.</span>
               {isClient && (
                 <MyPieChart
                   data={[
@@ -270,7 +274,7 @@ export default function Home() {
 
       <div className="my-14">
         <div>
-          <h1 className="mb-2">Pár szó a csapatunkrol</h1>
+          <h1 className="mb-2">Pár szó a csapatunkról</h1>
           <p className="text-justify">
             Elkötelezettek és szakmailag felkészültek vagyunk alkalmazásunk
             fejlesztésében. A csapat most intenzíven dolgozik a verseny idején,
@@ -280,6 +284,11 @@ export default function Home() {
             kiválóságra, hogy bizonyítsuk elhivatottságunkat és tehetségünket a
             versenyen.
           </p>
+          <div className="my-4 w-full text-right text-lg">
+            <a href="/bemutatkozás">
+              <Button size="lg">Tovább</Button>
+            </a>
+          </div>
         </div>
       </div>
     </main>
