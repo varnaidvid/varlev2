@@ -4,8 +4,9 @@ import { getServerSession } from 'next-auth';
 import authOptions from '@/lib/auth/authOptions';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-
-import pieChart from '@/components/pieChart';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
+import MyPieChart from '@/components/Chart';
 
 import {
   Table,
@@ -69,6 +70,12 @@ export default function Home() {
       sum: '57',
     },
   ];
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <main className="container mt-10 overflow-hidden">
@@ -141,25 +148,42 @@ export default function Home() {
             </TableBody>
           </Table>
           <div className="ml-5">
-            // Chart helye
+            {isClient && (
+              <MyPieChart
+                data={[
+                  {
+                    name: leaderboard[0].name,
+                    value: parseInt(leaderboard[0].sum),
+                  },
+                  {
+                    name: leaderboard[1].name,
+                    value: parseInt(leaderboard[1].sum),
+                  },
+                  {
+                    name: leaderboard[2].name,
+                    value: parseInt(leaderboard[2].sum),
+                  },
+                ]}
+              />
+            )}
           </div>
         </div>
         <div className="my-6">
           <h3>Évfolyamonként</h3>
-          <div className="flex flex-col my-2">
-            <div className="flex flex-row">
+          <div className="flex flex-row my-2 justify-between">
+            <div className="flex flex-col text-center">
               <span>Évfolyam I.</span>
               // Chart helye
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-col text-center">
               <span>Évfolyam II.</span>
               // Chart helye
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-col text-center">
               <span>Évfolyam III.</span>
               // Chart helye
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-col text-center">
               <span>Évfolyam IIII.</span>
               // Chart helye
             </div>
