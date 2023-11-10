@@ -1,3 +1,5 @@
+'use client';
+
 import { getServerSession } from 'next-auth';
 import authOptions from '@/lib/auth/authOptions';
 import { useEffect } from 'react';
@@ -22,9 +24,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-export default async function Home() {
-  const session = await getServerSession(authOptions);
-
+export default function Home() {
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     // Improvement idea: append the name of the user to the greeting

@@ -16,7 +16,13 @@ import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
 import UsersDataTable from '@/components/webmester/usersDataTable';
-import { GearSix, CaretRight, Gauge, Monitor } from '@phosphor-icons/react';
+import {
+  GearSix,
+  CaretRight,
+  Gauge,
+  Monitor,
+  PresentationChart,
+} from '@phosphor-icons/react';
 import Link from 'next/link';
 
 export default function BemutatkozoPage() {
@@ -54,7 +60,7 @@ export default function BemutatkozoPage() {
 
         <Link href="/webmester/beallitasok">
           <div className="flex items-center gap-[2px] hover:underline">
-            <Monitor className="h-6 w-6" /> Bemutatkozás szerkesztése
+            <PresentationChart className="h-6 w-6" /> Bemutatkozás
           </div>
         </Link>
       </span>

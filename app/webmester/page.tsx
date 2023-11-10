@@ -1,19 +1,9 @@
 'use client';
 
-import SignUpForm from '@/components/webmester/signUpForm';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-
 import {
   Gauge,
   GearSix,
+  PresentationChart,
   UserCirclePlus,
   UserList,
 } from '@phosphor-icons/react';
@@ -71,7 +61,7 @@ export default function WebmesterHome() {
         <div className="col-span-2 grid items-start gap-6 lg:col-span-1">
           <div className="flex items-center justify-center [&>div]:w-full">
             <DashboardCard
-              Icon={UserCirclePlus}
+              Icon={PresentationChart}
               title="Bemutatkozó oldal"
               description="A kártyára kattintva megtalálja szerkesztheti a bemutató oldalt"
               buttonText="03. Szerkesztés"
