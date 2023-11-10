@@ -3,7 +3,14 @@
 import { User } from '@prisma/client';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { DotsThree, ArrowUp } from '@phosphor-icons/react';
+import {
+  DotsThree,
+  ArrowUp,
+  Backspace,
+  PencilSimple,
+  Trash,
+  ArrowLeft,
+} from '@phosphor-icons/react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +25,18 @@ import { DataTableColumnHeader } from './dataTableColumnHeader';
 import { Checkbox } from '@/components/ui/checkbox';
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -27,9 +46,13 @@ import {
 
 import toast from 'react-hot-toast';
 
-import { updateUser, updateUserRole } from '@/lib/actions';
+import { deleteUsers, updateUser, updateUserRole } from '@/lib/actions';
+import Link from 'next/link';
 
 const columns: ColumnDef<User>[] = [
+  {
+    id: 'currentUser',
+  },
   {
     id: 'select',
     header: ({ table }) => (
@@ -77,7 +100,7 @@ const columns: ColumnDef<User>[] = [
             }
           }}
         >
-          <SelectTrigger className="w-max border-none justify-start gap-1">
+          <SelectTrigger className="w-max border-none justify-start gap-1 bg-transparent">
             <SelectValue defaultValue={role} />
           </SelectTrigger>
           <SelectContent>
@@ -134,29 +157,95 @@ const columns: ColumnDef<User>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      const payment = row.original;
+    cell: ({ row, table }) => {
+      // const disabled: boolean = table
+      //   .getFilteredSelectedRowModel()
+      //   .rows.some((row) => row.getValue('username') == table.);
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Menü kinyitása</span>
-              <DotsThree className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AlertDialog>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Biztos vagy benne?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {table.getFilteredSelectedRowModel().rows.length == 0 ? (
+                  <div>
+                    Ezzel kifogja törölni <b>{row.getValue('username')}</b> nevű
+                    felhasználót.
+                  </div>
+                ) : table.getFilteredSelectedRowModel().rows.length == 1 ? (
+                  <div>
+                    Ezzel kifogja törölni{' '}
+                    <b>
+                      {table
+                        .getFilteredSelectedRowModel()
+                        .rows[0]?.getValue('username')}{' '}
+                    </b>
+                    nevű felhasználót.
+                  </div>
+                ) : (
+                  <div>
+                    Ezzel ki kifogja törölni a kiválasztott{' '}
+                    <b>{table.getFilteredSelectedRowModel().rows.length} db </b>
+                    felhasználót.
+                  </div>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="w-full">
+                <ArrowLeft className="w-6 h-6 mr-1" /> Vissza
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="w-full"
+                onClick={async () => {
+                  const usernames: string[] = table
+                    .getFilteredSelectedRowModel()
+                    .rows.map((row) => row.getValue('username'));
+
+                  const res: any = await deleteUsers(usernames);
+
+                  if (res.status == 500)
+                    toast.error(res.message, { duration: 5000 });
+                  else toast.success('Sikeres törlés', { duration: 5000 });
+                }}
+              >
+                <Trash className="w-6 h-6 mr-1" /> Törlés
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Menü kinyitása</span>
+                <DotsThree className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
+              <Link
+                href={`/webmester/felhasznalok/${row.getValue('username')}`}
+              >
+                <DropdownMenuItem>
+                  <div className="flex justify-between w-full">
+                    Szerkesztés
+                    <PencilSimple className="w-4 h-4 ml-4" />
+                  </div>
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <AlertDialogTrigger className="w-full">
+                <DropdownMenuItem>
+                  <div className="flex justify-between w-full">
+                    Törlés
+                    <Backspace className="w-4 h-4 ml-4" />
+                  </div>
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </AlertDialog>
       );
     },
   },
