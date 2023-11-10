@@ -52,8 +52,8 @@ model Competition {
 
   year Int // évfolyam
 
-  StartDate DateTime
-  EndDate   DateTime
+  startDate DateTime
+  endDate   DateTime
 
   questions Question[]
 
