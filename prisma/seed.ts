@@ -8,37 +8,37 @@ async function main() {
     const diakPwd = await hash("diakJelszo", 10);
 
     const webmester = await prisma.user.upsert({
-        where: { username: 'webmester' },
+        where: { username: 'webmester-webmester' },
         update: {},
         create: {
-            username: 'webmester',
+            username: 'webmester-webmester',
             password: webmesterPwd,
             role: 'webmester',
         },
     })
     const zsuri = await prisma.user.upsert({
-        where: { username: 'zsuri' },
+        where: { username: 'zsuri-zsuri' },
         update: {},
         create: {
-            username: 'zsuri',
+            username: 'zsuri-zsuri',
             password: zsuriPwd,
             role: 'tanar',
         },
     })
     const tanar = await prisma.user.upsert({
-        where: { username: 'tanar' },
+        where: { username: 'tanar-tanar' },
         update: {},
         create: {
-            username: 'tanar',
+            username: 'tanar-tanar',
             password: tanarPwd,
             role: 'tanar',
         },
     })
     const diak = await prisma.user.upsert({
-        where: { username: 'diak' },
+        where: { username: 'diak-diak' },
         update: {},
         create: {
-            username: 'diak',
+            username: 'diak-diak',
             password: diakPwd,
             role: 'diak',
         },

@@ -21,11 +21,7 @@ const authOptions: NextAuthOptions = {
                 });
 
                 if (await compare(credentials.password, user.password)) {
-                    return {
-                        id: user.id,
-                        username: user.username,
-                        role: user.role,
-                    };
+                    return user;
                 }
 
                 return null;
@@ -33,32 +29,18 @@ const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        session: ({ session, token }) => {
-            // to debug session refresh
-            console.log("Session Callback", { session, token });
+        jwt: async ({ token, user }) => {
+            user && (token.user = user)
+            return token
+        },
+        session: async ({ session, token }) => {
+            session.user = token.user as any
 
             return {
                 ...session,
-                user: {
-                    id: session.user.id,
-                    username: session.user.username,
-                    role: session.user.role,
-                    randomKey: "randomKey", // any value can be added here to session
-                },
-            };
-        },
-        jwt: ({ token, user }) => {
-            // to debug token refresh
-            console.log("JWT Callback", { token, user });
-
-            if (user) {
-                return {
-                    ...token,
-                    id: user.id,
-                };
+                "random": "random",
             }
-            return token;
-        },
+        }
     },
 };
 

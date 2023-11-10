@@ -18,35 +18,50 @@ import { ChangeEvent, MouseEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormField,
+} from '@/components/ui/form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
 const SignInPage = () => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+  const formSchema: any = z.object({
+    username: z.string().refine((data) => data.includes('-'), {
+      message: 'Vezetéknév és keresztnév kötőjellel elválasztva.',
+    }),
+    password: z.string().min(6, {
+      message: 'Legalább 6 karakter hosszú.',
+    }),
+  });
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
   });
 
-  const handleInputChanged = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  function onSubmit(event: any) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     toast.loading('Bejelentkezés folyamatban...', {
       id: 'signin',
     });
 
-    event.preventDefault();
-    event.stopPropagation();
-
     signIn('credentials', {
-      username: formData.username,
-      password: formData.password,
+      username: values.username,
+      password: values.password,
       callbackUrl: '/',
       redirect: false,
     }).then((result) => {
@@ -70,7 +85,9 @@ const SignInPage = () => {
           id: 'signin',
           duration: 5000,
         });
+
         router.push('/');
+        router.refresh();
       }
     });
   }
@@ -79,57 +96,50 @@ const SignInPage = () => {
     <div className="grid min-h-screen place-items-center">
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Bejelentkezés</CardTitle>
-          <CardDescription>
-            Add meg a felhasználóneved és a jelszavad belépéshez
-          </CardDescription>
+          <CardTitle>Belépés</CardTitle>
+          <CardDescription>Bejelentkezés a mátrixba</CardDescription>
         </CardHeader>
-        <form onSubmit={onSubmit}>
-          <CardContent>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="username">Felhasználónév</Label>
-                <Input
-                  id="username"
-                  placeholder="Gipsz-Jakab"
-                  type="text"
-                  name="username"
-                  autoCapitalize="none"
-                  autoComplete="username"
-                  autoCorrect="off"
-                  required
-                  disabled={isLoading}
-                  value={formData.username}
-                  onChange={handleInputChanged}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Jelszó</Label>
-                <Input
-                  id="password"
-                  placeholder="********"
-                  type="password"
-                  name="password"
-                  autoCapitalize="none"
-                  autoComplete="password"
-                  autoCorrect="off"
-                  required
-                  disabled={isLoading}
-                  value={formData.password}
-                  onChange={handleInputChanged}
-                />
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button disabled={isLoading} className="w-full">
-              {isLoading && (
-                <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Bejelentkezés
-            </Button>
-          </CardFooter>
-        </form>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Felhasználónév</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Gipsz-Jakab" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jelszó</FormLabel>
+                    <FormControl>
+                      <Input placeholder="*******" type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button disabled={isLoading} className="w-full" type="submit">
+                {isLoading && (
+                  <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Bejelentkezés
+              </Button>
+            </CardContent>
+          </form>
+        </Form>
       </Card>
     </div>
   );
