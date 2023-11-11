@@ -20,6 +20,11 @@ export const VezerloContext = createContext<vezerloContextType>({
   setUsers: () => null as any,
   isUsersLoading: false,
   setIsUsersLoading: () => null as any,
+
+  draggableItems: null as string[] | null,
+  setDraggableItems: () => null as any,
+  droppedItems: null as string[] | null,
+  setDroppedItems: () => null as any,
 });
 
 export default function VezerloLayout({
@@ -43,6 +48,9 @@ export default function VezerloLayout({
   const [users, setUsers] = useState<User[] | null>(null);
   const [isUsersLoading, setIsUsersLoading] = useState<boolean>(false);
 
+  const [draggableItems, setDraggableItems] = useState<string[] | null>(null);
+  const [droppedItems, setDroppedItems] = useState<string[] | null>(null);
+
   useEffect(() => {
     if (session && session.user.role == 'diak' && status == 'authenticated') {
       toast.error('Hozzáférés megtagadva');
@@ -63,6 +71,11 @@ export default function VezerloLayout({
           setUsers,
           isUsersLoading,
           setIsUsersLoading,
+
+          draggableItems,
+          setDraggableItems,
+          droppedItems,
+          setDroppedItems,
         }}
       >
         <main className="mt-24">{children}</main>

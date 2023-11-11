@@ -21,6 +21,7 @@ import {
   UserCirclePlus,
   UserList,
   Gauge,
+  UsersFour,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -30,35 +31,35 @@ import { VezerloContext } from '../layout';
 export default function UserPage() {
   const { data: session, status } = useSession();
 
-  const { users, setUsers, isUsersLoading, setIsUsersLoading } =
-    useContext(VezerloContext);
+  //   const { users, setUsers, isUsersLoading, setIsUsersLoading } =
+  //     useContext(VezerloContext);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      setIsUsersLoading(true);
+  //   useEffect(() => {
+  //     const fetchUser = async () => {
+  //       setIsUsersLoading(true);
 
-      const users = await getUsers();
+  //       const users = await getUsers();
 
-      if (!users) {
-        setIsUsersLoading(false);
-        return;
-      } else {
-        setUsers(users);
-        setIsUsersLoading(false);
-      }
-    };
+  //       if (!users) {
+  //         setIsUsersLoading(false);
+  //         return;
+  //       } else {
+  //         setUsers(users);
+  //         setIsUsersLoading(false);
+  //       }
+  //     };
 
-    if (session?.user.role == 'webmester' && !isUsersLoading) fetchUser();
-  }, [session]);
+  //     if (session?.user.role == 'webmester' && !isUsersLoading) fetchUser();
+  //   }, [session]);
 
   return (
     <>
-      <title>VarléV2 - Felhasználók kezelése</title>
-      <meta name="description" content="VarléV2 - Felhasználók kezelése" />
+      <title>VarléV2 - Csapatok kezelése</title>
+      <meta name="description" content="VarléV2 - Csapatok kezelése" />
 
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Felhasználók kezelése
+          Csapatok kezelése
         </h1>
 
         <div className="flex items-center gap-4">
@@ -67,10 +68,10 @@ export default function UserPage() {
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          <Link href="/vezerlopult/regisztracio">
+          <Link href="/vezerlopult/csapatok/letrehozas">
             <Button variant="default">
               {' '}
-              <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új fiók
+              <UsersFour className="w-6 h-6 mr-2" color="white" /> Új csapat
               létrehozása
             </Button>
           </Link>
@@ -86,9 +87,9 @@ export default function UserPage() {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/vezerlopult/felhasznalok">
+        <Link href="/vezerlopult/csapatok">
           <div className="flex items-center gap-[2px] hover:underline">
-            <UserList className="h-6 w-6 mr-1" /> Felhasználók
+            <UsersFour className="h-6 w-6 mr-1" /> Csapatok
           </div>
         </Link>
       </span>
@@ -96,27 +97,24 @@ export default function UserPage() {
       <Separator className="mt-6 mb-8" />
 
       <>
-        {users && users.length == 0 && (
+        {/* {users && users.length == 0 && ( */}
+        {true && (
           <Card>
             <CardHeader>
-              <CardTitle>Felhasználók</CardTitle>
+              <CardTitle>Csapatok</CardTitle>
               <CardDescription>
-                Jelenleg nincsenek felhasználók az adatbázisban.
+                Jelenleg nincsen csapat az adatbázisban.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Link href="/vezerlopult/regisztracio">
+              <Link href="/vezerlopult/csapatok/letrehozas">
                 <Button variant="default">
-                  <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új
-                  fiók létrehozása
+                  <UsersFour className="w-6 h-6 mr-2" color="white" /> Új csapat
+                  létrehozása
                 </Button>
               </Link>
             </CardContent>
           </Card>
-        )}
-
-        {users && users.length > 0 && (
-          <UsersDataTable columns={columns} data={users} />
         )}
       </>
     </>

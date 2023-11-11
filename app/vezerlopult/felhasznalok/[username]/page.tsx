@@ -28,7 +28,10 @@ export default function UserPage({ params }: { params: { username: string } }) {
   const { user, setUser, isUserLoading } = useContext(VezerloContext);
 
   return (
-    <main className="mt-32">
+    <>
+      <title>VarléV2 - Felhasználók kezelése</title>
+      <meta name="description" content="VarléV2 - Felhasználók kezelése" />
+
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
           Felhasználó szerkesztése
@@ -79,7 +82,7 @@ export default function UserPage({ params }: { params: { username: string } }) {
         </Link>
       </span>
 
-      <Separator className="my-7" />
+      <Separator className="mt-6 mb-8" />
 
       <>
         <Tabs defaultValue="account">
@@ -95,6 +98,6 @@ export default function UserPage({ params }: { params: { username: string } }) {
           </TabsContent>
         </Tabs>
       </>
-    </main>
+    </>
   );
 }
