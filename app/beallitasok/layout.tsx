@@ -11,23 +11,23 @@ export const metadata: Metadata = {
 
 const sidebarNavItems = [
   {
-    title: 'Profile',
+    title: 'Profil',
     href: '/beallitasok',
   },
   {
-    title: 'Account',
+    title: 'Fiók',
     href: '/beallitasok/account',
   },
   {
-    title: 'Appearance',
+    title: 'Megjelenés',
     href: '/beallitasok/appearance',
   },
   {
-    title: 'Notifications',
+    title: 'Értesítések',
     href: '/beallitasok/notifications',
   },
   {
-    title: 'Display',
+    title: 'Egyéb',
     href: '/beallitasok/display',
   },
 ];

@@ -1,12 +1,12 @@
-"use client"
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronDownIcon } from "@radix-ui/react-icons"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from '@/lib/utils';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -15,42 +15,42 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { toast } from "@/components/ui/use-toast"
+} from '@/components/ui/form';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { toast } from '@/components/ui/use-toast';
 
 const appearanceFormSchema = z.object({
-  theme: z.enum(["light", "dark"], {
-    required_error: "Please select a theme.",
+  theme: z.enum(['light', 'dark'], {
+    required_error: 'Kérlek válassz egy témát.',
   }),
-  font: z.enum(["inter", "manrope", "system"], {
-    invalid_type_error: "Select a font",
-    required_error: "Please select a font.",
+  font: z.enum(['inter', 'manrope', 'system'], {
+    invalid_type_error: 'Válassz egy betűtípust',
+    required_error: 'Kérlek válassz egy betűtípust.',
   }),
-})
+});
 
-type AppearanceFormValues = z.infer<typeof appearanceFormSchema>
+type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 
-// This can come from your database or API.
+// Ez az alapértelmezett érték lehet adatbázisodból vagy API-ból származó.
 const defaultValues: Partial<AppearanceFormValues> = {
-  theme: "light",
-}
+  theme: 'light',
+};
 
 export function AppearanceForm() {
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues,
-  })
+  });
 
   function onSubmit(data: AppearanceFormValues) {
     toast({
-      title: "You submitted the following values:",
+      title: 'A következő értékeket küldted el:',
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
       ),
-    })
+    });
   }
 
   return (
@@ -61,13 +61,13 @@ export function AppearanceForm() {
           name="font"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Font</FormLabel>
+              <FormLabel>Betűtípus</FormLabel>
               <div className="relative w-max">
                 <FormControl>
                   <select
                     className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "w-[200px] appearance-none bg-transparent font-normal"
+                      buttonVariants({ variant: 'outline' }),
+                      'w-[200px] appearance-none bg-transparent font-normal'
                     )}
                     {...field}
                   >
@@ -79,7 +79,8 @@ export function AppearanceForm() {
                 <ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50" />
               </div>
               <FormDescription>
-                Set the font you want to use in the dashboard.
+                Állítsd be azt a betűtípust, amelyet a vezérlőpulton szeretnél
+                használni.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -90,9 +91,9 @@ export function AppearanceForm() {
           name="theme"
           render={({ field }) => (
             <FormItem className="space-y-1">
-              <FormLabel>Theme</FormLabel>
+              <FormLabel>Téma</FormLabel>
               <FormDescription>
-                Select the theme for the dashboard.
+                Válassz egy témát a vezérlőpulthoz.
               </FormDescription>
               <FormMessage />
               <RadioGroup
@@ -122,7 +123,7 @@ export function AppearanceForm() {
                       </div>
                     </div>
                     <span className="block w-full p-2 text-center font-normal">
-                      Light
+                      Világos
                     </span>
                   </FormLabel>
                 </FormItem>
@@ -148,7 +149,7 @@ export function AppearanceForm() {
                       </div>
                     </div>
                     <span className="block w-full p-2 text-center font-normal">
-                      Dark
+                      Sötét
                     </span>
                   </FormLabel>
                 </FormItem>
@@ -157,8 +158,8 @@ export function AppearanceForm() {
           )}
         />
 
-        <Button type="submit">Update preferences</Button>
+        <Button type="submit">Beállítások frissítése</Button>
       </form>
     </Form>
-  )
+  );
 }

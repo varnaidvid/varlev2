@@ -20,39 +20,39 @@ import { toast } from '@/components/ui/use-toast';
 const items = [
   {
     id: 'recents',
-    label: 'Recents',
+    label: 'Előzmények',
   },
   {
     id: 'home',
-    label: 'Home',
+    label: 'Főoldal',
   },
   {
     id: 'applications',
-    label: 'Applications',
+    label: 'Alkalmazások',
   },
   {
     id: 'desktop',
-    label: 'Desktop',
+    label: 'Asztal',
   },
   {
     id: 'downloads',
-    label: 'Downloads',
+    label: 'Letöltések',
   },
   {
     id: 'documents',
-    label: 'Documents',
+    label: 'Dokumentumok',
   },
 ] as const;
 
 const displayFormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: 'You have to select at least one item.',
+    message: 'Legalább egy elemet ki kell választanod.',
   }),
 });
 
 type DisplayFormValues = z.infer<typeof displayFormSchema>;
 
-// This can come from your database or API.
+// Ez az alapértelmezett érték lehet adatbázisodból vagy API-ból származó.
 const defaultValues: Partial<DisplayFormValues> = {
   items: ['recents', 'home'],
 };
@@ -65,7 +65,7 @@ export function DisplayForm() {
 
   function onSubmit(data: DisplayFormValues) {
     toast({
-      title: 'You submitted the following values:',
+      title: 'A következő értékeket küldted el:',
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
@@ -83,9 +83,10 @@ export function DisplayForm() {
           render={() => (
             <FormItem>
               <div className="mb-4">
-                <FormLabel className="text-base">Sidebar</FormLabel>
+                <FormLabel className="text-base">Oldalsáv</FormLabel>
                 <FormDescription>
-                  Select the items you want to display in the sidebar.
+                  Válaszd ki azokat az elemeket, amelyeket meg szeretnél
+                  jeleníteni az oldalsávban.
                 </FormDescription>
               </div>
               {items.map((item) => (
@@ -125,7 +126,7 @@ export function DisplayForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Update display</Button>
+        <Button type="submit">Kijelző frissítése</Button>
       </form>
     </Form>
   );

@@ -49,24 +49,24 @@ const accountFormSchema = z.object({
   name: z
     .string()
     .min(2, {
-      message: 'Name must be at least 2 characters.',
+      message: 'A név legalább 2 karakter hosszú kell legyen.',
     })
     .max(30, {
-      message: 'Name must not be longer than 30 characters.',
+      message: 'A név nem lehet hosszabb 30 karakternél.',
     }),
   dob: z.date({
-    required_error: 'A date of birth is required.',
+    required_error: 'A születési dátum megadása kötelező.',
   }),
   language: z.string({
-    required_error: 'Please select a language.',
+    required_error: 'Kérlek válassz egy nyelvet.',
   }),
 });
 
 type AccountFormValues = z.infer<typeof accountFormSchema>;
 
-// This can come from your database or API.
+// Ez az alapértelmezett érték lehet adatbázisodból vagy API-ból származó.
 const defaultValues: Partial<AccountFormValues> = {
-  // name: "Your name",
+  // name: "A neved",
   // dob: new Date("2023-01-23"),
 };
 
@@ -78,7 +78,7 @@ export function AccountForm() {
 
   function onSubmit(data: AccountFormValues) {
     toast({
-      title: 'You submitted the following values:',
+      title: 'A következő értékeket küldted el:',
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
@@ -95,13 +95,12 @@ export function AccountForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Név</FormLabel>
               <FormControl>
-                <Input placeholder="Your name" {...field} />
+                <Input placeholder="A neved" {...field} />
               </FormControl>
               <FormDescription>
-                This is the name that will be displayed on your profile and in
-                emails.
+                Ez a név fog megjelenni a profilodon és az e-mailekben.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -112,7 +111,7 @@ export function AccountForm() {
           name="dob"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
+              <FormLabel>Születési dátum</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -126,7 +125,7 @@ export function AccountForm() {
                       {field.value ? (
                         format(field.value, 'PPP')
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Válassz egy dátumot</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -145,7 +144,7 @@ export function AccountForm() {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                Your date of birth is used to calculate your age.
+                A születési dátumod használjuk az életkorod kiszámításához.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -156,7 +155,7 @@ export function AccountForm() {
           name="language"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Language</FormLabel>
+              <FormLabel>Nyelv</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -172,15 +171,15 @@ export function AccountForm() {
                         ? languages.find(
                             (language) => language.value === field.value
                           )?.label
-                        : 'Select language'}
+                        : 'Válassz nyelvet'}
                       <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-[200px] p-0">
                   <Command>
-                    <CommandInput placeholder="Search language..." />
-                    <CommandEmpty>No language found.</CommandEmpty>
+                    <CommandInput placeholder="Nyelv keresése..." />
+                    <CommandEmpty>Nincs találat.</CommandEmpty>
                     <CommandGroup>
                       {languages.map((language) => (
                         <CommandItem
@@ -206,13 +205,13 @@ export function AccountForm() {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                This is the language that will be used in the dashboard.
+                Ez a nyelv lesz használva a vezérlőpulton.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Update account</Button>
+        <Button type="submit">Fiók frissítése</Button>
       </form>
     </Form>
   );
