@@ -67,7 +67,7 @@ export default function UserPage() {
 
         <Link href="/webmester/felhasznalok">
           <div className="flex items-center gap-[2px] hover:underline">
-            <UserList className="h-6 w-6" /> Felhasználók
+            <UserList className="h-6 w-6 mr-1" /> Felhasználók
           </div>
         </Link>
       </span>
