@@ -76,6 +76,13 @@ const columns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Felhasználónév" />
     ),
+    cell: ({ row }) => {
+      return (
+        <Link href={`/webmester/felhasznalok/${row.getValue('username')}`}>
+          <span>{row.getValue('username')}</span>
+        </Link>
+      );
+    },
   },
   {
     accessorKey: 'role',
