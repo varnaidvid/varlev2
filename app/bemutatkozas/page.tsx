@@ -9,7 +9,7 @@ import {
 
 export default function Home() {
   return (
-    <main className="container mx-auto">
+    <main className="container mx-auto text-gray-700">
       <div className="my-10">
         <Card>
           <CardHeader>
@@ -42,9 +42,6 @@ export default function Home() {
                   <CardContent>
                     <p className="text-justify">{member.description}</p>
                   </CardContent>
-                  <CardFooter>
-                    <p>Card Footer</p>
-                  </CardFooter>
                 </Card>
               ))}
             </div>
