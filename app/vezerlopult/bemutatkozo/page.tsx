@@ -1,6 +1,6 @@
 'use client';
 
-import SignUpForm from '@/components/webmester/signUpForm';
+import SignUpForm from '@/components/vezerlopult/signUpForm';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,12 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import columns from '@/components/webmester/datatable/dataTableColumns';
+import columns from '@/components/vezerlopult/datatable/dataTableColumns';
 import { useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/webmester/datatable/usersDataTable';
+import UsersDataTable from '@/components/vezerlopult/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,
@@ -34,12 +34,12 @@ export default function BemutatkozoPage() {
         </h1>
 
         <div className="flex items-center gap-4">
-          <Link href="/webmester">
+          <Link href="/vezerlopult">
             <span className="text-sm hover:underline">
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          {/* <Link href="/webmester/regisztracio">
+          {/* <Link href="/vezerlopult/regisztracio">
             <Button variant="default">
               {' '}
               <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új fiók
@@ -50,7 +50,7 @@ export default function BemutatkozoPage() {
       </div>
 
       <span className="leading-none tracking-tight text-base text-gray-500 flex items-center">
-        <Link href="/webmester">
+        <Link href="/vezerlopult">
           <div className="flex items-center gap-[2px] hover:underline">
             <Gauge className="h-6 w-6" /> Vezérlőpult
           </div>
@@ -58,7 +58,7 @@ export default function BemutatkozoPage() {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/webmester/beallitasok">
+        <Link href="/vezerlopult/beallitasok">
           <div className="flex items-center gap-[2px] hover:underline">
             <PresentationChart className="h-6 w-6" /> Bemutatkozás
           </div>

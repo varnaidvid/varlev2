@@ -26,6 +26,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+import UploadcareImage from '@uploadcare/nextjs-loader';
+
 export default function Home() {
   const { data: session, status } = useSession();
 
@@ -82,6 +84,13 @@ export default function Home() {
   return (
     <main className="container mt-10 overflow-hidden">
       <div>
+        <UploadcareImage
+          alt="Test image"
+          src="https://ucarecdn.com/6c88151d-9afc-4395-a0c5-9b554945319b/"
+          width="400"
+          height="300"
+        />
+
         <h1 className="font-bold tracking-tight mb-2">{getGreeting()}</h1>
         <div className="tracking-light text-sm text-gray-400">
           Tekintsd meg az aktuális versenyeket és feladatokat!

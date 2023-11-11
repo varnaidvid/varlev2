@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
 import React from 'react';
 
-export interface webmesterContextType {
+export interface vezerloContextType {
     user: User | null;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     isUserLoading: boolean;

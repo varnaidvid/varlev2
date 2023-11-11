@@ -28,7 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "types/**/*.ts",
-    "app/webmester/regisztracio",
+    "app/vezerlopult/regisztracio",
     "prisma/seed.ts"
   ],
   "exclude": ["node_modules"]

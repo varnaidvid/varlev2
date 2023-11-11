@@ -103,7 +103,7 @@ const SignUpForm = () => {
     });
 
     setIsLoading(false);
-    router.push('/webmester/felhasznalok/');
+    router.push('/vezerlopult/felhasznalok/');
   }
 
   return (

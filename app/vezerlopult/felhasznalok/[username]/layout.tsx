@@ -12,7 +12,7 @@ import {
   useState,
 } from 'react';
 import toast from 'react-hot-toast';
-import { WebmesterContext } from '../../layout';
+import { VezerloContext } from '../../layout';
 
 export default function UserLayout({
   params,
@@ -23,7 +23,7 @@ export default function UserLayout({
 }) {
   const router = useRouter();
 
-  const { user, setUser, setIsUserLoading } = useContext(WebmesterContext);
+  const { user, setUser, setIsUserLoading } = useContext(VezerloContext);
 
   useEffect(() => {
     setIsUserLoading(true);

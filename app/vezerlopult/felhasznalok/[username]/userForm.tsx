@@ -43,35 +43,50 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { User } from '@prisma/client';
-import {
-  getUser,
-  updateUserPassword,
-  updateUsernameAndRole,
-} from '@/lib/actions';
+import { getUser, updateUsernameAndRole } from '@/lib/actions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { WebmesterContext } from '../../layout';
+import { VezerloContext } from '../../layout';
 
-const PasswordForm = () => {
+const UserForm = () => {
   const router = useRouter();
+  const { data: session, status, update } = useSession();
 
-  const { user, setUser, isUserLoading } = useContext(WebmesterContext);
+  const { user, setUser, isUserLoading } = useContext(VezerloContext);
 
   const formSchema: any = z.object({
-    password: z.string().min(6, {
-      message: 'Legalább 6 karakter hosszú legyen a jelszó.',
+    username: z.string().refine((data) => data.includes('-'), {
+      message:
+        'Felhasználónévnek tartalmaznia kell egy kötőjelet a vezeték- és keresztnév között.',
     }),
-    password2: z
+    role: z
       .string()
-      .refine((data) => data === form.getValues('password'), {
-        message: 'Jelszavaknak egyeznie kell.',
-      }),
+      .min(1, {
+        message: 'Válasszon szerepkört.',
+      })
+      .refine(
+        (data) =>
+          data === 'webmester' ||
+          data === 'zsuri' ||
+          data === 'tanar' ||
+          data === 'diak',
+        {
+          message: 'Válasszon szerepkört.',
+        }
+      ),
   });
+
+  useEffect(() => {
+    if (!user) return;
+
+    form.setValue('username', user.username);
+    form.setValue('role', user.role);
+  }, [user]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      password: '',
-      password2: '',
+      username: '',
+      role: '',
     },
   });
 
@@ -84,9 +99,10 @@ const PasswordForm = () => {
     });
 
     try {
-      const newUser = await updateUserPassword(
+      const newUser = await updateUsernameAndRole(
         user?.username!,
-        values.password
+        values.username,
+        values.role
       );
 
       toast.success('Sikeres frissítés!', {
@@ -95,10 +111,28 @@ const PasswordForm = () => {
 
       setIsLoading(false);
 
-      form.setValue('password', '');
-      form.setValue('password2', '');
+      setUser(newUser);
+
+      if (session?.user.username == user?.username) {
+        router.replace(`/vezerlopult/felhasznalok/${values.username}`);
+
+        await update({
+          ...session!.user,
+          username: values.username,
+          role: values.role,
+        });
+      }
     } catch (error) {
       setIsLoading(false);
+
+      if ((error as Error).message.includes('Unique')) {
+        form.setError('username', {
+          type: 'manual',
+          message: 'Ez a felhasználónév már foglalt!',
+        });
+
+        return;
+      }
 
       toast.error('Hiba történt a frissítés során!', {
         id: 'signup',
@@ -110,7 +144,7 @@ const PasswordForm = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Jelszó módosítása</CardTitle>
+        <CardTitle>Általános adatok frissítése</CardTitle>
       </CardHeader>
 
       <Form {...form}>
@@ -126,19 +160,15 @@ const PasswordForm = () => {
               <>
                 <FormField
                   control={form.control}
-                  name="password"
+                  name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Új jelszó</FormLabel>
+                      <FormLabel>Felhasználónév</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="*******"
-                          type="password"
-                          {...field}
-                        />
+                        <Input required placeholder="Gipsz-Jakab" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Legalább 6 karakter hosszú jelszó
+                        Vezetéknév és keresztnév kötőjellel elválasztva
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -147,20 +177,32 @@ const PasswordForm = () => {
 
                 <FormField
                   control={form.control}
-                  name="password2"
+                  name="role"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Jelszó megerősítése</FormLabel>
+                      <FormLabel>Szerepkör</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="*******"
-                          type="password"
-                          {...field}
-                        />
+                        <Select
+                          required
+                          defaultValue={user?.role}
+                          onValueChange={(val) => form.setValue('role', val)}
+                        >
+                          <SelectTrigger
+                            disabled={session?.user.username == user?.username}
+                          >
+                            <SelectValue
+                              defaultValue={user?.role}
+                              placeholder="Válasszon szerepkört"
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="webmester">Webmester</SelectItem>
+                            <SelectItem value="zsuri">Zsűri tag</SelectItem>
+                            <SelectItem value="tanar">Tanár</SelectItem>
+                            <SelectItem value="diak">Diák</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
-                      <FormDescription>
-                        Egyezzen a fenti jelszóval
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -184,4 +226,4 @@ const PasswordForm = () => {
   );
 };
 
-export default PasswordForm;
+export default UserForm;

@@ -49,8 +49,8 @@ import toast from 'react-hot-toast';
 import { deleteUser, deleteUsers, updateUserRole } from '@/lib/actions';
 import Link from 'next/link';
 import { useContext } from 'react';
-import { WebmesterContext } from '@/app/webmester/layout';
 import { useSession } from 'next-auth/react';
+import { VezerloContext } from '@/app/vezerlopult/layout';
 
 const columns: ColumnDef<User>[] = [
   {
@@ -79,7 +79,7 @@ const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <Link href={`/webmester/felhasznalok/${row.getValue('username')}`}>
+        <Link href={`/vezerlopult/felhasznalok/${row.getValue('username')}`}>
           <span>{row.getValue('username')}</span>
         </Link>
       );
@@ -180,7 +180,7 @@ const columns: ColumnDef<User>[] = [
     id: 'actions',
     header: ({ column, table }) => {
       const disabled = table.getFilteredSelectedRowModel().rows.length == 0;
-      const { users, setUsers } = useContext(WebmesterContext);
+      const { users, setUsers } = useContext(VezerloContext);
 
       return (
         <AlertDialog>
@@ -261,7 +261,7 @@ const columns: ColumnDef<User>[] = [
       );
     },
     cell: ({ row, table }) => {
-      const { users, setUsers } = useContext(WebmesterContext);
+      const { users, setUsers } = useContext(VezerloContext);
 
       return (
         <AlertDialog>
@@ -339,7 +339,7 @@ const columns: ColumnDef<User>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
               <Link
-                href={`/webmester/felhasznalok/${row.getValue('username')}`}
+                href={`/vezerlopult/felhasznalok/${row.getValue('username')}`}
               >
                 <DropdownMenuItem>
                   <div className="flex justify-between w-full">

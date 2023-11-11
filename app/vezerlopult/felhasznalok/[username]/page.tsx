@@ -1,13 +1,10 @@
 'use client';
 
-import SignUpForm from '@/components/webmester/signUpForm';
 import { Button } from '@/components/ui/button';
-import columns from '@/components/webmester/datatable/dataTableColumns';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUser, getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/webmester/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,
@@ -22,28 +19,28 @@ import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserForm from './userForm';
 import PasswordForm from './passwordForm';
-import { WebmesterContext } from '../../layout';
-import { webmesterContextType } from '@/types/webmesterContext';
+import { VezerloContext } from '../../layout';
+import { Separator } from '@/components/ui/separator';
 
 export default function UserPage({ params }: { params: { username: string } }) {
   const router = useRouter();
 
-  const { user, setUser, isUserLoading } = useContext(WebmesterContext);
+  const { user, setUser, isUserLoading } = useContext(VezerloContext);
 
   return (
     <main className="mt-32">
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Felhasználó áttekintése
+          Felhasználó szerkesztése
         </h1>
 
         <div className="flex items-center gap-4">
-          <Link href="/webmester">
+          <Link href="/vezerlopult">
             <span className="text-sm hover:underline">
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          <Link href="/webmester/regisztracio">
+          <Link href="/vezerlopult/regisztracio">
             <Button variant="default">
               {' '}
               <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új fiók
@@ -54,7 +51,7 @@ export default function UserPage({ params }: { params: { username: string } }) {
       </div>
 
       <span className="leading-none tracking-tight text-base text-gray-500 flex items-center">
-        <Link href="/webmester">
+        <Link href="/vezerlopult">
           <div className="flex items-center gap-[2px] hover:underline">
             <Gauge className="h-6 w-6" /> Vezérlőpult
           </div>
@@ -62,7 +59,7 @@ export default function UserPage({ params }: { params: { username: string } }) {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/webmester/felhasznalok">
+        <Link href="/vezerlopult/felhasznalok">
           <div className="flex items-center gap-[2px] hover:underline">
             <UserList className="h-6 w-6" /> Felhasználók
           </div>
@@ -71,7 +68,7 @@ export default function UserPage({ params }: { params: { username: string } }) {
         <CaretRight className="mx-1 h-4 w-4" />
 
         <Link
-          href={`/webmester/felhasznalok/${
+          href={`/vezerlopult/felhasznalok/${
             user?.username ? user.username : params.username
           }`}
         >
@@ -82,7 +79,9 @@ export default function UserPage({ params }: { params: { username: string } }) {
         </Link>
       </span>
 
-      <div className="mt-14">
+      <Separator className="my-7" />
+
+      <>
         <Tabs defaultValue="account">
           <TabsList className="mb-4">
             <TabsTrigger value="account">Általános adatok</TabsTrigger>
@@ -95,7 +94,7 @@ export default function UserPage({ params }: { params: { username: string } }) {
             <PasswordForm />
           </TabsContent>
         </Tabs>
-      </div>
+      </>
     </main>
   );
 }

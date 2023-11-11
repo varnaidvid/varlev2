@@ -17,11 +17,11 @@ export default function DashboardCard({
 }) {
   return (
     <Link href={link}>
-      <Card className="rounded-md h-[400px] hover:bg-accent hover:shadow-sm transition-all">
+      <Card className="rounded-md h-[250px] hover:bg-accent hover:shadow-sm transition-all">
         <CardHeader className="h-full flex flex-col justify-between">
           <div className="flex flex-col gap-2">
             <CardTitle>
-              <Icon className="h-8 w-8 mb-4" />
+              <Icon weight="bold" className="h-10 w-10 mb-3" />
               {title}
             </CardTitle>
             <CardDescription>{description}</CardDescription>

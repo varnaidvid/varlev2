@@ -1,6 +1,5 @@
 'use client';
 
-import SignUpForm from '@/components/webmester/signUpForm';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,12 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import columns from '@/components/webmester/datatable/dataTableColumns';
+import columns from '@/components/datatable/dataTableColumns';
 import { useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/webmester/datatable/usersDataTable';
+import UsersDataTable from '@/components/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,
@@ -25,14 +24,14 @@ import {
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { webmesterContextType } from '@/types/webmesterContext';
-import { WebmesterContext } from '../layout';
+import { Separator } from '@/components/ui/separator';
+import { VezerloContext } from '../layout';
 
 export default function UserPage() {
   const { data: session, status } = useSession();
 
   const { users, setUsers, isUsersLoading, setIsUsersLoading } =
-    useContext(WebmesterContext);
+    useContext(VezerloContext);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -60,12 +59,12 @@ export default function UserPage() {
         </h1>
 
         <div className="flex items-center gap-4">
-          <Link href="/webmester">
+          <Link href="/vezerlopult">
             <span className="text-sm hover:underline">
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          <Link href="/webmester/regisztracio">
+          <Link href="/vezerlopult/regisztracio">
             <Button variant="default">
               {' '}
               <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új fiók
@@ -76,7 +75,7 @@ export default function UserPage() {
       </div>
 
       <span className="leading-none tracking-tight text-base text-gray-500 flex items-center">
-        <Link href="/webmester">
+        <Link href="/vezerlopult">
           <div className="flex items-center gap-[2px] hover:underline">
             <Gauge className="h-6 w-6" /> Vezérlőpult
           </div>
@@ -84,14 +83,16 @@ export default function UserPage() {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/webmester/felhasznalok">
+        <Link href="/vezerlopult/felhasznalok">
           <div className="flex items-center gap-[2px] hover:underline">
             <UserList className="h-6 w-6 mr-1" /> Felhasználók
           </div>
         </Link>
       </span>
 
-      <div className="mt-8">
+      <Separator className="my-7" />
+
+      <>
         {users && users.length == 0 && (
           <Card>
             <CardHeader>
@@ -101,7 +102,7 @@ export default function UserPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Link href="/webmester/regisztracio">
+              <Link href="/vezerlopult/regisztracio">
                 <Button variant="default">
                   <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új
                   fiók létrehozása
@@ -114,7 +115,7 @@ export default function UserPage() {
         {users && users.length > 0 && (
           <UsersDataTable columns={columns} data={users} />
         )}
-      </div>
+      </>
     </>
   );
 }

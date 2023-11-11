@@ -33,7 +33,7 @@ import {
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { DataTablePagination } from '../webmester/datatable/dataTablePagination';
+import { DataTablePagination } from '../vezerlopult/datatable/dataTablePagination';
 // import DataTableViewOptions from './dataTableViewOptions';
 
 interface DataTableProps<TData, TValue> {
