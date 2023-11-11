@@ -6,9 +6,8 @@ import {
   type ParsedQuestion,
 } from '@/components/tanar/questionsTableColumns';
 import { useEffect, useState } from 'react';
-import { prisma } from '@/prisma/db';
 import { getQuestions } from '@/lib/actions';
-import { Prisma, Question } from '@prisma/client';
+import { Question } from '@prisma/client';
 import QuestionsDataTable from '@/components/tanar/questionsDataTable';
 import {
   GearSix,
@@ -16,6 +15,7 @@ import {
   UserCirclePlus,
   UserList,
   Gauge,
+  NotePencil,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -59,11 +59,17 @@ export default function UserPage() {
           <Link href="/">
             <span className="text-sm hover:underline">Vissza a főoldalra</span>
           </Link>
+          <Link href="/feladatok/szerkesztes/">
+            <Button variant="outline">
+              {' '}
+              <NotePencil className="w-6 h-6 mr-2" /> Feladatok szerkesztése
+            </Button>
+          </Link>
           <Link href="/feladatok/letrehozas/">
             <Button variant="default">
               {' '}
-              <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új
-              feladatok feltöltése
+              <UserCirclePlus className="w-6 h-6 mr-2" /> Új feladatok
+              feltöltése
             </Button>
           </Link>
         </div>

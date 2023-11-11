@@ -25,15 +25,6 @@ export async function deleteUsers(usernames: string[]) {
 }
 
 // QUESTIONS
-export async function getQuestions() {
-  return prisma.question.findMany({
-    include: {
-      creator: {
-        select: {
-          username: true,
-        },
-      },
-    },
-  });
-}
+export async function getQuestions() { return prisma.question.findMany({ include: { creator: { select: { username: true, }, }, }, }); }
+export async function getOwnQuestions(username: string) { const session = await getServerSession(authOptions); return prisma.question.findMany({ where: { creatorId: session?.user.id } }); }
 
