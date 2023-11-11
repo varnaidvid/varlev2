@@ -20,39 +20,39 @@ import toast from 'react-hot-toast';
 const items = [
   {
     id: 'recents',
-    label: 'Előzmények',
+    label: 'Recents',
   },
   {
     id: 'home',
-    label: 'Főoldal',
+    label: 'Home',
   },
   {
     id: 'applications',
-    label: 'Alkalmazások',
+    label: 'Applications',
   },
   {
     id: 'desktop',
-    label: 'Asztal',
+    label: 'Desktop',
   },
   {
     id: 'downloads',
-    label: 'Letöltések',
+    label: 'Downloads',
   },
   {
     id: 'documents',
-    label: 'Dokumentumok',
+    label: 'Documents',
   },
 ] as const;
 
 const displayFormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: 'Legalább egy elemet ki kell választanod.',
+    message: 'You have to select at least one item.',
   }),
 });
 
 type DisplayFormValues = z.infer<typeof displayFormSchema>;
 
-// prisma ???
+// This can come from your database or API.
 const defaultValues: Partial<DisplayFormValues> = {
   items: ['recents', 'home'],
 };
@@ -64,7 +64,7 @@ export function DisplayForm() {
   });
 
   function onSubmit(data: DisplayFormValues) {
-    toast.success('Értesítések frissítve.');
+    toast.success('Megjelenítés frissítve.');
   }
 
   return (
@@ -76,10 +76,9 @@ export function DisplayForm() {
           render={() => (
             <FormItem>
               <div className="mb-4">
-                <FormLabel className="text-base">Oldalsáv</FormLabel>
+                <FormLabel className="text-base">Sidebar</FormLabel>
                 <FormDescription>
-                  Válaszd ki azokat az elemeket, amelyeket meg szeretnél
-                  jeleníteni az oldalsávban.
+                  Select the items you want to display in the sidebar.
                 </FormDescription>
               </div>
               {items.map((item) => (
@@ -119,7 +118,7 @@ export function DisplayForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Kijelző frissítése</Button>
+        <Button type="submit">Update display</Button>
       </form>
     </Form>
   );

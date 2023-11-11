@@ -21,17 +21,17 @@ import toast from 'react-hot-toast';
 
 const appearanceFormSchema = z.object({
   theme: z.enum(['light', 'dark'], {
-    required_error: 'Kérlek válassz egy témát.',
+    required_error: 'Please select a theme.',
   }),
   font: z.enum(['inter', 'manrope', 'system'], {
-    invalid_type_error: 'Válassz egy betűtípust',
-    required_error: 'Kérlek válassz egy betűtípust.',
+    invalid_type_error: 'Select a font',
+    required_error: 'Please select a font.',
   }),
 });
 
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 
-// Ez az alapértelmezett érték lehet adatbázisodból vagy API-ból származó.
+// This can come from your database or API.
 const defaultValues: Partial<AppearanceFormValues> = {
   theme: 'light',
 };
@@ -43,7 +43,7 @@ export function AppearanceForm() {
   });
 
   function onSubmit(data: AppearanceFormValues) {
-    toast.success("A megjelenés beállításaid frissítve lettek.");
+    toast.success('Megjelenítési beállítások frissítve!');
   }
 
   return (
@@ -54,7 +54,7 @@ export function AppearanceForm() {
           name="font"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Betűtípus</FormLabel>
+              <FormLabel>Font</FormLabel>
               <div className="relative w-max">
                 <FormControl>
                   <select
@@ -72,8 +72,7 @@ export function AppearanceForm() {
                 <ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50" />
               </div>
               <FormDescription>
-                Állítsd be azt a betűtípust, amelyet a vezérlőpulton szeretnél
-                használni.
+                Set the font you want to use in the dashboard.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -84,9 +83,9 @@ export function AppearanceForm() {
           name="theme"
           render={({ field }) => (
             <FormItem className="space-y-1">
-              <FormLabel>Téma</FormLabel>
+              <FormLabel>Theme</FormLabel>
               <FormDescription>
-                Válassz egy témát a vezérlőpulthoz.
+                Select the theme for the dashboard.
               </FormDescription>
               <FormMessage />
               <RadioGroup
@@ -116,7 +115,7 @@ export function AppearanceForm() {
                       </div>
                     </div>
                     <span className="block w-full p-2 text-center font-normal">
-                      Világos
+                      Light
                     </span>
                   </FormLabel>
                 </FormItem>
@@ -142,7 +141,7 @@ export function AppearanceForm() {
                       </div>
                     </div>
                     <span className="block w-full p-2 text-center font-normal">
-                      Sötét
+                      Dark
                     </span>
                   </FormLabel>
                 </FormItem>
@@ -151,7 +150,7 @@ export function AppearanceForm() {
           )}
         />
 
-        <Button type="submit">Beállítások frissítése</Button>
+        <Button type="submit">Update preferences</Button>
       </form>
     </Form>
   );

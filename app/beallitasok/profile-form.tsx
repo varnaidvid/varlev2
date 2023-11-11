@@ -31,21 +31,21 @@ const profileFormSchema = z.object({
   username: z
     .string()
     .min(2, {
-      message: 'A felhasználónév legalább 2 karakter hosszú kell legyen.',
+      message: 'Username must be at least 2 characters.',
     })
     .max(30, {
-      message: 'A felhasználónév nem lehet hosszabb 30 karakternél.',
+      message: 'Username must not be longer than 30 characters.',
     }),
   email: z
     .string({
-      required_error: 'Válaszd ki az email címet a megjelenítéshez.',
+      required_error: 'Please select an email to display.',
     })
     .email(),
   bio: z.string().max(160).min(4),
   urls: z
     .array(
       z.object({
-        value: z.string().url({ message: 'Kérlek adj meg érvényes URL-t.' }),
+        value: z.string().url({ message: 'Please enter a valid URL.' }),
       })
     )
     .optional(),
@@ -53,8 +53,9 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
+// This can come from your database or API.
 const defaultValues: Partial<ProfileFormValues> = {
-  bio: 'Birtokolok egy számítógépet.',
+  bio: 'I own a computer.',
   urls: [
     { value: 'https://shadcn.com' },
     { value: 'http://twitter.com/shadcn' },
@@ -74,7 +75,7 @@ export function ProfileForm() {
   });
 
   function onSubmit(data: ProfileFormValues) {
-    toast.success('A profilodat sikeresen frissítetted.');
+    toast.success('Profilod sikeresen frissítve!');
   }
 
   return (
@@ -85,13 +86,13 @@ export function ProfileForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Felhasználónév</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input placeholder="shadcn" {...field} />
               </FormControl>
               <FormDescription>
-                Ez a nyilvános neved. Lehet az igazi neved vagy egy becenév.
-                Csak minden 30 napban változtathatod meg.
+                This is your public display name. It can be your real name or a
+                pseudonym. You can only change this once every 30 days.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -106,7 +107,7 @@ export function ProfileForm() {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Válaszd ki a megjelenítendő megerősített email címet" />
+                    <SelectValue placeholder="Select a verified email to display" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -116,9 +117,8 @@ export function ProfileForm() {
                 </SelectContent>
               </Select>
               <FormDescription>
-                A megerősített email címeket a{' '}
-                <Link href="/examples/forms">email beállításoknál</Link> tudod
-                kezelni.
+                You can manage verified email addresses in your{' '}
+                <Link href="/examples/forms">email settings</Link>.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -129,17 +129,17 @@ export function ProfileForm() {
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Rövid bemutatkozás</FormLabel>
+              <FormLabel>Bio</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Mesélj egy kicsit magadról"
+                  placeholder="Tell us a little bit about yourself"
                   className="resize-none"
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                @Megjegyzés segítségével megemlítheted más felhasználókat és
-                szervezeteket a hozzászólásaiddal.
+                You can <span>@mention</span> other users and organizations to
+                link to them.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -154,11 +154,10 @@ export function ProfileForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={cn(index !== 0 && 'sr-only')}>
-                    URL-ek
+                    URLs
                   </FormLabel>
                   <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Adj hozzá linkeket a weboldaladhoz, blogodhoz vagy közösségi
-                    média profiljaidhoz.
+                    Add links to your website, blog, or social media profiles.
                   </FormDescription>
                   <FormControl>
                     <Input {...field} />
@@ -175,10 +174,10 @@ export function ProfileForm() {
             className="mt-2"
             onClick={() => append({ value: '' })}
           >
-            URL hozzáadása
+            Add URL
           </Button>
         </div>
-        <Button type="submit">Profil frissítése</Button>
+        <Button type="submit">Update profile</Button>
       </form>
     </Form>
   );
