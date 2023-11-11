@@ -52,7 +52,7 @@ export default function FeladatokSzerkesztese() {
     <main className="mt-32">
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Összes feladat
+          Feladatok szerkesztése
         </h1>
 
         <div className="flex items-center gap-4">
