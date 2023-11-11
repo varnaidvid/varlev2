@@ -1,11 +1,15 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
 import { getServerSession } from 'next-auth';
 import authOptions from '@/lib/auth/authOptions';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
 
-import pieChart from '@/components/pieChart';
+import { Button } from '@/components/ui/button';
+import MyPieChart from '@/components/Chart';
 
 import {
   Table,
@@ -27,12 +31,15 @@ import {
 } from '@/components/ui/card';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+
   const getGreeting = () => {
     const currentHour = new Date().getHours();
     // Improvement idea: append the name of the user to the greeting
+    // Example: Jó reggelt, {name}!
 
     switch (true) {
-      case currentHour >= 5 && currentHour < 12:
+      case currentHour >= 3 && currentHour < 12:
         return 'Jó reggelt!';
       case currentHour >= 12 && currentHour < 18:
         return 'Jó napot!';
@@ -70,6 +77,12 @@ export default function Home() {
     },
   ];
 
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <main className="container mt-10 overflow-hidden">
       <div>
@@ -77,6 +90,7 @@ export default function Home() {
         <div className="tracking-light text-sm text-gray-400">
           Tekintsd meg az aktuális versenyeket és feladatokat!
         </div>
+
         <div className="flex flex-row max-w-full overflow-x-auto">
           <div className="my-4 flex flex-nowrap">
             <Card className="mr-6 min-w-[1/3] w-1/3">
@@ -115,61 +129,152 @@ export default function Home() {
       <div className="my-10">
         <h1 className="mb-2">Aktivitás</h1>
         <div className="flex flex-row">
-          <Table>
-            <TableCaption>Kiadott feladatok száma évfolyamonként</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tanár neve</TableHead>
-                <TableHead>Évfolyam I.</TableHead>
-                <TableHead>Évfolyam II.</TableHead>
-                <TableHead>Évfolyam III.</TableHead>
-                <TableHead>Évfolyam IIII.</TableHead>
-                <TableHead>Összesen</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {leaderboard.map((name) => (
-                <TableRow key={name.name}>
-                  <TableCell>{name.name}</TableCell>
-                  <TableCell>{name.year1}</TableCell>
-                  <TableCell>{name.year2}</TableCell>
-                  <TableCell>{name.year3}</TableCell>
-                  <TableCell>{name.year4}</TableCell>
-                  <TableCell>{name.sum}</TableCell>
+          <div className="w-3/4">
+            <Table>
+              <TableCaption>
+                Kiadott feladatok száma évfolyamonként
+              </TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Tanár neve</TableHead>
+                  <TableHead>Évfolyam I.</TableHead>
+                  <TableHead>Évfolyam II.</TableHead>
+                  <TableHead>Évfolyam III.</TableHead>
+                  <TableHead>Évfolyam IIII.</TableHead>
+                  <TableHead>Összesen</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="ml-5">
-            // Chart helye
+              </TableHeader>
+              <TableBody>
+                {leaderboard.map((name) => (
+                  <TableRow key={name.name}>
+                    <TableCell>{name.name}</TableCell>
+                    <TableCell>{name.year1}</TableCell>
+                    <TableCell>{name.year2}</TableCell>
+                    <TableCell>{name.year3}</TableCell>
+                    <TableCell>{name.year4}</TableCell>
+                    <TableCell>{name.sum}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="w-1/4 pl-6">
+            {isClient && (
+              <MyPieChart
+                data={[
+                  {
+                    name: leaderboard[0].name,
+                    value: parseInt(leaderboard[0].sum),
+                  },
+                  {
+                    name: leaderboard[1].name,
+                    value: parseInt(leaderboard[1].sum),
+                  },
+                  {
+                    name: leaderboard[2].name,
+                    value: parseInt(leaderboard[2].sum),
+                  },
+                ]}
+              />
+            )}
           </div>
         </div>
-        <div className="my-6">
-          <h3>Évfolyamonként</h3>
-          <div className="flex flex-col my-2">
-            <div className="flex flex-row">
-              <span>Évfolyam I.</span>
-              // Chart helye
+
+        <div className="my-12">
+          <h3 className="mb-2">Évfolyamonkénti aktivitás</h3>
+          <div className="flex flex-row my-2 justify-between mt-6">
+            <div className="flex flex-col text-center">
+              <span className="font-bold">Évfolyam I.</span>
+              {isClient && (
+                <MyPieChart
+                  data={[
+                    {
+                      name: leaderboard[0].name,
+                      value: parseInt(leaderboard[0].sum),
+                    },
+                    {
+                      name: leaderboard[1].name,
+                      value: parseInt(leaderboard[1].sum),
+                    },
+                    {
+                      name: leaderboard[2].name,
+                      value: parseInt(leaderboard[2].sum),
+                    },
+                  ]}
+                />
+              )}
             </div>
-            <div className="flex flex-row">
-              <span>Évfolyam II.</span>
-              // Chart helye
+            <div className="flex flex-col text-center">
+              <span className="font-bold">Évfolyam II.</span>
+              {isClient && (
+                <MyPieChart
+                  data={[
+                    {
+                      name: 'Péter',
+                      value: 15,
+                    },
+                    {
+                      name: 'Tamás',
+                      value: 20,
+                    },
+                    {
+                      name: 'Julika',
+                      value: 9,
+                    },
+                  ]}
+                />
+              )}
             </div>
-            <div className="flex flex-row">
-              <span>Évfolyam III.</span>
-              // Chart helye
+            <div className="flex flex-col text-center">
+              <span className="font-bold">Évfolyam III.</span>
+              {isClient && (
+                <MyPieChart
+                  data={[
+                    {
+                      name: 'Emese',
+                      value: 18,
+                    },
+                    {
+                      name: 'Viktor',
+                      value: 19,
+                    },
+                    {
+                      name: 'Eszter',
+                      value: 23,
+                    },
+                  ]}
+                />
+              )}
             </div>
-            <div className="flex flex-row">
-              <span>Évfolyam IIII.</span>
-              // Chart helye
+            <div className="flex flex-col text-center">
+              <span className="font-bold">Évfolyam IIII.</span>
+              {isClient && (
+                <MyPieChart
+                  data={[
+                    {
+                      name: 'Tündi',
+                      value: 19,
+                    },
+                    {
+                      name: 'Ági',
+                      value: 31,
+                    },
+                    {
+                      name: 'Tibi',
+                      value: 22,
+                    },
+                  ]}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="my-10">
+      <div className="my-14">
         <div>
-          <h1 className="mb-2">Pár szó a csapatunkrol</h1>
+          <h1 className="mb-2">Pár szó a csapatunkról</h1>
           <p className="text-justify">
             Elkötelezettek és szakmailag felkészültek vagyunk alkalmazásunk
             fejlesztésében. A csapat most intenzíven dolgozik a verseny idején,
@@ -179,6 +284,11 @@ export default function Home() {
             kiválóságra, hogy bizonyítsuk elhivatottságunkat és tehetségünket a
             versenyen.
           </p>
+          <div className="my-4 w-full text-right text-lg">
+            <a href="/bemutatkozás">
+              <Button size="lg">Tovább</Button>
+            </a>
+          </div>
         </div>
       </div>
     </main>

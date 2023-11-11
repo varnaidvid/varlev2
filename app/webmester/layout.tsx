@@ -14,7 +14,12 @@ export default function WebMesterLayout({ children }: { children: ReactNode }) {
     },
   });
 
-  if (status === 'authenticated') {
+  if (status === 'authenticated' && session.user.role != 'webmester') {
+    toast.error('Hozzáférés megtagadva');
+    redirect('/');
+  }
+
+  if (status === 'authenticated' && session.user.role == 'webmester') {
     return <div>{children}</div>;
   }
 }

@@ -6,7 +6,6 @@ import { createUser } from '@/lib/actions';
 export async function POST(request: NextRequest) {
     const { username, password, role } = await request.json();
     const hashedPassword = await hash(password, 10);
-
     try {
         await createUser(username, hashedPassword, role);
 
@@ -16,6 +15,7 @@ export async function POST(request: NextRequest) {
     } catch (err) {
         return new NextResponse(JSON.stringify({
             status: 'fail',
+            message: (err as Error).message,
         }), {
             status: 500,
         });

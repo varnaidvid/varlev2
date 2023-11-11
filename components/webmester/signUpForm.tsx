@@ -38,6 +38,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const SignUpForm = () => {
+  const router = useRouter();
+
   const formSchema: any = z.object({
     username: z.string().refine((data) => data.includes('-'), {
       message:
@@ -51,7 +53,7 @@ const SignUpForm = () => {
       .refine((data) => data === form.getValues('password'), {
         message: 'Jelszavaknak egyeznie kell.',
       }),
-    role: z.enum(['webmester', 'zsuri', 'tanar', 'diak']),
+    role: z.string(),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,19 +84,29 @@ const SignUpForm = () => {
     if (!res.ok) {
       setIsLoading(false);
 
-      toast.error('Hiba történt a regisztráció során', {
-        id: 'signup',
-        duration: 5000,
+      res.json().then((temp) => {
+        if (temp.message.includes('Unique'))
+          toast.error('Létezik már ilyen felhasználónevű fiók.', {
+            id: 'signup',
+            duration: 5000,
+          });
+        else {
+          toast.error('Hiba történt a regisztráció során!', {
+            id: 'signup',
+            duration: 5000,
+          });
+        }
       });
 
       return;
     }
-
-    setIsLoading(false);
     toast.success('Sikeres regisztráció!', {
       id: 'signup',
       duration: 5000,
     });
+
+    setIsLoading(false);
+    router.push('/webmester/felhasznalok/');
   }
 
   return (
@@ -165,7 +177,10 @@ const SignUpForm = () => {
                 <FormItem>
                   <FormLabel>Szerepkör</FormLabel>
                   <FormControl>
-                    <Select required>
+                    <Select
+                      required
+                      onValueChange={(val) => form.setValue('role', val)}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Válasszon szerepkört" />
                       </SelectTrigger>
