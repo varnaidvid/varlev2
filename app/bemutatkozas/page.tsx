@@ -9,7 +9,7 @@ import {
 
 export default function Home() {
   return (
-    <main className="container mx-auto">
+    <main className="container mx-auto text-gray-700">
       <div className="my-10">
         <Card>
           <CardHeader>

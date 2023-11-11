@@ -116,9 +116,6 @@ const Header = () => {
             <Button variant={'ghost'}>
               <Link href="/bejelentkezes">Bejelentkezés</Link>
             </Button>
-            <Button variant={'ghost'}>
-              <Link href="/regisztracio">Regisztráció</Link>
-            </Button>
           </>
         ) : status != 'loading' ? (
           <Button
