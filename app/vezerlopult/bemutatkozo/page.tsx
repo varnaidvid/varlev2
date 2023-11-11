@@ -1,6 +1,6 @@
 'use client';
 
-import SignUpForm from '@/components/vezerlopult/signUpForm';
+/*import SignUpForm from '@/components/vezerlopult/signUpForm';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,7 +15,11 @@ import { useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/vezerlopult/datatable/usersDataTable';
+import UsersDataTable from '@/components/vezerlopult/datatable/usersDataTable';*/
+
+import Head from 'next/head';
+import RichTextBox from '@/components/RichTextBox';
+
 import {
   GearSix,
   CaretRight,
@@ -66,7 +70,7 @@ export default function BemutatkozoPage() {
       </span>
 
       <div className="mt-14">
-        <h1>BEMUTATKOZÁS MARKDOWN EDITOR</h1>
+        <RichTextBox />
       </div>
     </main>
   );

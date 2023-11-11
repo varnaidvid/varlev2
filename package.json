@@ -51,6 +51,9 @@
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
     "recharts": "^2.9.3",
+    "slate": "^0.100.0",
+    "slate-history": "^0.100.0",
+    "slate-react": "^0.101.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.4"
