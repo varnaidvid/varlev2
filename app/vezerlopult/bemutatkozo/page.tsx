@@ -18,7 +18,7 @@ import { User } from '@prisma/client';
 import UsersDataTable from '@/components/vezerlopult/datatable/usersDataTable';*/
 
 import Head from 'next/head';
-import RichTextBox from '@/components/RichTextBox';
+import Editor from '@/components/RichTextBox';
 
 import {
   GearSix,
@@ -69,9 +69,7 @@ export default function BemutatkozoPage() {
         </Link>
       </span>
 
-      <div className="mt-14">
-        <RichTextBox />
-      </div>
+      <div className="mt-14">{Editor()}</div>
     </main>
   );
 }
