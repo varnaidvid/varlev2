@@ -1,7 +1,6 @@
 import { Separator } from '@/components/ui/separator';
-import { ProfileForm } from '@/app/webmester/beallitasok/profile-form';
+import { ProfileForm } from '@/app/vezerlopult/beallitasok/profile-form';
 
-<<<<<<< HEAD:app/vezerlopult/beallitasok/page.tsx
 import SignUpForm from '@/components/vezerlopult/signUpForm';
 import { Button } from '@/components/ui/button';
 import {
@@ -71,7 +70,7 @@ export default function SettingsPage() {
         <h1>SETTINGS FORM</h1>
       </div>
     </main>
-=======
+
 export default function SettingsProfilePage() {
   return (
     <div className="space-y-6">
@@ -82,6 +81,5 @@ export default function SettingsProfilePage() {
       <Separator />
       <ProfileForm />
     </div>
->>>>>>> c24c6d526a1cd66673fd8c88fca997629dc22fdc:app/webmester/beallitasok/page.tsx
   );
 }
