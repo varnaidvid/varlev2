@@ -1,26 +1,16 @@
 'use client';
 
-import * as React from 'react';
-
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getPaginationRowModel,
   SortingState,
   getSortedRowModel,
-  getPaginationRowModel,
-  ColumnFiltersState,
-  VisibilityState,
   getFilteredRowModel,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 import {
   Table,
@@ -30,29 +20,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
+import { DataTablePagination } from '@/components/datatable/dataTablePagination';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { DataTablePagination } from '../datatable/dataTablePagination';
-// import DataTableViewOptions from './dataTableViewOptions';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export default function QuestionsDataTable<TData, TValue>({
+export function EditQuestionsTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const table = useReactTable({
     data,
     columns,
@@ -60,34 +42,38 @@ export default function QuestionsDataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    onRowSelectionChange: setRowSelection,
-    onColumnVisibilityChange: setColumnVisibility,
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      rowSelection,
-      columnVisibility,
       columnFilters,
     },
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
   });
+
+  useEffect(() => {
+    table.setPageSize(5);
+  }, []);
 
   return (
     <div>
-      {/* <div className="flex items-center py-4">
+      <div className="flex items-center py-4">
         <Input
-          placeholder="Keresés..."
-          value={
-            (table.getColumn('username')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('username')?.setFilterValue(event.target.value)
-          }
+          //   placeholder="Szavak szűrése..."
+          //   value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          //   onChange={(event) =>
+          //     table.getColumn('email')?.setFilterValue(event.target.value)
+          //   }
+
+          placeholder="Keresés 4. szavak alapján..."
+          // search by word1 word2 word3 word4 at the same time
+          value={(table.getColumn('word4')?.getFilterValue() as string) || ''}
+          onChange={(event) => {
+            const value = event.target.value;
+            table.getColumn('word4')?.setFilterValue(value);
+          }}
           className="max-w-sm"
         />
-        <DataTableViewOptions table={table} />
-      </div> */}
-
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -109,8 +95,6 @@ export default function QuestionsDataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {/* while there is no data show Loading... in 5 row */}
-
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -133,7 +117,7 @@ export default function QuestionsDataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Nincs találat.
+                  No results.
                 </TableCell>
               </TableRow>
             )}

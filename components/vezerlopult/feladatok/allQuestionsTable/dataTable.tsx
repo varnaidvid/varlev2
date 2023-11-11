@@ -1,15 +1,18 @@
 'use client';
 
+import * as React from 'react';
+
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel,
   SortingState,
   getSortedRowModel,
-  getFilteredRowModel,
+  getPaginationRowModel,
   ColumnFiltersState,
+  VisibilityState,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 
 import {
@@ -20,21 +23,27 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { DataTablePagination } from '@/components/webmester/datatable/dataTablePagination';
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
+
+import { DataTablePagination } from '@/components/datatable/dataTablePagination';
+import { useEffect } from 'react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function EditQuestionsTable<TData, TValue>({
+export default function AllQuestionsDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+
   const table = useReactTable({
     data,
     columns,
@@ -42,34 +51,24 @@ export function EditQuestionsTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
+    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      rowSelection,
+      columnVisibility,
+      columnFilters,
+    },
   });
+
+  useEffect(() => {
+    table.setPageSize(5);
+  }, []);
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          //   placeholder="Szavak szűrése..."
-          //   value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          //   onChange={(event) =>
-          //     table.getColumn('email')?.setFilterValue(event.target.value)
-          //   }
-
-          placeholder="Keresés 4. szavak alapján..."
-          // search by word1 word2 word3 word4 at the same time
-          value={(table.getColumn('word4')?.getFilterValue() as string) || ''}
-          onChange={(event) => {
-            const value = event.target.value;
-            table.getColumn('word4')?.setFilterValue(value);
-          }}
-          className="max-w-sm"
-        />
-      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -91,6 +90,8 @@ export function EditQuestionsTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
+            {/* while there is no data show Loading... in 5 row */}
+
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -113,7 +114,7 @@ export function EditQuestionsTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Nincs találat.
                 </TableCell>
               </TableRow>
             )}
