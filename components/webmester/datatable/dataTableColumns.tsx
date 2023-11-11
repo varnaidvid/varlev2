@@ -120,6 +120,13 @@ const columns: ColumnDef<User>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
+    sortingFn: (rowA, rowB, id) => {
+      const roleOrder = ['diak', 'tanar', 'zsuri', 'webmester'];
+      const roleA = rowA.getValue(id) as string;
+      const roleB = rowB.getValue(id) as string;
+
+      return roleOrder.indexOf(roleA) - roleOrder.indexOf(roleB);
+    },
   },
   {
     accessorKey: 'createdAt',
