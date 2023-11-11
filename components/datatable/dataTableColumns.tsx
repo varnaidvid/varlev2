@@ -316,7 +316,7 @@ const columns: ColumnDef<User>[] = [
                   else {
                     setUsers(
                       users?.filter(
-                        (user) => !usernames.includes(user.username)
+                        (user: any) => !usernames.includes(user.username)
                       )!
                     );
                     table.toggleAllPageRowsSelected(false);
