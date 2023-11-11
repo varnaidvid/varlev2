@@ -50,6 +50,7 @@ import { webmesterContextType } from '@/types/webmesterContext';
 
 const UserForm = () => {
   const router = useRouter();
+  const { data: session, status, update } = useSession();
 
   const { user, setUser, isUserLoading } = useContext(WebmesterContext);
 
@@ -111,7 +112,17 @@ const UserForm = () => {
 
       setIsLoading(false);
 
-      router.replace(`/webmester/felhasznalok/${newUser.username}`);
+      setUser(newUser);
+
+      if (session?.user.username == user?.username) {
+        router.replace(`/webmester/felhasznalok/${values.username}`);
+
+        await update({
+          ...session!.user,
+          username: values.username,
+          role: values.role,
+        });
+      }
     } catch (error) {
       setIsLoading(false);
 
@@ -177,7 +188,9 @@ const UserForm = () => {
                           defaultValue={user?.role}
                           onValueChange={(val) => form.setValue('role', val)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger
+                            disabled={session?.user.username == user?.username}
+                          >
                             <SelectValue
                               defaultValue={user?.role}
                               placeholder="Válasszon szerepkört"

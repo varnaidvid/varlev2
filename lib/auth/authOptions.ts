@@ -29,7 +29,13 @@ const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        jwt: async ({ token, user }) => {
+        jwt: async ({ token, trigger, session, user }) => {
+            if (trigger === "update" && session) {
+                token.user = session
+
+                return token
+            }
+
             user && (token.user = user)
             return token
         },
@@ -40,7 +46,7 @@ const authOptions: NextAuthOptions = {
                 ...session,
                 "random": "random",
             }
-        }
+        },
     },
 };
 

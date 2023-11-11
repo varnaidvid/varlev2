@@ -34,7 +34,7 @@ export default function UserPage({ params }: { params: { username: string } }) {
     <main className="mt-32">
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Felhasználó frissítése
+          Felhasználó áttekintése
         </h1>
 
         <div className="flex items-center gap-4">
@@ -83,10 +83,10 @@ export default function UserPage({ params }: { params: { username: string } }) {
       </span>
 
       <div className="mt-14">
-        <Tabs defaultValue="account" className="w-[400px]">
-          <TabsList>
-            <TabsTrigger value="account">Adatok</TabsTrigger>
-            <TabsTrigger value="password">Jelszó</TabsTrigger>
+        <Tabs defaultValue="account">
+          <TabsList className="mb-4">
+            <TabsTrigger value="account">Általános adatok</TabsTrigger>
+            <TabsTrigger value="password">Jelszó módosítása</TabsTrigger>
           </TabsList>
           <TabsContent value="account">
             <UserForm />

@@ -42,25 +42,6 @@ export default function WebmesterLayout({
   const [users, setUsers] = useState<User[] | null>(null);
   const [isUsersLoading, setIsUsersLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      setIsUsersLoading(true);
-
-      const users = await getUsers();
-
-      if (!users) {
-        setIsUsersLoading(false);
-        return;
-      } else {
-        setUsers(users);
-        setIsUsersLoading(false);
-      }
-    };
-
-    if (session?.user.role == 'webmester' && !users && !isUsersLoading)
-      fetchUser();
-  }, [session]);
-
   if (status === 'authenticated' && session.user.role != 'webmester') {
     toast.error('Hozzáférés megtagadva');
     redirect('/');
@@ -81,7 +62,7 @@ export default function WebmesterLayout({
           setIsUsersLoading,
         }}
       >
-        {children}
+        <main className="mt-24">{children}</main>
       </WebmesterContext.Provider>
     );
   }

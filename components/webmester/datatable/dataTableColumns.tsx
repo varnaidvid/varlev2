@@ -46,10 +46,11 @@ import {
 
 import toast from 'react-hot-toast';
 
-import { deleteUsers, updateUserRole } from '@/lib/actions';
+import { deleteUser, deleteUsers, updateUserRole } from '@/lib/actions';
 import Link from 'next/link';
 import { useContext } from 'react';
 import { WebmesterContext } from '@/app/webmester/layout';
+import { useSession } from 'next-auth/react';
 
 const columns: ColumnDef<User>[] = [
   {
@@ -93,6 +94,8 @@ const columns: ColumnDef<User>[] = [
       const role = row.getValue('role') as string;
       const username = row.getValue('username') as string;
 
+      const { data: session } = useSession();
+
       return (
         <Select
           defaultValue={role}
@@ -105,7 +108,10 @@ const columns: ColumnDef<User>[] = [
             }
           }}
         >
-          <SelectTrigger className="w-max border-none justify-start gap-1 bg-transparent">
+          <SelectTrigger
+            className="w-max border-none justify-start gap-1 bg-transparent"
+            disabled={session?.user.username == username}
+          >
             <SelectValue defaultValue={role} />
           </SelectTrigger>
           <SelectContent>
@@ -294,9 +300,15 @@ const columns: ColumnDef<User>[] = [
               <AlertDialogAction
                 className="w-full"
                 onClick={async () => {
-                  const usernames: string[] = table
-                    .getFilteredSelectedRowModel()
-                    .rows.map((row) => row.getValue('username'));
+                  let usernames: string[] = [];
+
+                  if (table.getFilteredSelectedRowModel().rows.length == 0) {
+                    usernames = [row.getValue('username')];
+                  } else {
+                    usernames = table
+                      .getFilteredSelectedRowModel()
+                      .rows.map((row) => row.getValue('username'));
+                  }
 
                   const res: any = await deleteUsers(usernames);
 

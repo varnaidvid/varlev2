@@ -35,6 +35,7 @@ export default function UserLayout({
 
       if (!user) {
         setIsUserLoading(false);
+
         toast.error('A felhasználó nem található.');
         router.push('/');
       } else {

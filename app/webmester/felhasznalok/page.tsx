@@ -31,10 +31,29 @@ import { WebmesterContext } from '../layout';
 export default function UserPage() {
   const { data: session, status } = useSession();
 
-  const { users, setUsers } = useContext(WebmesterContext);
+  const { users, setUsers, isUsersLoading, setIsUsersLoading } =
+    useContext(WebmesterContext);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setIsUsersLoading(true);
+
+      const users = await getUsers();
+
+      if (!users) {
+        setIsUsersLoading(false);
+        return;
+      } else {
+        setUsers(users);
+        setIsUsersLoading(false);
+      }
+    };
+
+    if (session?.user.role == 'webmester' && !isUsersLoading) fetchUser();
+  }, [session]);
 
   return (
-    <main className="mt-32">
+    <>
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
           Felhasználók kezelése
@@ -72,7 +91,7 @@ export default function UserPage() {
         </Link>
       </span>
 
-      <div className="mt-14">
+      <div className="mt-8">
         {users && users.length == 0 && (
           <Card>
             <CardHeader>
@@ -96,6 +115,6 @@ export default function UserPage() {
           <UsersDataTable columns={columns} data={users} />
         )}
       </div>
-    </main>
+    </>
   );
 }

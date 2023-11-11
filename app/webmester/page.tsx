@@ -12,7 +12,7 @@ import DashboardCard from '@/components/webmester/dashboardCard';
 
 export default function WebmesterHome() {
   return (
-    <main className="mt-32">
+    <>
       <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
         Üdvözöljük a webmesteri vezérlőpulton!
       </h1>
@@ -71,6 +71,6 @@ export default function WebmesterHome() {
           <div className="flex items-center justify-center [&>div]:w-full"></div>
         </div>
       </div>
-    </main>
+    </>
   );
 }
