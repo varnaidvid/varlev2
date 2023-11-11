@@ -52,7 +52,7 @@ const displayFormSchema = z.object({
 
 type DisplayFormValues = z.infer<typeof displayFormSchema>;
 
-// Ez az alapértelmezett érték lehet adatbázisodból vagy API-ból származó.
+// prisma ???
 const defaultValues: Partial<DisplayFormValues> = {
   items: ['recents', 'home'],
 };

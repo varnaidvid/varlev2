@@ -5,13 +5,14 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarNav } from '@/app/webmester/beallitasok/components/sidebar-nav';
 
 import Link from 'next/link';
-import {
+
+/*import {
   GearSix,
   CaretRight,
   UserCirclePlus,
   UserList,
   Gauge,
-} from '@phosphor-icons/react';
+} from '@phosphor-icons/react';*/
 
 export const metadata: Metadata = {
   title: 'Forms',
@@ -21,23 +22,23 @@ export const metadata: Metadata = {
 const sidebarNavItems = [
   {
     title: 'Profil',
-    href: '/beallitasok',
+    href: '/webmester/beallitasok',
   },
   {
     title: 'Fiók',
-    href: '/beallitasok/account',
+    href: '/webmester/beallitasok/account',
   },
   {
     title: 'Megjelenés',
-    href: '/beallitasok/appearance',
+    href: '/webmester/beallitasok/appearance',
   },
   {
     title: 'Értesítések',
-    href: '/beallitasok/notifications',
+    href: '/webmester/beallitasok/notifications',
   },
   {
     title: 'Egyéb',
-    href: '/beallitasok/display',
+    href: '/webmester/beallitasok/display',
   },
 ];
 
