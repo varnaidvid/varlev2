@@ -42,9 +42,6 @@ export default function Home() {
                   <CardContent>
                     <p className="text-justify">{member.description}</p>
                   </CardContent>
-                  <CardFooter>
-                    <p>Card Footer</p>
-                  </CardFooter>
                 </Card>
               ))}
             </div>
