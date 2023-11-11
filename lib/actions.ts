@@ -33,4 +33,8 @@ export async function deleteUsers(usernames: string[]) {
 // QUESTIONS
 export async function getQuestions() { return prisma.question.findMany({ include: { creator: { select: { username: true, }, }, }, }); }
 export async function getOwnQuestions(username: string) { const session = await getServerSession(authOptions); return prisma.question.findMany({ where: { creatorId: session?.user.id } }); }
+export async function deleteQuestion(id: string) { return prisma.question.delete({ where: { id } }); }
+export async function deleteQuestions(ids: string[]) { console.log(ids); return prisma.question.deleteMany({ where: { id: { in: ids } } }); }
+export async function updateQuestion(id: string, question: string) { return prisma.question.update({ where: { id }, data: { question } }); }
+
 
