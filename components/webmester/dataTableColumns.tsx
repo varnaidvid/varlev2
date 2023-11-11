@@ -46,7 +46,7 @@ import {
 
 import toast from 'react-hot-toast';
 
-import { deleteUsers, updateUser, updateUserRole } from '@/lib/actions';
+import { deleteUsers, updateUserRole } from '@/lib/actions';
 import Link from 'next/link';
 
 const columns: ColumnDef<User>[] = [
@@ -94,8 +94,7 @@ const columns: ColumnDef<User>[] = [
             const user = await updateUserRole(username, value);
             if (user) {
               toast.success(
-                `Sikeresen frissítette a szerepkörét ${username}-nek`,
-                { duration: 5000 }
+                `Sikeresen frissítette a szerepkörét ${username}-nek`
               );
             }
           }}
@@ -205,9 +204,10 @@ const columns: ColumnDef<User>[] = [
 
                   const res: any = await deleteUsers(usernames);
 
-                  if (res.status == 500)
-                    toast.error(res.message, { duration: 5000 });
-                  else toast.success('Sikeres törlés', { duration: 5000 });
+                  if (res.status == 500) toast.error(res.message);
+                  else toast.success('Sikeres törlés');
+
+                  // TODO: DELETE ROW FROM TABLE AFTER DELETE
                 }}
               >
                 <Trash className="w-6 h-6 mr-1" /> Törlés

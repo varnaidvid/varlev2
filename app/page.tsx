@@ -281,7 +281,7 @@ export default function Home() {
             versenyen.
           </p>
           <div className="my-4 w-full text-right text-lg">
-            <a href="/bemutatkozás">
+            <a href="/bemutatkozas">
               <Button size="lg">Tovább</Button>
             </a>
           </div>

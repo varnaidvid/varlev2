@@ -68,20 +68,17 @@ const SignInPage = () => {
           setIsLoading(false);
           toast.error('Hibás felhasználónév vagy jelszó', {
             id: 'signin',
-            duration: 5000,
           });
         } else {
           setIsLoading(false);
           toast.error('Hiba történt a bejelentkezés során', {
             id: 'signin',
-            duration: 5000,
           });
         }
       } else {
         setIsLoading(false);
         toast.success('Sikeres bejelentkezés', {
           id: 'signin',
-          duration: 5000,
         });
 
         router.push('/');

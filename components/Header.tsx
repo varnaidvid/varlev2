@@ -131,7 +131,7 @@ const Header = () => {
             variant={'ghost'}
             onClick={() => {
               toast.success('Sikeres kijelentkezés');
-              signOut({ redirect: false });
+              signOut({ redirect: true, callbackUrl: '/' });
             }}
           >
             Kijelentkezés

@@ -3,12 +3,18 @@
 import { prisma } from "@/prisma/db";
 import { getServerSession } from "next-auth";
 import authOptions from "./auth/authOptions";
+import { hash } from "bcryptjs";
 
 // USERS
 export async function getUsers() { return prisma.user.findMany() }
 export async function getUser(username: string) { return prisma.user.findUnique({ where: { username } }) }
 export async function createUser(username: string, password: string, role: string) { return prisma.user.create({ data: { username, password, role } }) }
-export async function updateUser(username: string, password: string, role: string) { return prisma.user.update({ where: { username }, data: { password, role } }) }
+export async function updateUsernameAndRole(username: string, newUsername: string, role: string) { return prisma.user.update({ where: { username }, data: { username: newUsername, role } }) }
+export async function updateUserPassword(username: string, password: string) {
+  const hashedPassword = await hash(password, 10);
+
+  return prisma.user.update({ where: { username }, data: { password: hashedPassword } })
+}
 export async function updateUserRole(username: string, role: string) { return prisma.user.update({ where: { username }, data: { role } }) }
 export async function deleteUser(username: string) { return prisma.user.delete({ where: { username } }) }
 export async function deleteUsers(usernames: string[]) {

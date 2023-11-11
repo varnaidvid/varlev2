@@ -88,12 +88,10 @@ const SignUpForm = () => {
         if (temp.message.includes('Unique'))
           toast.error('Létezik már ilyen felhasználónevű fiók.', {
             id: 'signup',
-            duration: 5000,
           });
         else {
           toast.error('Hiba történt a regisztráció során!', {
             id: 'signup',
-            duration: 5000,
           });
         }
       });
@@ -102,7 +100,6 @@ const SignUpForm = () => {
     }
     toast.success('Sikeres regisztráció!', {
       id: 'signup',
-      duration: 5000,
     });
 
     setIsLoading(false);

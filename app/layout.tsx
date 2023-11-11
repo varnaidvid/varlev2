@@ -25,7 +25,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             mirrored: false,
           }}
         >
-          <Toaster position="bottom-right" reverseOrder={false} gutter={8} />
+          <Toaster
+            position="bottom-right"
+            reverseOrder={false}
+            gutter={8}
+            toastOptions={{
+              duration: 5000,
+            }}
+          />
           <AuthProvider>
             <div className="flex flex-col min-h-screen">
               <Header />
