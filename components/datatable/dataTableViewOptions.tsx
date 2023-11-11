@@ -26,6 +26,12 @@ export default function DataTableViewOptions<TData>({
     role: 'Szerepkör',
     createdAt: 'Dátum',
     updatedAt: 'Frissítve',
+    year: 'Évfolyam',
+    word1: '1. szó',
+    word2: '2. szó',
+    word3: '3. szó',
+    word4: '4. szó',
+    id: 'ID',
   };
 
   return (

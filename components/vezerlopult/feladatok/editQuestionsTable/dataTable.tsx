@@ -23,6 +23,7 @@ import {
 import { DataTablePagination } from '@/components/datatable/dataTablePagination';
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { DataTableToolbar } from '@/components/datatable/dataTableToolbar';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -56,24 +57,10 @@ export function EditQuestionsTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          //   placeholder="Szavak szűrése..."
-          //   value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          //   onChange={(event) =>
-          //     table.getColumn('email')?.setFilterValue(event.target.value)
-          //   }
-
-          placeholder="Keresés 4. szavak alapján..."
-          // search by word1 word2 word3 word4 at the same time
-          value={(table.getColumn('word4')?.getFilterValue() as string) || ''}
-          onChange={(event) => {
-            const value = event.target.value;
-            table.getColumn('word4')?.setFilterValue(value);
-          }}
-          className="max-w-sm"
-        />
+      <div className="py-4">
+        <DataTableToolbar table={table} />
       </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
