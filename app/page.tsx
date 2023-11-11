@@ -1,12 +1,8 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { getServerSession } from 'next-auth';
-import authOptions from '@/lib/auth/authOptions';
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
 
 import { Button } from '@/components/ui/button';
 import MyPieChart from '@/components/Chart';
