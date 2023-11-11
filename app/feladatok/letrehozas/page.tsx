@@ -28,6 +28,7 @@ import { CloudArrowUp, FileText } from '@phosphor-icons/react';
 import Dropzone from 'react-dropzone';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
   // field for .txt file upload
@@ -120,6 +121,11 @@ export default function FeladatLetrehozas() {
       body: JSON.stringify({ questions: questionsFormatted }),
     });
     console.log(res);
+    if (res.status === 200) {
+      toast.success('Sikeres feltöltés!');
+    } else {
+      toast.error('Hiba történt a feladatok feltöltés során!');
+    }
     setUploadedQuestions([]);
   };
 
@@ -127,7 +133,12 @@ export default function FeladatLetrehozas() {
     <div className="flex flex-col items-center gap-16 py-8 px-6">
       <h1>Feladatok létrehozása</h1>
       <Form {...form}>
-        <form className="w-full">
+        <form
+          className="w-full"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <FormItem>
             <Dropzone
               accept={{
@@ -171,7 +182,10 @@ export default function FeladatLetrehozas() {
 
       <div className="flex flex-col items-center gap-8 w-full">
         <div className="flex justify-between w-full">
-          <h3>Beimportált feladatok:</h3>
+          <h3>
+            Beimportált feladatok{' '}
+            <span className="text-muted-foreground">(előnézet)</span>
+          </h3>
           <Button
             size={'lg'}
             disabled={uploadedQuestions.length === 0}
@@ -204,6 +218,15 @@ export default function FeladatLetrehozas() {
             ))}
           </TableBody>
         </Table>
+        <Button
+          className={uploadedQuestions.length === 0 ? 'hidden' : ''}
+          size={'lg'}
+          disabled={uploadedQuestions.length === 0}
+          onClick={insertQuestions}
+        >
+          Feladatok feltöltése
+          <CloudArrowUp size={20} weight="bold" className="ml-3" />
+        </Button>
       </div>
     </div>
   );
