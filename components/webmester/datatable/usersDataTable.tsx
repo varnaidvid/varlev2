@@ -13,6 +13,8 @@ import {
   ColumnFiltersState,
   VisibilityState,
   getFilteredRowModel,
+  getFacetedUniqueValues,
+  getFacetedRowModel,
 } from '@tanstack/react-table';
 
 import {
@@ -28,6 +30,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DataTablePagination } from './dataTablePagination';
 import DataTableViewOptions from './dataTableViewOptions';
+import { DataTableToolbar } from './dataTableToolbar';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -49,14 +52,17 @@ export default function usersDataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
+    enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
       rowSelection,
@@ -67,18 +73,8 @@ export default function usersDataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Keresés felhasználónév alapján..."
-          value={
-            (table.getColumn('username')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('username')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DataTableViewOptions table={table} />
+      <div className="py-4">
+        <DataTableToolbar table={table} />
       </div>
 
       <div className="rounded-md border">

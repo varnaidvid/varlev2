@@ -10,12 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import columns from '@/components/webmester/dataTableColumns';
-import { useEffect, useState } from 'react';
+import columns from '@/components/webmester/datatable/dataTableColumns';
+import { useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/webmester/usersDataTable';
+import UsersDataTable from '@/components/webmester/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,
@@ -24,13 +24,14 @@ import {
   Gauge,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { webmesterContextType } from '@/types/webmesterContext';
+import { WebmesterContext } from '../layout';
 
 export default function UserPage() {
-  const [users, setUsers] = useState<User[]>([]);
+  const { data: session, status } = useSession();
 
-  useEffect(() => {
-    getUsers().then((res) => setUsers(res));
-  }, []);
+  const { users, setUsers } = useContext(WebmesterContext);
 
   return (
     <main className="mt-32">
@@ -72,7 +73,28 @@ export default function UserPage() {
       </span>
 
       <div className="mt-14">
-        <UsersDataTable columns={columns} data={users} />
+        {users && users.length == 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Felhasználók</CardTitle>
+              <CardDescription>
+                Jelenleg nincsenek felhasználók az adatbázisban.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/webmester/regisztracio">
+                <Button variant="default">
+                  <UserCirclePlus className="w-6 h-6 mr-2" color="white" /> Új
+                  fiók létrehozása
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+
+        {users && users.length > 0 && (
+          <UsersDataTable columns={columns} data={users} />
+        )}
       </div>
     </main>
   );

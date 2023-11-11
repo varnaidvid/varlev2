@@ -45,12 +45,13 @@ import * as z from 'zod';
 import { User } from '@prisma/client';
 import { getUser, updateUsernameAndRole } from '@/lib/actions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { userContext } from './layout';
+import { WebmesterContext } from '../../layout';
+import { webmesterContextType } from '@/types/webmesterContext';
 
 const UserForm = () => {
   const router = useRouter();
 
-  const { user, setUser, isUserLoading } = useContext(userContext);
+  const { user, setUser, isUserLoading } = useContext(WebmesterContext);
 
   const formSchema: any = z.object({
     username: z.string().refine((data) => data.includes('-'), {

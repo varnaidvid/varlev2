@@ -49,12 +49,12 @@ import {
   updateUsernameAndRole,
 } from '@/lib/actions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { userContext } from './layout';
+import { WebmesterContext } from '../../layout';
 
 const PasswordForm = () => {
   const router = useRouter();
 
-  const { user, setUser, isUserLoading } = useContext(userContext);
+  const { user, setUser, isUserLoading } = useContext(WebmesterContext);
 
   const formSchema: any = z.object({
     password: z.string().min(6, {

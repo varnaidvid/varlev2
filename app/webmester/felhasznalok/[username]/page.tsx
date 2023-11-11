@@ -2,12 +2,12 @@
 
 import SignUpForm from '@/components/webmester/signUpForm';
 import { Button } from '@/components/ui/button';
-import columns from '@/components/webmester/dataTableColumns';
+import columns from '@/components/webmester/datatable/dataTableColumns';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUser, getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/webmester/usersDataTable';
+import UsersDataTable from '@/components/webmester/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,
@@ -21,13 +21,14 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserForm from './userForm';
-import { userContext } from './layout';
 import PasswordForm from './passwordForm';
+import { WebmesterContext } from '../../layout';
+import { webmesterContextType } from '@/types/webmesterContext';
 
 export default function UserPage({ params }: { params: { username: string } }) {
   const router = useRouter();
 
-  const { user, setUser, isUserLoading } = useContext(userContext);
+  const { user, setUser, isUserLoading } = useContext(WebmesterContext);
 
   return (
     <main className="mt-32">

@@ -1,7 +1,7 @@
 'use client';
 
 import { User } from '@prisma/client';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, filterFns } from '@tanstack/react-table';
 
 import {
   DotsThree,
@@ -48,11 +48,10 @@ import toast from 'react-hot-toast';
 
 import { deleteUsers, updateUserRole } from '@/lib/actions';
 import Link from 'next/link';
+import { useContext } from 'react';
+import { WebmesterContext } from '@/app/webmester/layout';
 
 const columns: ColumnDef<User>[] = [
-  {
-    id: 'currentUser',
-  },
   {
     id: 'select',
     header: ({ table }) => (
@@ -111,6 +110,9 @@ const columns: ColumnDef<User>[] = [
         </Select>
       );
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     accessorKey: 'createdAt',
@@ -156,10 +158,90 @@ const columns: ColumnDef<User>[] = [
   },
   {
     id: 'actions',
+    header: ({ column, table }) => {
+      const disabled = table.getFilteredSelectedRowModel().rows.length == 0;
+      const { users, setUsers } = useContext(WebmesterContext);
+
+      return (
+        <AlertDialog>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Biztos vagy benne?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {table.getFilteredSelectedRowModel().rows.length == 1 ? (
+                  <div>
+                    Ezzel kifogja törölni{' '}
+                    <b>
+                      {table
+                        .getFilteredSelectedRowModel()
+                        .rows[0]?.getValue('username')}{' '}
+                    </b>
+                    nevű felhasználót.
+                  </div>
+                ) : (
+                  <div>
+                    Ezzel ki kifogja törölni a kiválasztott{' '}
+                    <b>{table.getFilteredSelectedRowModel().rows.length} db </b>
+                    felhasználót.
+                  </div>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="w-full">
+                <ArrowLeft className="w-6 h-6 mr-1" /> Vissza
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="w-full"
+                onClick={async () => {
+                  const usernames: string[] = table
+                    .getFilteredSelectedRowModel()
+                    .rows.map((row) => row.getValue('username'));
+
+                  const res: any = await deleteUsers(usernames);
+
+                  if (res.status == 500) toast.error(res.message);
+                  else {
+                    setUsers(
+                      users?.filter(
+                        (user) => !usernames.includes(user.username)
+                      )!
+                    );
+                    table.toggleAllPageRowsSelected(false);
+                    toast.success('Sikeres törlés');
+                  }
+                }}
+              >
+                <Trash className="w-6 h-6 mr-1" /> Törlés
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Össz Menü kinyitása</span>
+                <DotsThree className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Össz Műveletek</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <AlertDialogTrigger className="w-full" disabled={disabled}>
+                <DropdownMenuItem disabled={disabled}>
+                  <div className="flex justify-between w-full">
+                    Törlés
+                    <Backspace className="w-4 h-4 ml-4" />
+                  </div>
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </AlertDialog>
+      );
+    },
     cell: ({ row, table }) => {
-      // const disabled: boolean = table
-      //   .getFilteredSelectedRowModel()
-      //   .rows.some((row) => row.getValue('username') == table.);
+      const { users, setUsers } = useContext(WebmesterContext);
 
       return (
         <AlertDialog>
@@ -205,9 +287,15 @@ const columns: ColumnDef<User>[] = [
                   const res: any = await deleteUsers(usernames);
 
                   if (res.status == 500) toast.error(res.message);
-                  else toast.success('Sikeres törlés');
-
-                  // TODO: DELETE ROW FROM TABLE AFTER DELETE
+                  else {
+                    setUsers(
+                      users?.filter(
+                        (user) => !usernames.includes(user.username)
+                      )!
+                    );
+                    table.toggleAllPageRowsSelected(false);
+                    toast.success('Sikeres törlés');
+                  }
                 }}
               >
                 <Trash className="w-6 h-6 mr-1" /> Törlés

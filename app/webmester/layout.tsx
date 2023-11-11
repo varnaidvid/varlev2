@@ -1,11 +1,34 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { getUsers } from '@/lib/actions';
+import { webmesterContextType } from '@/types/webmesterContext';
+import { User } from '@prisma/client';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
+import { redirect, useRouter } from 'next/navigation';
+import { createContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
-export default function WebMesterLayout({ children }: { children: ReactNode }) {
+export const WebmesterContext = createContext<webmesterContextType>({
+  user: null as User | null,
+  setUser: () => null as any,
+  isUserLoading: false,
+  setIsUserLoading: () => null as any,
+
+  users: null as User[] | null,
+  setUsers: () => null as any,
+  isUsersLoading: false,
+  setIsUsersLoading: () => null as any,
+});
+
+export default function WebmesterLayout({
+  params,
+  children,
+}: {
+  params: { username: string };
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -13,6 +36,30 @@ export default function WebMesterLayout({ children }: { children: ReactNode }) {
       redirect('/');
     },
   });
+  const [user, setUser] = useState<User | null>(null);
+  const [isUserLoading, setIsUserLoading] = useState<boolean>(false);
+
+  const [users, setUsers] = useState<User[] | null>(null);
+  const [isUsersLoading, setIsUsersLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setIsUsersLoading(true);
+
+      const users = await getUsers();
+
+      if (!users) {
+        setIsUsersLoading(false);
+        return;
+      } else {
+        setUsers(users);
+        setIsUsersLoading(false);
+      }
+    };
+
+    if (session?.user.role == 'webmester' && !users && !isUsersLoading)
+      fetchUser();
+  }, [session]);
 
   if (status === 'authenticated' && session.user.role != 'webmester') {
     toast.error('Hozzáférés megtagadva');
@@ -20,6 +67,22 @@ export default function WebMesterLayout({ children }: { children: ReactNode }) {
   }
 
   if (status === 'authenticated' && session.user.role == 'webmester') {
-    return <div>{children}</div>;
+    return (
+      <WebmesterContext.Provider
+        value={{
+          user,
+          setUser,
+          isUserLoading,
+          setIsUserLoading,
+
+          users,
+          setUsers,
+          isUsersLoading,
+          setIsUsersLoading,
+        }}
+      >
+        {children}
+      </WebmesterContext.Provider>
+    );
   }
 }

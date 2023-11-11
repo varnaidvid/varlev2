@@ -1,11 +1,11 @@
 'use client';
 
-import columns from '@/components/webmester/dataTableColumns';
+import columns from '@/components/webmester/datatable/dataTableColumns';
 import { useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/webmester/usersDataTable';
+import UsersDataTable from '@/components/webmester/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,

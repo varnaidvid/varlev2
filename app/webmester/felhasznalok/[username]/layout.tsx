@@ -7,16 +7,12 @@ import {
   Dispatch,
   SetStateAction,
   createContext,
+  useContext,
   useEffect,
   useState,
 } from 'react';
 import toast from 'react-hot-toast';
-
-export const userContext = createContext({
-  user: undefined as User | undefined,
-  setUser: undefined as Dispatch<SetStateAction<User | undefined>> | undefined,
-  isUserLoading: undefined as boolean | undefined,
-});
+import { WebmesterContext } from '../../layout';
 
 export default function UserLayout({
   params,
@@ -27,8 +23,7 @@ export default function UserLayout({
 }) {
   const router = useRouter();
 
-  const [user, setUser] = useState<User>();
-  const [isUserLoading, setIsUserLoading] = useState<boolean>(false);
+  const { user, setUser, setIsUserLoading } = useContext(WebmesterContext);
 
   useEffect(() => {
     setIsUserLoading(true);
@@ -52,9 +47,5 @@ export default function UserLayout({
     fetchUser();
   }, []);
 
-  return (
-    <userContext.Provider value={{ user, setUser, isUserLoading }}>
-      {children}
-    </userContext.Provider>
-  );
+  return <>{children}</>;
 }
