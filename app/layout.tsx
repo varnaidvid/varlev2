@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useState } from 'react';
 import './globals.css';
-import { Poppins } from 'next/font/google';
+import { Poppins, Space_Mono, Source_Code_Pro } from 'next/font/google';
 import AuthProvider from '@/lib/auth/providers';
 import Header from '@/components/Header';
 import { IconContext } from '@phosphor-icons/react';
@@ -14,10 +14,16 @@ const poppins = Poppins({
   subsets: ['latin'],
 });
 
+const customMonoFont = Source_Code_Pro({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--custom-mono',
+});
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={poppins.className}>
+      <body className={poppins.className + ' ' + customMonoFont.variable}>
         <IconContext.Provider
           value={{
             size: 32,
