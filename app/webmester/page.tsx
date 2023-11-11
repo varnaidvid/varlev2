@@ -36,7 +36,7 @@ export default function WebmesterHome() {
               link="/webmester/regisztracio"
             />
           </div>
-          <div className="flex items-center justify-center [&>div]:w-full">
+          <div className="flex items-center justify-center [&>div]:w-full mb-12">
             <DashboardCard
               Icon={GearSix}
               title="Alapbeállítások"
