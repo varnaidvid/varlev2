@@ -14,9 +14,12 @@ model User {
   username String @unique
   password String
 
-  role String
+  role   String
+  avatar String? @default("")
 
   questions Question[]
+
+  Competitor Competitor?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,6 +28,10 @@ model User {
 model Team {
   id String @id @default(uuid())
 
+  name        String @unique
+  description String
+
+  // csak 3 versenyző lehet egy csapatban
   competitors Competitor[]
 
   createdAt DateTime @default(now())
@@ -37,8 +44,13 @@ model Competitor {
   year  Int // évfolyam
   class String // osztály
 
-  team   Team   @relation(fields: [teamId], references: [id])
-  teamId String
+  // csak egy csapatba tartozhat
+  team   Team?   @relation(fields: [teamId], references: [id])
+  teamId String?
+
+  // csak egy felhasználóhoz tartozhat
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 
   attempts Attempt[]
 
@@ -51,6 +63,8 @@ model Competition {
 
   name        String
   description String
+
+  image_url String @default("")
 
   year Int // évfolyam
 

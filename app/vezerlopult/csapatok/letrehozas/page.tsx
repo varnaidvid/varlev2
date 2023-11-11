@@ -1,32 +1,47 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import columns from '@/components/datatable/dataTableColumns';
+import { useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
 import { getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components//datatable/usersDataTable';
+import UsersDataTable from '@/components/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,
-  PlusCircle,
   UserCirclePlus,
   UserList,
   Gauge,
+  UsersFour,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
-import SignUpForm from '@/components/vezerlopult/felhasznalok/signUpForm';
-import { Button } from '@/components/ui/button';
+import { useSession } from 'next-auth/react';
 import { Separator } from '@/components/ui/separator';
+import { VezerloContext } from '../../layout';
+import NewTeamForm from '@/components/vezerlopult/csapatok/newTeamForm';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
-export default function UserPage() {
+export default function CsapatLetrehozas() {
+  const { data: session, status } = useSession();
+
   return (
     <>
-      <title>VarléV2 - Új fiók létrehozása</title>
-      <meta name="description" content="VarléV2 - Új fiók létrehozása" />
+      <title>VarléV2 - Új csapat létrehozás</title>
+      <meta name="description" content="VarléV2 - Új csapat létrehozás" />
 
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Új fiók létrehozása
+          Új csapat regisztrálás
         </h1>
 
         <div className="flex items-center gap-4">
@@ -35,11 +50,10 @@ export default function UserPage() {
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-
-          <Link href="/vezerlopult/felhasznalok">
+          <Link href="/vezerlopult/csapatok">
             <Button variant="default">
               {' '}
-              <UserList className="w-6 h-6 mr-2" color="white" /> Felhasználók
+              <UsersFour className="w-6 h-6 mr-2" color="white" /> Csapatok
             </Button>
           </Link>
         </div>
@@ -54,9 +68,9 @@ export default function UserPage() {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/vezerlopult/regisztracio">
+        <Link href="/vezerlopult/csapatok/letrehozas">
           <div className="flex items-center gap-[2px] hover:underline">
-            <UserCirclePlus className="h-6 w-6" /> Regisztráció
+            <UsersFour className="h-6 w-6 mr-1" /> Új csapat
           </div>
         </Link>
       </span>
@@ -64,7 +78,9 @@ export default function UserPage() {
       <Separator className="mt-6 mb-8" />
 
       <>
-        <SignUpForm />
+        <DndProvider backend={HTML5Backend}>
+          <NewTeamForm />
+        </DndProvider>
       </>
     </>
   );

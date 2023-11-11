@@ -11,4 +11,9 @@ export interface vezerloContextType {
     setUsers: React.Dispatch<React.SetStateAction<User[] | null>>;
     isUsersLoading: boolean;
     setIsUsersLoading: React.Dispatch<React.SetStateAction<boolean>>;
+
+    draggableItems: string[] | null;
+    setDraggableItems: React.Dispatch<React.SetStateAction<string[] | null>>;
+    droppedItems: string[] | null;
+    setDroppedItems: React.Dispatch<React.SetStateAction<string[] | null>>;
 }

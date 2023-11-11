@@ -1,25 +1,27 @@
 'use client';
 
 import {
+  Flag,
   Gauge,
   GearSix,
   PresentationChart,
+  Question,
   SlidersHorizontal,
+  UserCircle,
   UserCirclePlus,
   UserList,
+  UsersFour,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { useSession } from 'next-auth/react';
 import Head from 'next/head';
-import MainAccountsCards from '@/components/vezerlopult/felhasznalok/mainAccountsCards';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import MainTeamCards from '@/components/vezerlopult/csapatok/mainTeamCards';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -30,7 +32,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useState } from 'react';
 import MainCompetitonCards from '@/components/vezerlopult/versenyek/mainCompetitionCards';
-import MainTasksCards from '@/components/vezerlopult/feladatok/mainTasksCards';
+import DashboardCard from '@/components/vezerlopult/dashboardCard';
 
 export default function VezerloHome() {
   const { data: session, status, update } = useSession();
@@ -47,28 +49,16 @@ export default function VezerloHome() {
           Üdvözöljük a vezérlőpultján!
         </h1>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto hidden h-8 lg:flex"
-            >
-              <SlidersHorizontal className="mr-2 h-4 w-4" />
-              Nézet
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuRadioGroup value={view} onValueChange={setView}>
-              <DropdownMenuRadioItem value="normal">
-                Normál
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="compact">
-                Kompakt
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Link href="/vezerlopult/beallitasok">
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto hidden h-8 lg:flex"
+          >
+            <GearSix className="mr-2 h-4 w-4" />
+            Beállítások
+          </Button>
+        </Link>
       </div>
 
       <span className="tracking-tight text-base text-gray-500">
@@ -83,96 +73,48 @@ export default function VezerloHome() {
 
       {session?.user.role == 'webmester' && (
         <div className="mt-6">
-          <h3 className="text-xl font-medium tracking-tight mb-2">
-            Felhasználók
-          </h3>
-
-          <MainAccountsCards />
-
-          <Separator className="my-8" />
-        </div>
-      )}
-
-      {session?.user.role == 'webmester' && (
-        <div className="mt-6">
-          <h3 className="text-xl font-medium tracking-tight mb-2">Csapatok</h3>
-
-          <MainTeamCards />
-
-          <Separator className="my-8" />
-        </div>
-      )}
-
-      {session?.user.role == 'webmester' || session?.user.role == 'zsuri' ? (
-        <div className="mt-6">
-          <h3 className="text-xl font-medium tracking-tight mb-2">Versenyek</h3>
-
-          <MainCompetitonCards />
-
-          <Separator className="my-8" />
-        </div>
-      ) : (
-        ''
-      )}
-
-      {session?.user.role == 'webmester' || session?.user.role == 'tanar' ? (
-        <div className="mt-6">
-          <h3 className="text-xl font-medium tracking-tight mb-2">Feladatok</h3>
-
-          <MainTasksCards />
-
-          <Separator className="my-8" />
-        </div>
-      ) : (
-        ''
-      )}
-      {/* 
-      <div className="items-start justify-center gap-4 my-4 md:grid lg:grid-cols-2 xl:grid-cols-3">
-        <div className="col-span-2 grid items-start gap-6 lg:col-span-1">
-          <div className="flex items-center justify-center [&>div]:w-full">
+          <div className="grid md:grid-cols-2 gap-4">
             <DashboardCard
-              Icon={UserCirclePlus}
-              title="Fiók létrehozása"
-              description="A kártyára kattintva megtalálja a regisztrációs felületet"
-              buttonText="01. Regisztráció"
-              link="/vezerlopult/regisztracio"
-            />
-          </div>
-          <div className="flex items-center justify-center [&>div]:w-full mb-12">
-            <DashboardCard
-              Icon={GearSix}
-              title="Alapbeállítások"
-              description="A kártyára kattintva módosíthatja az alapbeállításokat"
-              buttonText="04. Beállítások"
-              link="/vezerlopult/beallitasok"
-            />
-          </div>
-        </div>
-        <div className="col-span-2 grid items-start gap-6 lg:col-span-1">
-          <div className="flex items-center justify-center [&>div]:w-full">
-            <DashboardCard
-              Icon={UserList}
-              title="Felhasználók kezelése"
-              description="A kártyára kattintva megtalálja a felhasználók kezelői felületet"
-              buttonText="02. Felhasználók"
+              Icon={UserCircle}
+              title="Felhasználók"
+              description="Itt található a felhasználók kezelő felülete, ahol új felhasználókat hozhat létre, illetve meglévőket módosíthat."
+              buttonText="Felhasználók"
               link="/vezerlopult/felhasznalok"
+              secondLink="/vezerlopult/regisztracio"
+              secondLinkText="Új felhasználó"
             />
-          </div>
-          <div className="flex items-center justify-center [&>div]:w-full"></div>
-        </div>
-        <div className="col-span-2 grid items-start gap-6 lg:col-span-1">
-          <div className="flex items-center justify-center [&>div]:w-full">
             <DashboardCard
-              Icon={PresentationChart}
-              title="Bemutatkozó oldal"
-              description="A kártyára kattintva megtalálja szerkesztheti a bemutató oldalt"
-              buttonText="03. Szerkesztés"
-              link="/vezerlopult/bemutatkozo"
-            />{' '}
+              Icon={UsersFour}
+              title="Csapatok"
+              description="Itt található a csapatok kezelő felülete, ahol új csapatokat hozhat létre, illetve meglévőket módosíthat."
+              buttonText="Csapatok"
+              link="/vezerlopult/csapatok"
+              secondLink="/vezerlopult/csapatok/letrehozas"
+              secondLinkText="Új csapat"
+            />
+            <DashboardCard
+              Icon={Flag}
+              title="Versenyek"
+              description="Itt található a versenyek kezelő felülete, ahol új versenyek hozhat létre, illetve meglévőket módosíthat."
+              buttonText="Versenyek"
+              link="/vezerlopult/versenyek"
+              secondLink="/vezerlopult/versenyek/letrehozas"
+              secondLinkText="Új verseny"
+            />
+            <DashboardCard
+              Icon={Question}
+              title="Feladatok"
+              description="Itt található a feladatok kezelő felülete, ahol új feladatok hozhat létre, illetve meglévőket módosíthat."
+              buttonText="Feladatok"
+              link="/vezerlopult/feladatok"
+              secondLink="/vezerlopult/feladatok/letrehozas"
+              secondLinkText="Új feladat"
+            />
+
+            <Separator className="my-8" />
           </div>
-          <div className="flex items-center justify-center [&>div]:w-full"></div>
-        </div> 
-      </div> */}
+        </div>
+      )}
     </>
   );
 }
