@@ -1,5 +1,7 @@
-'use client';
+import { Separator } from '@/components/ui/separator';
+import { ProfileForm } from '@/app/webmester/beallitasok/profile-form';
 
+<<<<<<< HEAD:app/vezerlopult/beallitasok/page.tsx
 import SignUpForm from '@/components/vezerlopult/signUpForm';
 import { Button } from '@/components/ui/button';
 import {
@@ -69,5 +71,17 @@ export default function SettingsPage() {
         <h1>SETTINGS FORM</h1>
       </div>
     </main>
+=======
+export default function SettingsProfilePage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium">Profil</h3>
+        <p className="text-sm text-muted-foreground">Így fognak mások látni.</p>
+      </div>
+      <Separator />
+      <ProfileForm />
+    </div>
+>>>>>>> c24c6d526a1cd66673fd8c88fca997629dc22fdc:app/webmester/beallitasok/page.tsx
   );
 }
