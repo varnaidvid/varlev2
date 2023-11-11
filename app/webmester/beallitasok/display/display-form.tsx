@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { toast } from '@/components/ui/use-toast';
+import toast from 'react-hot-toast';
 
 const items = [
   {
@@ -52,7 +52,7 @@ const displayFormSchema = z.object({
 
 type DisplayFormValues = z.infer<typeof displayFormSchema>;
 
-// Ez az alapértelmezett érték lehet adatbázisodból vagy API-ból származó.
+// prisma ???
 const defaultValues: Partial<DisplayFormValues> = {
   items: ['recents', 'home'],
 };
@@ -64,14 +64,7 @@ export function DisplayForm() {
   });
 
   function onSubmit(data: DisplayFormValues) {
-    toast({
-      title: 'A következő értékeket küldted el:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    toast.success('Értesítések frissítve.');
   }
 
   return (

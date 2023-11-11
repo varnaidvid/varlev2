@@ -31,7 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { toast } from '@/components/ui/use-toast';
+import toast from 'react-hot-toast';
 
 const languages = [
   { label: 'English', value: 'en' },
@@ -77,14 +77,7 @@ export function AccountForm() {
   });
 
   function onSubmit(data: AccountFormValues) {
-    toast({
-      title: 'A következő értékeket küldted el:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    toast.success('A fiókod sikeresen frissítve lett.');
   }
 
   return (

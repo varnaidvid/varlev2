@@ -1,12 +1,10 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { getUsers } from '@/lib/actions';
 import { webmesterContextType } from '@/types/webmesterContext';
 import { User } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export const WebmesterContext = createContext<webmesterContextType>({

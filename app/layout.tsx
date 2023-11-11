@@ -7,7 +7,6 @@ import AuthProvider from '@/lib/auth/providers';
 import Header from '@/components/Header';
 import { IconContext } from '@phosphor-icons/react';
 import { Toaster } from 'react-hot-toast';
-import toast from 'react-hot-toast';
 
 const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],

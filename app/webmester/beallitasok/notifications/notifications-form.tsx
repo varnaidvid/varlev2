@@ -18,11 +18,11 @@ import {
 } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
-import { toast } from '@/components/ui/use-toast';
+import toast from 'react-hot-toast';
 
 const notificationsFormSchema = z.object({
   type: z.enum(['all', 'mentions', 'none'], {
-    required_error: 'You need to select a notification type.',
+    required_error: 'Ki kell választanod egy értesítési típust.',
   }),
   mobile: z.boolean().default(false).optional(),
   communication_emails: z.boolean().default(false).optional(),
@@ -33,7 +33,7 @@ const notificationsFormSchema = z.object({
 
 type NotificationsFormValues = z.infer<typeof notificationsFormSchema>;
 
-// This can come from your database or API.
+// prisma ???
 const defaultValues: Partial<NotificationsFormValues> = {
   communication_emails: false,
   marketing_emails: false,
@@ -48,14 +48,7 @@ export function NotificationsForm() {
   });
 
   function onSubmit(data: NotificationsFormValues) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    toast.success('Értesítések frissítve!');
   }
 
   return (
@@ -66,7 +59,7 @@ export function NotificationsForm() {
           name="type"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel>Notify me about...</FormLabel>
+              <FormLabel>Értesítések erről...</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
@@ -78,7 +71,7 @@ export function NotificationsForm() {
                       <RadioGroupItem value="all" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      All new messages
+                      Minden új üzenet
                     </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -86,14 +79,14 @@ export function NotificationsForm() {
                       <RadioGroupItem value="mentions" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      Direct messages and mentions
+                      Direkt üzenetek és említések
                     </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="none" />
                     </FormControl>
-                    <FormLabel className="font-normal">Nothing</FormLabel>
+                    <FormLabel className="font-normal">Semmi</FormLabel>
                   </FormItem>
                 </RadioGroup>
               </FormControl>
@@ -102,7 +95,7 @@ export function NotificationsForm() {
           )}
         />
         <div>
-          <h3 className="mb-4 text-lg font-medium">Email Notifications</h3>
+          <h3 className="mb-4 text-lg font-medium">E-mail Értesítések</h3>
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -111,10 +104,10 @@ export function NotificationsForm() {
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
-                      Communication emails
+                      Kommunikációs e-mailek
                     </FormLabel>
                     <FormDescription>
-                      Receive emails about your account activity.
+                      Értesítések az account tevékenységeiről.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -133,10 +126,10 @@ export function NotificationsForm() {
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">
-                      Marketing emails
+                      Marketing e-mailek
                     </FormLabel>
                     <FormDescription>
-                      Receive emails about new products, features, and more.
+                      Értesítések az új termékekről, funkciókról és egyebekről.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -154,9 +147,11 @@ export function NotificationsForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Social emails</FormLabel>
+                    <FormLabel className="text-base">
+                      Szociális e-mailek
+                    </FormLabel>
                     <FormDescription>
-                      Receive emails for friend requests, follows, and more.
+                      Értesítések baráti kérésekről, követésekről és egyebekről.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -174,9 +169,11 @@ export function NotificationsForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Security emails</FormLabel>
+                    <FormLabel className="text-base">
+                      Biztonsági e-mailek
+                    </FormLabel>
                     <FormDescription>
-                      Receive emails about your account activity and security.
+                      Értesítések az account tevékenységéről és biztonságáról.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -205,17 +202,18 @@ export function NotificationsForm() {
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>
-                  Use different settings for my mobile devices
+                  Különböző beállításokat szeretnék a mobil eszközeimre
                 </FormLabel>
                 <FormDescription>
-                  You can manage your mobile notifications in the{' '}
-                  <Link href="/examples/forms">mobile settings</Link> page.
+                  A mobil értesítéseket a{' '}
+                  <Link href="/examples/forms">mobil beállítások</Link> oldalon
+                  tudod kezelni.
                 </FormDescription>
               </div>
             </FormItem>
           )}
         />
-        <Button type="submit">Update notifications</Button>
+        <Button type="submit">Értesítések frissítése</Button>
       </form>
     </Form>
   );
