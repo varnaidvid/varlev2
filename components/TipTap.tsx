@@ -3,6 +3,7 @@ import { Toolbar } from '@/components/Toolbar';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Heading from '@tiptap/extension-heading';
+import Image from '@tiptap/extension-image';
 
 export default function Tiptap({
   description,
@@ -13,6 +14,7 @@ export default function Tiptap({
 }) {
   const editor = useEditor({
     extensions: [
+      Image,
       StarterKit.configure({}),
       Heading.configure({
         HTMLAttributes: { class: 'text-xl font-bold', levels: [2] },

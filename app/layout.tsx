@@ -13,6 +13,7 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
   display: 'swap',
+  adjustFontFallback: true,
 });
 
 const customMonoFont = Source_Code_Pro({
@@ -20,6 +21,7 @@ const customMonoFont = Source_Code_Pro({
   subsets: ['latin'],
   variable: '--custom-mono',
   display: 'swap',
+  adjustFontFallback: true,
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {

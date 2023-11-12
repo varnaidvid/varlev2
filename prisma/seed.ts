@@ -184,8 +184,182 @@ async function seedAllRoles() {
     console.log({ webmester, zsuri, tanar, diak, diakCompetitor })
 }
 
-seedAllRoles()
-    // seedStudents()
+
+// medve oroszlán elefánt zsiráf 6
+// hétfő kedd szerda csütörtök 5
+// alma macska autó eső 7
+// számítógép telefon könyv ceruza 5
+// tél nyár tavasz ősz 8
+// futball kosárlabda tenisz golf 5
+// szaxofon gitár zongora hegedű 5
+// tenger tó folyó patak 5
+// banán napszemüveg strandlabda napernyő 6
+// pizza hamburger sushi taco 5
+// hold nap csillag bolygó 5
+// festmény szobor rajz fotó 5
+// repülő hajó vonat autóbusz 6
+// róka nyúl medve hód 5
+// kávé tea limonádé víz 5
+// párizs london róma berlin 5
+// régió térkép ország város 5
+// zokni cipő kabát kalap 5
+// nyár ősz tél tavasz 5
+// csokoládé vanília eper pisztácia 6
+
+
+async function seedQuestions() {
+    // fetch users with role "tanar"
+    const teachers = await prisma.user.findMany({ where: { role: 'tanar' } })
+
+    const questions = [
+        {
+            id: "q1",
+            question: "medve oroszlán elefánt zsiráf 6",
+        },
+        {
+            id: "q2",
+            question: "hétfő kedd szerda csütörtök 5",
+        },
+        {
+            id: "q3",
+            question: "alma macska autó eső 7",
+        },
+        {
+            id: "q4",
+            question: "számítógép telefon könyv ceruza 5",
+        },
+        {
+            id: "q5",
+            question: "tél nyár tavasz ősz 8",
+        },
+        {
+            id: "q6",
+            question: "futball kosárlabda tenisz golf 5",
+        },
+        {
+            id: "q7",
+            question: "szaxofon gitár zongora hegedű 5",
+        },
+        {
+            id: "q8",
+            question: "tenger tó folyó patak 5",
+        },
+        {
+            id: "q9",
+            question: "banán napszemüveg strandlabda napernyő 6",
+        },
+        {
+            id: "q10",
+            question: "pizza hamburger sushi taco 5",
+        },
+        {
+            id: "q11",
+            question: "hold nap csillag bolygó 5",
+        },
+        {
+            id: "q12",
+            question: "festmény szobor rajz fotó 5",
+        },
+        {
+            id: "q13",
+            question: "repülő hajó vonat autóbusz 6",
+        },
+        {
+            id: "q14",
+            question: "róka nyúl medve hód 5",
+        },
+        {
+            id: "q15",
+            question: "kávé tea limonádé víz 5",
+        },
+        {
+            id: "q16",
+            question: "párizs london róma berlin 5",
+        },
+        {
+            id: "q17",
+            question: "régió térkép ország város 5",
+        },
+        {
+            id: "q18",
+            question: "zokni cipő kabát kalap 5",
+        },
+        {
+            id: "q19",
+            question: "nyár ősz tél tavasz 5",
+        },
+        {
+            id: "q20",
+            question: "csokoládé vanília eper pisztácia 6",
+        }
+
+
+
+
+    ]
+
+    // upsert questions to db
+    const upsertedQuestions = await Promise.all(
+        questions.map(async (question) => {
+            return await prisma.question.upsert({
+                where: { id: question.id },
+                update: {},
+                create: {
+                    question: question.question,
+                    creatorId: teachers[randomInt(0, teachers.length - 1)].id,
+                },
+            })
+        })
+    )
+
+    console.log(upsertedQuestions)
+
+}
+
+async function seedCompetitions() {
+    // fetch questions from role "tanr" creators
+    let questions = await prisma.question.findMany({ include: { creator: true } })
+    questions = questions.filter((question) => question.creator.role === "tanar") // webmester feladatai ne legyenek példa versenyben
+
+    // filter questions by year: year should be 5. year = questions[0].question.split(" ")[question[0].question.split(" ").length - 1]
+    questions = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "5")
+
+    // sorting the questions in to 3 question packs
+    let questions1 = []
+    let questions2 = []
+    let questions3 = []
+    let i = 0
+    while (i + 3 <= questions.length) {
+        questions1.push(questions[i].id)
+        i++
+        questions2.push(questions[i].id)
+        i++
+        questions3.push(questions[i].id)
+        i++
+    }
+
+    // upsert a competition to db
+    const competition = await prisma.competition.upsert({
+        where: { id: "c1" },
+        update: {},
+        create: {
+            id: "c1",
+            name: "Példa verseny",
+            description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
+            year: 5,
+            startDate: new Date("2023-11-11"),
+            endDate: new Date("2023-11-13"),
+            questions1: questions1,
+            questions2: questions2,
+            questions3: questions3,
+        },
+    })
+}
+
+// seedAllRoles()
+// seedStudents()
+// seedQuestions()
+seedCompetitions()
     .then(async () => {
         await prisma.$disconnect()
     })
