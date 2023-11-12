@@ -16,9 +16,13 @@ import {
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { unstable_renderSubtreeIntoContainer } from 'react-dom';
+import { Widget } from '@uploadcare/react-widget';
+
 type Props = {
   editor: Editor | null;
 };
+
+import './style.css';
 
 export function Toolbar({ editor }: Props) {
   if (!editor) {
@@ -92,34 +96,14 @@ export function Toolbar({ editor }: Props) {
         <Undo className="h-4 w-4" />
       </Toggle>
 
-      <Toggle
-        size="sm"
-        onClick={() => {
-          const url = window.prompt('URL');
-
-          if (url) {
-            editor.chain().focus().setImage({ src: url }).run();
-          }
-        }}
-      >
-        <Image className="h-4 w-4" />
-      </Toggle>
-
-      {/*<Toggle
-        size="sm"
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={editor.isActive('bulletList') ? 'is-active' : ''}
-      >
-        <List className="h-4 w-4" />
-      </Toggle>
-
-      <Toggle
-        size="sm"
-        pressed={editor.isActive('orderedList')}
-        onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
-      >
-        <ListOrdered className="h-4 w-4" />
-      </Toggle>*/}
+      <div className="text-gray-700">
+        <Widget
+          crop="free, 16:9, 4:3, 5:4, 1:1"
+          publicKey="9e050a5302218c1e1d2e"
+          clearable
+          onChange={info => editor.chain().focus().setImage({ src: 'https://ucarecdn.com/' + info.uuid + "/" }).run()}
+        />
+      </div>
     </div>
   );
 }
