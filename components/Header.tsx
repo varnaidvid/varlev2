@@ -33,7 +33,9 @@ const Header = () => {
   return (
     <header className="flex p-4 bg-gray-800/75 text-gray-300 items-center justify-between">
       <div className="flex">
-        <Link href="/">VarleV2</Link>
+        <Link className="font-bold" href="/">
+          VarleV2
+        </Link>
       </div>
       <div>
         <NavigationMenu>
