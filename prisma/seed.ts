@@ -10,20 +10,6 @@ async function seedStudents() {
         "Nagy-Ferenc",
         "Lakatos-János",
         "Szabó-Géza",
-        "Horváth-Gábor",
-        "Varga-László",
-        "Tóth-István",
-        "Kiss-Péter",
-        "Jakab-Gipsz",
-        "Béla-Kovács",
-        "Pista-Kiss",
-        "Ferenc-Nagy",
-        "János-Lakatos",
-        "Géza-Szabó",
-        "Gábor-Horváth",
-        "László-Varga",
-        "István-Tóth",
-        "Péter-Kiss",
     ]
     // reverse the names between -
     let usernames2 = userNames.map((userName) => {
@@ -38,20 +24,6 @@ async function seedStudents() {
         "Nagy-Ferenc-Jelszo",
         "Lakatos-János-Jelszo",
         "Szabó-Géza-Jelszo",
-        "Horváth-Gábor-Jelszo",
-        "Varga-László-Jelszo",
-        "Tóth-István-Jelszo",
-        "Kiss-Péter-Jelszo",
-        "Jakab-Gipsz-Jelszo",
-        "Béla-Kovács-Jelszo",
-        "Pista-Kiss-Jelszo",
-        "Ferenc-Nagy-Jelszo",
-        "János-Lakatos-Jelszo",
-        "Géza-Szabó-Jelszo",
-        "Gábor-Horváth-Jelszo",
-        "László-Varga-Jelszo",
-        "István-Tóth-Jelszo",
-        "Péter-Kiss-Jelszo",
     ]
 
     let passwords2 = passwords.map((password) => {
@@ -187,25 +159,6 @@ async function seedAllRoles() {
 async function seedZsurik() {
     let userNames = [
         "Zsuri-Gipsz-Jakab",
-        "Zsuri-Kovács-Béla",
-        "Zsuri-Kiss-Pista",
-        "Zsuri-Nagy-Ferenc",
-        "Zsuri-Lakatos-János",
-        "Zsuri-Szabó-Géza",
-        "Zsuri-Horváth-Gábor",
-        "Zsuri-Varga-László",
-        "Zsuri-Tóth-István",
-        "Zsuri-Kiss-Péter",
-        "Zsuri-Jakab-Gipsz",
-        "Zsuri-Béla-Kovács",
-        "Zsuri-Pista-Kiss",
-        "Zsuri-Ferenc-Nagy",
-        "Zsuri-János-Lakatos",
-        "Zsuri-Géza-Szabó",
-        "Zsuri-Gábor-Horváth",
-        "Zsuri-László-Varga",
-        "Zsuri-István-Tóth",
-        "Zsuri-Péter-Kiss",
     ]
 
     let password = "Zsuri-Jelszo"
@@ -232,116 +185,251 @@ async function seedZsurik() {
 }
 
 
-// medve oroszlán elefánt zsiráf 6
-// hétfő kedd szerda csütörtök 5
-// alma macska autó eső 7
-// számítógép telefon könyv ceruza 5
-// tél nyár tavasz ősz 8
-// futball kosárlabda tenisz golf 5
-// szaxofon gitár zongora hegedű 5
-// tenger tó folyó patak 5
-// banán napszemüveg strandlabda napernyő 6
-// pizza hamburger sushi taco 5
-// hold nap csillag bolygó 5
-// festmény szobor rajz fotó 5
-// repülő hajó vonat autóbusz 6
-// róka nyúl medve hód 5
-// kávé tea limonádé víz 5
-// párizs london róma berlin 5
-// régió térkép ország város 5
-// zokni cipő kabát kalap 5
-// nyár ősz tél tavasz 5
-// csokoládé vanília eper pisztácia 6
-
-
 async function seedQuestions() {
     // fetch users with role "tanar"
     const teachers = await prisma.user.findMany({ where: { role: 'tanar' } })
 
     const questions = [
         {
-            id: "q1",
-            question: "medve oroszlán elefánt zsiráf 6",
+            "id": "q1",
+            "question": "krokodil jaguár gepárd leopárdminta 7"
         },
         {
-            id: "q2",
-            question: "hétfő kedd szerda csütörtök 5",
+            "id": "q2",
+            "question": "vasárnap csütörtök péntek szombathely 8"
         },
         {
-            id: "q3",
-            question: "alma macska autó eső 7",
+            "id": "q3",
+            "question": "narancs banán alma mandarinfa 7"
         },
         {
-            id: "q4",
-            question: "számítógép telefon könyv ceruza 5",
+            "id": "q4",
+            "question": "laptop monitor egér billentyűzetkiosztás 8"
         },
         {
-            id: "q5",
-            question: "tél nyár tavasz ősz 8",
+            "id": "q5",
+            "question": "himalája alpok kárpátok andokhegyei 7"
         },
         {
-            id: "q6",
-            question: "futball kosárlabda tenisz golf 5",
+            "id": "q6",
+            "question": "jégkorong curling műkorcsolya jégtánc 8"
         },
         {
-            id: "q7",
-            question: "szaxofon gitár zongora hegedű 5",
+            "id": "q7",
+            "question": "klarinét trombita fuvola oboafajta 7"
         },
         {
-            id: "q8",
-            question: "tenger tó folyó patak 5",
+            "id": "q8",
+            "question": "óceán tengeri ár sekély vízimalom 8"
         },
         {
-            id: "q9",
-            question: "banán napszemüveg strandlabda napernyő 6",
+            "id": "q9",
+            "question": "szemüveg óra ékszer nyakláncdíszítés 7"
         },
         {
-            id: "q10",
-            question: "pizza hamburger sushi taco 5",
+            "id": "q10",
+            "question": "lasagne bolognai spagetti carbonara 8"
         },
         {
-            id: "q11",
-            question: "hold nap csillag bolygó 5",
+            "id": "q11",
+            "question": "júpiter mars vénusz merkúr 7"
         },
         {
-            id: "q12",
-            question: "festmény szobor rajz fotó 5",
+            "id": "q12",
+            "question": "vászon akvarell pastell krétafestmény 8"
         },
         {
-            id: "q13",
-            question: "repülő hajó vonat autóbusz 6",
+            "id": "q13",
+            "question": "hőlégballon zeppelin siklóernyő léghajózás 7"
         },
         {
-            id: "q14",
-            question: "róka nyúl medve hód 5",
+            "id": "q14",
+            "question": "farkas sakál hiéna denevérfaj 8"
         },
         {
-            id: "q15",
-            question: "kávé tea limonádé víz 5",
+            "id": "q15",
+            "question": "cappuccino espresso macchiato ristretto 7"
         },
         {
-            id: "q16",
-            question: "párizs london róma berlin 5",
+            "id": "q16",
+            "question": "moszkva bécs prága madridi utca 8"
         },
         {
-            id: "q17",
-            question: "régió térkép ország város 5",
+            "id": "q17",
+            "question": "kontinens földrész sziget félsziget 7"
         },
         {
-            id: "q18",
-            question: "zokni cipő kabát kalap 5",
+            "id": "q18",
+            "question": "szandál papucs csizma bakancs 8"
         },
         {
-            id: "q19",
-            question: "nyár ősz tél tavasz 5",
+            "id": "q19",
+            "question": "április június szeptember októberi eső 7"
         },
         {
-            id: "q20",
-            question: "csokoládé vanília eper pisztácia 6",
+            "id": "q20",
+            "question": "jégkrém fagylalt sorbet parfé 8"
+        },
+        {
+            "id": "q21",
+            "question": "medve oroszlán elefánt zsiráf 6"
+        },
+        {
+            "id": "q22",
+            "question": "hétfő kedd szerda csütörtök 5"
+        },
+        {
+            "id": "q23",
+            "question": "alma macska autó esőkabát 7"
+        },
+        {
+            "id": "q24",
+            "question": "számítógép telefon könyv ceruzatartó 5"
+        },
+        {
+            "id": "q25",
+            "question": "tél nyár tavasz őszi eső 8"
+        },
+        {
+            "id": "q26",
+            "question": "futball kosárlabda tenisz golflabda 5"
+        },
+        {
+            "id": "q27",
+            "question": "szaxofon gitár zongora hegedűművész 5"
+        },
+        {
+            "id": "q28",
+            "question": "tenger tó folyó patakvíz 5"
+        },
+        {
+            "id": "q29",
+            "question": "banán napszemüveg strandlabda napernyőnyílás 6"
+        },
+        {
+            "id": "q30",
+            "question": "pizza hamburger sushi tacószósz 5"
+        },
+        {
+            "id": "q31",
+            "question": "hold nap csillag bolygórendszer 5"
+        },
+        {
+            "id": "q32",
+            "question": "festmény szobor rajz fotóalbum 5"
+        },
+        {
+            "id": "q33",
+            "question": "repülő hajó vonat autóbuszjegy 6"
+        },
+        {
+            "id": "q34",
+            "question": "róka nyúl medve hódvárárok 5"
+        },
+        {
+            "id": "q35",
+            "question": "kávé tea limonádé vízvezeték 5"
+        },
+        {
+            "id": "q36",
+            "question": "párizs london róma berlintorta 5"
+        },
+        {
+            "id": "q37",
+            "question": "régió térkép ország városhatár 5"
+        },
+        {
+            "id": "q38",
+            "question": "zokni cipő kabát kalapot 5"
+        },
+        {
+            "id": "q39",
+            "question": "nyár ősz tél tavaszvirág 5"
+        },
+        {
+            "id": "q40",
+            "question": "csokoládé vanília eper pisztáciakrém 6"
+        },
+        {
+            "id": "q41",
+            "question": "kígyó tigris cápa delfinusz 7"
+        },
+        {
+            "id": "q42",
+            "question": "kedd szerda csütörtök pénteknap 8"
+        },
+        {
+            "id": "q43",
+            "question": "grapefruit limonádé citrom narancslé 7"
+        },
+        {
+            "id": "q44",
+            "question": "videokamera fényképezőgép mikrofon hangszórókészülék 8"
+        },
+        {
+            "id": "q45",
+            "question": "rock jazz blues reggaeton 7"
+        },
+        {
+            "id": "q46",
+            "question": "focilabda röplabda kosárlabda tollaslabda 8"
+        },
+        {
+            "id": "q47",
+            "question": "fagyasztó mikrohullámú sütő mosogatógép hűtőszekrény 7"
+        },
+        {
+            "id": "q48",
+            "question": "erdő sivatag mocsár dzsungelvidék 8"
+        },
+        {
+            "id": "q49",
+            "question": "szemceruza rúzs púder alapozókrém 7"
+        },
+        {
+            "id": "q50",
+            "question": "tortilla burrito enchilada quesadilla 8"
+        },
+        {
+            "id": "q51",
+            "question": "neptunusz uránusz szaturnusz jupiterhold 7"
+        },
+        {
+            "id": "q52",
+            "question": "akvarell grafika szénrajz olajfestmény 8"
+        },
+        {
+            "id": "q53",
+            "question": "komp hajó jet-ski jacht 7"
+        },
+        {
+            "id": "q54",
+            "question": "ló szamár tehén juhászkutya 8"
+        },
+        {
+            "id": "q55",
+            "question": "mocha frappuccino latte macchiato 7"
+        },
+        {
+            "id": "q56",
+            "question": "tokió sydney kairó new york-i 8"
+        },
+        {
+            "id": "q57",
+            "question": "hegy völgy fennsík barlangrendszer 7"
+        },
+        {
+            "id": "q58",
+            "question": "cipőzsinór nyakkendő öv kalapfény 8"
+        },
+        {
+            "id": "q59",
+            "question": "március május július novemberi hó 7"
+        },
+        {
+            "id": "q60",
+            "question": "fagyöngy hópehely jégcsap fenyőfa 8"
         }
-
-
-
 
     ]
 
@@ -435,12 +523,11 @@ async function seedSiteInfo() {
 
 }
 
-// seedAllRoles()
-// seedStudents()
-// seedQuestions()
-// seedZsurik()
-seedCompetitions()
-    // seedSiteInfo()
+seedAllRoles()
+    // seedStudents()
+    // seedQuestions()
+    // seedZsurik()
+    // seedCompetitions()
     .then(async () => {
         await prisma.$disconnect()
     })
