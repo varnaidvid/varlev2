@@ -2,6 +2,7 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcryptjs';
 import { prisma } from '@/prisma/db';
+import { getCompitetorIdByUserId } from '../actions';
 
 const authOptions: NextAuthOptions = {
     session: {
@@ -41,6 +42,11 @@ const authOptions: NextAuthOptions = {
         },
         session: async ({ session, token }) => {
             session.user = token.user as any
+
+            if (session.user.role === "diak") {
+                const competitorId = await getCompitetorIdByUserId(session.user.id)
+                competitorId?.id && (session.user.competitorId = competitorId.id)
+            }
 
             return {
                 ...session,

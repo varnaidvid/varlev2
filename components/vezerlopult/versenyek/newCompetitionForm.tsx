@@ -49,8 +49,8 @@ import * as React from 'react';
 import { useDrop } from 'react-dnd';
 import { VezerloContext } from '@/app/vezerlopult/layout';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Dustbin } from '@/components/vezerlopult/csapatok/draggable/Dustbin';
-import { Box } from '@/components/vezerlopult/csapatok/draggable/Box';
+import { Dustbin } from '@/components/vezerlopult/versenyek/draggable/Dustbin';
+import { Box } from '@/components/vezerlopult/versenyek/draggable/Box';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 type customCompetitorType = {
@@ -82,6 +82,8 @@ const NewCompetitionForm = () => {
     return draggableItems?.sort((a, b) => a.localeCompare(b));
   }, [draggableItems]);
 
+  const [jurys, setJurys] = useState<string[]>([]);
+
   useEffect(() => {
     async function getCompetitors() {
       const competitors = await getTeamCreateCompetitors(year!, classNumber!);
@@ -105,13 +107,11 @@ const NewCompetitionForm = () => {
   }, [year, classNumber]);
 
   useEffect(() => {
-    console.log('asd');
-    setDraggableItems([]);
-    setDroppedItems([]);
-    setCompetitors([]);
+    setDraggableItems(null);
+    setDroppedItems(null);
 
     console.log(sortedDraggables);
-  }, []);
+  });
 
   useEffect(() => {
     form.setValue('competitors', droppedItems);
@@ -149,7 +149,12 @@ const NewCompetitionForm = () => {
 
       startDate: '',
       endDate: '',
-      competitors: ['', '', ''],
+
+      questions: [],
+
+      jurys: [],
+
+      teams: [],
     },
   });
 
@@ -157,14 +162,12 @@ const NewCompetitionForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    toast.loading('Csapat létrehozása folyamatban...', {
+    toast.loading('Verseny létrehozása folyamatban...', {
       id: 'registration',
     });
 
-    if (values.competitors.length != 3) {
-      toast.error('3 versenyzőnek kell lennie egy csapatban!', {
-        id: 'registration',
-      });
+    if (values.questions.length % 3 != 0) {
+      toast.error('');
 
       setIsLoading(false);
       return;
@@ -188,7 +191,7 @@ const NewCompetitionForm = () => {
       setDraggableItems([]);
 
       setIsLoading(false);
-      router.push('/vezerlopult/csapatok');
+      router.push('/vezerlopult/versenyek');
     } catch (error: any) {
       setIsLoading(false);
 
@@ -197,10 +200,10 @@ const NewCompetitionForm = () => {
       if ((error as Error).message.includes('Unique')) {
         form.setError('name', {
           type: 'manual',
-          message: 'Létezik már ilyen nevű csapat!',
+          message: 'Létezik már ilyen nevű verseny!',
         });
 
-        toast.error('Létezik már ilyen nevű csapat!', {
+        toast.error('Létezik már ilyen nevű verseny!', {
           id: 'registration',
         });
         return;
@@ -216,9 +219,9 @@ const NewCompetitionForm = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Új csapat létrehozása</CardTitle>
+        <CardTitle>Új verseny létrehozása</CardTitle>
         <CardDescription>
-          Alábbi űrlap segítségével hozhat létre új csapatot.
+          Alábbi űrlap segítségével hozhat létre új versenyt.
         </CardDescription>
       </CardHeader>
 
@@ -230,9 +233,13 @@ const NewCompetitionForm = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Csapat név</FormLabel>
+                  <FormLabel>Verseny név</FormLabel>
                   <FormControl>
-                    <Input placeholder="A Bosszúállók" {...field} required />
+                    <Input
+                      placeholder="Dusza Árpád Webprogamozói Verseny"
+                      {...field}
+                      required
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -244,15 +251,44 @@ const NewCompetitionForm = () => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Csapat rövid leírása</FormLabel>
+                  <FormLabel>Verseny rövid leírása</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="A Bosszúállók egy szuperhősökből álló csapat, melynek célja..."
+                      placeholder="A Dusza Árpád Webprogramozói verseny célja..."
                       {...field}
                       required
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name=""
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Évfolyam kiválasztása</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={(value: string) => {
+                        setYear(parseInt(value));
+                        form.setValue('year', value);
+                      }}
+                      value={year?.toString()}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Évfolyam" />
+                      </SelectTrigger>
+                      <SelectContent className="w-2">
+                        <SelectItem value="5">5.</SelectItem>
+                        <SelectItem value="6">6.</SelectItem>
+                        <SelectItem value="7">7.</SelectItem>
+                        <SelectItem value="8">8.</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
                 </FormItem>
               )}
             />
@@ -263,75 +299,7 @@ const NewCompetitionForm = () => {
                 name=""
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Évfolyam kiválasztása</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={(value: string) => {
-                          setYear(parseInt(value));
-                          form.setValue('year', value);
-                        }}
-                        value={year?.toString()}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Évfolyam" />
-                        </SelectTrigger>
-                        <SelectContent className="w-2">
-                          <SelectItem value="5">5.</SelectItem>
-                          <SelectItem value="6">6.</SelectItem>
-                          <SelectItem value="7">7.</SelectItem>
-                          <SelectItem value="8">8.</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Osztály kiválasztása</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={(value: string) => {
-                          form.setValue('class', value);
-                          setClassNumber(value);
-                        }}
-                        value={classNumber}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Osztály" />
-                        </SelectTrigger>
-                        <SelectContent className="w-2">
-                          <SelectItem value="A">A</SelectItem>
-                          <SelectItem value="B">B</SelectItem>
-                          <SelectItem value="C">C</SelectItem>
-                          <SelectItem value="D">D</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>
-                      {year && classNumber ? (
-                        <span>
-                          {year}. {classNumber} osztály tanulói
-                        </span>
-                      ) : (
-                        <span>Nincs kiválasztva osztály</span>
-                      )}
-                    </FormLabel>
+                    <FormLabel>Zsűritagok kiválasztása</FormLabel>
                     <FormControl>
                       <Card>
                         <ScrollArea

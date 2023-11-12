@@ -74,7 +74,8 @@ model Competition {
   name        String @unique
   description String
 
-  year Int // évfolyam
+  // 4 különböző évfolyam
+  year String
 
   image_url String @default("")
 
