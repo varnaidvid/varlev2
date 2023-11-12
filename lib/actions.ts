@@ -45,6 +45,8 @@ export async function getOwnQuestions(username: string) { const session = await 
 export async function deleteQuestion(id: string) { return prisma.question.delete({ where: { id } }); }
 export async function deleteQuestions(ids: string[]) { console.log(ids); return prisma.question.deleteMany({ where: { id: { in: ids } } }); }
 export async function updateQuestion(id: string, question: string) { return prisma.question.update({ where: { id }, data: { question } }); }
+export async function getQuestionsByIds(ids: string[]) { return prisma.question.findMany({ where: { id: { in: ids } } }); }
+
 
 
 // TEAMS
@@ -95,6 +97,10 @@ export async function updateTeam(oldTeamId: string, newName: string, newDescript
   } catch (error) {
     throw error;
   }
+}
+
+export async function getTeamMembersByCompetitorId(competitorId: string) {
+  return prisma.team.findFirst({ where: { competitors: { some: { id: competitorId } } }, include: { competitors: true } });
 }
 
 // COMPETITORS

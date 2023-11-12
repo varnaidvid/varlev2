@@ -37,7 +37,15 @@ const exampleCompetition = {
 };
 
 import GameWrapper from '@/components/verseny/gameWrapper';
-import { Question } from '@prisma/client';
+import { Competitor, Question } from '@prisma/client';
+import {
+  getCompetition,
+  getTeamMembersByCompetitorId,
+  getQuestionsByIds,
+} from '@/lib/actions';
+import { combineEventHandlers } from 'recharts/types/util/ChartUtils';
+import { getServerSession } from 'next-auth';
+import authOptions from '@/lib/auth/authOptions';
 
 const scramble = (word: string) => {
   const scrambledWord = word
@@ -62,15 +70,50 @@ const parseQuestions = (questions: Question[]) => {
   return parsedQuestions;
 };
 
-export default function JatekOldal({ params }: { params: { id: string } }) {
-  //TODO: fetch real competition data
-  const competition = exampleCompetition;
-  //@ts-ignore
-  const questions = parseQuestions(competition.questions);
+export default async function JatekOldal({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const session = await getServerSession(authOptions);
+  const competitions = await getCompetition(params.id);
+  console.log(competitions);
+
+  //get team members
+  const team = await getTeamMembersByCompetitorId(
+    session?.user.competitorId as string
+  );
+  const teamMembers = team?.competitors.map(
+    (competitor: Competitor) => competitor.id
+  );
+
+  //sort team members abc order
+  const sortedTeamMembers = teamMembers?.sort((a: string, b: string) =>
+    a.localeCompare(b)
+  );
+
+  //find if competitor is the 1st, 2nd or 3rd member in sorterTeamMembers
+  const competitorIndex = sortedTeamMembers?.indexOf(
+    session?.user.competitorId as string
+  );
+
+  // choose the correct questions from questions1 or questions2 and questions3 based on the competitorIndex
+  let questions: Question[] = [];
+  if (competitorIndex === 0) {
+    questions = await getQuestionsByIds(competitions[0].questions1);
+  }
+  if (competitorIndex === 1) {
+    questions = await getQuestionsByIds(competitions[0].questions2);
+  }
+  if (competitorIndex === 2) {
+    questions = await getQuestionsByIds(competitions[0].questions3);
+  }
+
+  console.log(questions);
 
   return (
     <div>
-      <GameWrapper questions={questions}></GameWrapper>
+      <GameWrapper questions={parseQuestions(questions)}></GameWrapper>
     </div>
   );
 }
