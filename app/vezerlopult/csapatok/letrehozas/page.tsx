@@ -28,18 +28,9 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Separator } from '@/components/ui/separator';
 import { VezerloContext } from '../../layout';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TouchBackend } from 'react-dnd-touch-backend';
 import NewTeamForm from '@/components/vezerlopult/csapatok/newTeamForm';
 
 export default function CsapatLetrehozas() {
-  const isMobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-  const Backend = isMobile ? TouchBackend : HTML5Backend;
-
   return (
     <>
       <title>VarléV2 - Új csapat létrehozás</title>
@@ -84,9 +75,7 @@ export default function CsapatLetrehozas() {
       <Separator className="mt-6 mb-8" />
 
       <>
-        <DndProvider backend={Backend}>
-          <NewTeamForm />
-        </DndProvider>
+        <NewTeamForm />
       </>
     </>
   );

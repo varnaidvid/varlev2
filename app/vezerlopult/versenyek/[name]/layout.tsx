@@ -1,6 +1,6 @@
 'use client';
 
-import { getTeam } from '@/lib/actions';
+import { getCompetition, getCompetitionByName } from '@/lib/actions';
 import { User } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import {
@@ -14,7 +14,7 @@ import {
 import toast from 'react-hot-toast';
 import { VezerloContext } from '../../layout';
 
-export default function TeamLayout({
+export default function CompetitionLayout({
   params,
   children,
 }: {
@@ -23,29 +23,30 @@ export default function TeamLayout({
 }) {
   const router = useRouter();
 
-  const { team, setTeam, setIsTeamLoading } = useContext(VezerloContext);
+  const { competition, setCompetition, setIsCompetitionLoading } =
+    useContext(VezerloContext);
 
   useEffect(() => {
-    setIsTeamLoading(true);
+    setIsCompetitionLoading(true);
 
-    const fetchTeam = async () => {
+    const fetchCompetition = async () => {
       if (!params.name) return;
 
-      const team = await getTeam(decodeURI(params.name));
+      const competition = await getCompetitionByName(decodeURI(params.name));
 
-      if (!team) {
-        setIsTeamLoading(false);
+      if (!competition) {
+        setIsCompetitionLoading(false);
 
-        toast.error('A csapat nem található.');
-        router.push('/vezerlopult/csapatok');
+        toast.error('A verseny nem található.');
+        router.push('/vezerlopult/versenyek');
       } else {
-        setTeam(team);
+        setCompetition(competition);
 
-        setIsTeamLoading(false);
+        setIsCompetitionLoading(false);
       }
     };
 
-    fetchTeam();
+    fetchCompetition();
   }, []);
 
   return <>{children}</>;

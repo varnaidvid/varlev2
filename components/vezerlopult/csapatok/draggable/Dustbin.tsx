@@ -30,7 +30,7 @@ export const Dustbin: FC = () => {
         canDrop: monitor.canDrop(),
       }),
     }),
-    [droppedItems, draggableItems]
+    [droppedItems]
   );
 
   const isActive = canDrop && isOver;

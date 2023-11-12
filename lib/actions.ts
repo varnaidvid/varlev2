@@ -166,7 +166,9 @@ export async function getCompetition(competitionId: string) {
 }
 export async function getCompetitions() { return prisma.competition.findMany() }
 export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }
-
+export async function getCompetitionByName(name: string) {
+  return prisma.competition.findUnique({ where: { name } });
+}
 
 // ATTEMPTS
 export async function createAttempt({ competitionId, competitorId, questionId, answer, isCorrect, timeTaken }: { competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number }) {
@@ -213,4 +215,12 @@ export async function createCompetition(
   } catch (error) {
     throw error;
   }
+}
+
+
+// SiteInfo
+export async function uploadHtmlText(htmlText: string) {
+  const siteInfo = await prisma.siteInfo.findFirst();
+
+  return prisma.siteInfo.update({ where: { id: siteInfo!.id }, data: { htmlText } });
 }

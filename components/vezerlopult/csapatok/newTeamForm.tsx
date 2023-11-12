@@ -46,12 +46,14 @@ import { Textarea } from '@/components/ui/textarea';
 
 import * as React from 'react';
 
-import { useDrop } from 'react-dnd';
+import { DndProvider, useDrop } from 'react-dnd';
 import { VezerloContext } from '@/app/vezerlopult/layout';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dustbin } from '@/components/vezerlopult/csapatok/draggable/Dustbin';
 import { Box } from '@/components/vezerlopult/csapatok/draggable/Box';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Backend from '@/lib/draggableBackend';
+import DraggableBackend from '@/lib/draggableBackend';
 
 type customCompetitorType = {
   id: string;
@@ -302,81 +304,83 @@ const NewTeamForm = () => {
               />
             </div>
 
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>
-                      {year && classNumber ? (
-                        <span>
-                          {year}. {classNumber} osztály tanulói
-                        </span>
-                      ) : (
-                        <span>Nincs kiválasztva osztály</span>
-                      )}
-                    </FormLabel>
-                    <FormControl>
-                      <Card>
-                        <ScrollArea
-                          className={`h-[250px] ${
-                            draggableItems?.length == 0 &&
-                            droppedItems?.length! >= 0
-                              ? 'relative'
-                              : ''
-                          }`}
-                        >
-                          <>
-                            <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                              {draggableItems?.length == 0
-                                ? year && classNumber
-                                  ? 'Nincsenek versenyzők az osztályban'
-                                  : 'Válasszon ki egy osztályt...'
-                                : droppedItems?.length! >= 0 &&
-                                  draggableItems?.length == 0
-                                ? 'Nincs több tanuló'
-                                : ''}
-                            </span>
+            <DraggableBackend>
+              <div className="flex gap-4">
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>
+                        {year && classNumber ? (
+                          <span>
+                            {year}. {classNumber} osztály tanulói
+                          </span>
+                        ) : (
+                          <span>Nincs kiválasztva osztály</span>
+                        )}
+                      </FormLabel>
+                      <FormControl>
+                        <Card>
+                          <ScrollArea
+                            className={`h-[250px] ${
+                              draggableItems?.length == 0 &&
+                              droppedItems?.length! >= 0
+                                ? 'relative'
+                                : ''
+                            }`}
+                          >
+                            <>
+                              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                {draggableItems?.length == 0
+                                  ? year && classNumber
+                                    ? 'Nincsenek versenyzők az osztályban'
+                                    : 'Válasszon ki egy osztályt...'
+                                  : droppedItems?.length! >= 0 &&
+                                    draggableItems?.length == 0
+                                  ? 'Nincs több tanuló'
+                                  : ''}
+                              </span>
 
-                            <CardHeader>
-                              <div className="grid md:grid-cols-2 gap-3">
-                                {draggableItems &&
-                                  draggableItems?.length != 0 &&
-                                  sortedDraggables?.map((item, index) => (
-                                    <Box
-                                      name={item}
-                                      key={index}
-                                      index={index}
-                                    />
-                                  ))}
-                              </div>
-                            </CardHeader>
-                          </>
-                        </ScrollArea>
-                      </Card>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                              <CardHeader>
+                                <div className="grid md:grid-cols-2 gap-3">
+                                  {draggableItems &&
+                                    draggableItems?.length != 0 &&
+                                    sortedDraggables?.map((item, index) => (
+                                      <Box
+                                        name={item}
+                                        key={index}
+                                        index={index}
+                                      />
+                                    ))}
+                                </div>
+                              </CardHeader>
+                            </>
+                          </ScrollArea>
+                        </Card>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Csapattagok</FormLabel>
-                    <FormControl>
-                      <Card className="h-[250px]">
-                        <CardHeader>
-                          <Dustbin />
-                        </CardHeader>
-                      </Card>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Csapattagok</FormLabel>
+                      <FormControl>
+                        <Card className="h-[250px]">
+                          <CardHeader>
+                            <Dustbin />
+                          </CardHeader>
+                        </Card>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </DraggableBackend>
 
             <p className="text-sm text-muted-foreground">
               Megjegyzés: csak azok a versenyzők elérhetőek kiválasztásra akik
