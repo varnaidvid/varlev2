@@ -154,3 +154,9 @@ export async function getCompetition(competitionId: string) {
 // COMPETITIONS
 export async function getCompetitions() { return prisma.competition.findMany() }
 export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }
+
+
+// ATTEMPTS
+export async function createAttemt(competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number) {
+  return prisma.attempt.create({ data: { competitionId, competitorId, questionId, answer, isCorrect, TimeTaken: timeTaken } })
+}

@@ -330,11 +330,11 @@ async function seedCompetitions() {
     let questions3 = []
     let i = 0
     while (i + 3 <= questions.length) {
-        questions1.push(questions[i])
+        questions1.push(questions[i].id)
         i++
-        questions2.push(questions[i])
+        questions2.push(questions[i].id)
         i++
-        questions3.push(questions[i])
+        questions3.push(questions[i].id)
         i++
     }
 
@@ -349,9 +349,9 @@ async function seedCompetitions() {
             year: 5,
             startDate: new Date("2023-11-11"),
             endDate: new Date("2023-11-13"),
-            questions1: questions1.map((question) => (question.id)),
-            questions2: questions2.map((question) => (question.id)),
-            questions3: questions3.map((question) => (question.id)),
+            questions1: questions1,
+            questions2: questions2,
+            questions3: questions3,
         },
     })
 }
