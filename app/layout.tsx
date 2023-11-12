@@ -12,12 +12,14 @@ import { Metadata } from 'next';
 const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
+  display: 'swap',
 });
 
 const customMonoFont = Source_Code_Pro({
   weight: ['400', '700'],
   subsets: ['latin'],
   variable: '--custom-mono',
+  display: 'swap',
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {

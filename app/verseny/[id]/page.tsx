@@ -1,5 +1,4 @@
 export const dynamicParams = true;
-
 // testing data
 const exampleCompetition = {
   id: 'testcompetitionid',
@@ -37,32 +36,26 @@ const exampleCompetition = {
   ],
 };
 
-import Jatek from '@/components/verseny/jatek';
+import GameWrapper from '@/components/verseny/gameWrapper';
 import { Question } from '@prisma/client';
 
-const shuffle = (word: string) => {
-  const shuffledWord = word
+const scramble = (word: string) => {
+  const scrambledWord = word
     .split('')
     .sort(() => Math.random() - 0.5)
     .join('');
-  return shuffledWord;
+  return scrambledWord;
 };
 
 const parseQuestions = (questions: Question[]) => {
   const parsedQuestions = questions.map((question) => {
     const questionWords = question.question.split(' ').splice(0, 4);
-    console.log(questionWords);
     const words = questionWords.slice(0, 3);
-    console.log(words);
-
-    const shuffledWord = shuffle(questionWords[3]);
-    console.log(shuffledWord);
-
-    console.log(questionWords);
+    const scrambledWord = scramble(questionWords[3]);
     return {
       id: question.id,
       words: words,
-      shuffledWord: shuffledWord,
+      scrambledWord: scrambledWord,
       answer: questionWords[3],
     };
   });
@@ -77,10 +70,7 @@ export default function JatekOldal({ params }: { params: { id: string } }) {
 
   return (
     <div>
-      {/* id: {params.id}
-      <h1>Játék</h1>
-      <p>itt majd legyen a játék</p> */}
-      <Jatek questions={questions} />
+      <GameWrapper questions={questions}></GameWrapper>
     </div>
   );
 }
@@ -108,6 +98,19 @@ export default function JatekOldal({ params }: { params: { id: string } }) {
 //     attempts     Attempt[]
 //     creator   User   @relation(fields: [creatorId], references: [id])
 //     creatorId String
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @updatedAt
+//   }
+
+// model Attempt {
+//     id String @id @default(uuid())
+//     competitor   Competitor @relation(fields: [competitorId], references: [id])
+//     competitorId String
+//     question   Question @relation(fields: [questionId], references: [id])
+//     questionId String
+//     isCorrect Boolean
+//     TimeTaken Int
+//     answer String
 //     createdAt DateTime @default(now())
 //     updatedAt DateTime @updatedAt
 //   }
