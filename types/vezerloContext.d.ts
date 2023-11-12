@@ -16,4 +16,6 @@ export interface vezerloContextType {
     setDraggableItems: React.Dispatch<React.SetStateAction<string[] | null>>;
     droppedItems: string[] | null;
     setDroppedItems: React.Dispatch<React.SetStateAction<string[] | null>>;
+    isDragging: boolean;
+    setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
 }

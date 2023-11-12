@@ -48,7 +48,21 @@ export async function updateQuestion(id: string, question: string) { return pris
 
 
 // TEAMS
-export async function createTeam(name: string, description: string, competitors: string[]) { return prisma.team.create({ data: { name, description, competitors: { connect: competitors.map((competitor) => ({ id: competitor })), }, }, }); }
+export async function createTeam(name: string, description: string, competitors: string[]) {
+  try {
+    const users = await prisma.user.findMany({ where: { username: { in: competitors } } });
+    const _competitors = await prisma.competitor.findMany({ where: { userId: { in: users.map(user => user.id) } } });
+
+    const team = await prisma.team.create(
+      { data: { name, description, competitors: { connect: _competitors.map(competitor => ({ id: competitor.id })) } } });
+
+    const updatedCompetitors = await prisma.competitor.updateMany({ where: { userId: { in: users.map(user => user.id) } }, data: { teamId: team.id } });
+
+    return team;
+  } catch (error) {
+    throw error;
+  }
+}
 
 // COMPETITORS
 export async function getTeamCreateCompetitors(year: number, _class: string) {

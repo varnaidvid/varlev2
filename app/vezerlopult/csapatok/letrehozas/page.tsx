@@ -30,9 +30,14 @@ import { VezerloContext } from '../../layout';
 import NewTeamForm from '@/components/vezerlopult/csapatok/newTeamForm';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 
 export default function CsapatLetrehozas() {
-  const { data: session, status } = useSession();
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  const Backend = isMobile ? TouchBackend : HTML5Backend;
 
   return (
     <>
@@ -78,7 +83,7 @@ export default function CsapatLetrehozas() {
       <Separator className="mt-6 mb-8" />
 
       <>
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={Backend}>
           <NewTeamForm />
         </DndProvider>
       </>
