@@ -13,6 +13,7 @@ import {
   Gauge,
   UserCircle,
   UsersFour,
+  Flag,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -24,6 +25,7 @@ import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import EditCompetitionForm from '@/components/vezerlopult/versenyek/editCompetitionForm';
+import Stats from './stats';
 
 export default function UserPage({ params }: { params: { name: string } }) {
   const router = useRouter();
@@ -32,12 +34,12 @@ export default function UserPage({ params }: { params: { name: string } }) {
 
   return (
     <>
-      <title>VarléV2 - Versenyek kezelése</title>
-      <meta name="description" content="VarléV2 - Versenyek kezelése" />
+      <title>VarléV2 - Verseny</title>
+      <meta name="description" content="VarléV2 - Verseny" />
 
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Verseny szerkesztése
+          Verseny eredmények megtekintése
         </h1>
 
         <div className="flex items-center gap-4">
@@ -46,11 +48,10 @@ export default function UserPage({ params }: { params: { name: string } }) {
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          <Link href="/vezerlopult/versenyek/letrehozas">
+          <Link href="/vezerlopult/versenyek">
             <Button variant="default">
               {' '}
-              <UsersFour className="w-6 h-6 mr-2" color="white" /> Új verseny
-              létrehozása
+              <Flag className="w-6 h-6 mr-2" color="white" /> Versenyek
             </Button>
           </Link>
         </div>
@@ -65,7 +66,7 @@ export default function UserPage({ params }: { params: { name: string } }) {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/vezerlopult/versenyek">
+        <Link href="/vezerlopult/versenyek/">
           <div className="flex items-center gap-[2px] hover:underline">
             <UsersFour className="h-6 w-6" /> Versenyek
           </div>
@@ -87,9 +88,17 @@ export default function UserPage({ params }: { params: { name: string } }) {
 
       <Separator className="mt-6 mb-8" />
 
-      <>
-        <EditCompetitionForm competitonName={params.name} />
-      </>
+      {competition?.endDate! < new Date() ? (
+        <>
+          <Stats />
+        </>
+      ) : (
+        <>
+          <EditCompetitionForm competitonName={params.name} />
+        </>
+      )}
+
+      <></>
     </>
   );
 }
