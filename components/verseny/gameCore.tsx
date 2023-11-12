@@ -66,7 +66,8 @@ export default function Game({
   };
 
   useEffect(() => {
-    console.log('use effect');
+    //focus on the input field
+    inputRef.current?.focus();
     setLetters(createLetterCounts(question.scrambledWord));
   }, [question]);
 
@@ -81,18 +82,18 @@ export default function Game({
       </div>
       <form
         onSubmit={handleAnswerSubmit}
-        className="flex flex-col w-full max-w-lg"
+        className="flex flex-col w-full max-w-2xl"
       >
         <Input
           name="answer"
           ref={inputRef}
-          className="mt-16 text-5xl py-10 rounded-xl text-center font-mono uppercase font-bold tracking-widest"
+          className="mt-16 text-4xl py-10 rounded-xl text-center font-mono uppercase font-bold tracking-widest"
           value={input}
           type="text"
           onMouseDown={preventCursorMovement}
           onSelect={preventCursorMovement}
           onChange={(e) => {
-            let value = e.target.value;
+            let value = e.target.value.toLocaleLowerCase();
 
             // this is a backspace
             if (value.length < input.length) {

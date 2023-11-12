@@ -23,7 +23,7 @@ export default function GameWrapper({
       return redirect('/vezerlopult/');
     }
 
-    console.log('session', session);
+    // console.log('session', session);
   }, [status]);
 
   const submitAnswer = (answer: string) => {
