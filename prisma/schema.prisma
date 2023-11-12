@@ -91,10 +91,8 @@ model Competition {
   teams    Team[]
   attempts Attempt[]
 
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  Question   Question? @relation(fields: [questionId], references: [id])
-  questionId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Question {
@@ -104,8 +102,7 @@ model Question {
   // syntax: word1 word2 word3 word4 6 
   // (4 szó, utolsó szám évfolyam)
 
-  competitions Competition[]
-  attempts     Attempt[]
+  attempts Attempt[]
 
   creator   User   @relation(fields: [creatorId], references: [id])
   creatorId String
