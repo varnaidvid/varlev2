@@ -66,6 +66,7 @@ import { Separator } from '@/components/ui/separator';
 import { CalendarForm } from './datePicker';
 import Backend from '@/lib/draggableBackend';
 import DraggableBackend from '@/lib/draggableBackend';
+import { set } from 'date-fns';
 
 type customCompetitorType = {
   id: string;
@@ -102,8 +103,6 @@ const NewCompetitionForm = () => {
 
   const [year, setYear] = useState<number>();
   const [classNumber, setClassNumber] = useState<string>();
-
-  const [competitors, setCompetitors] = useState<customCompetitorType[]>([]);
 
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [startHour, setStartHour] = useState<number>(0);
@@ -250,6 +249,19 @@ const NewCompetitionForm = () => {
       username: question.creator.username,
     }));
   };
+
+  useEffect(() => {
+    setJuryDroppedItems([]);
+    setJuryDraggableItems([]);
+    setTeamsDraggableItems([]);
+    setTeamsDroppedItems([]);
+  }, []);
+  useEffect(() => {
+    setJuryDroppedItems([]);
+    setJuryDraggableItems([]);
+    setTeamsDraggableItems([]);
+    setTeamsDroppedItems([]);
+  }, [year]);
 
   const [questions, setQuestions] = useState<AllParsedQuestion[]>([]);
   useEffect(() => {
@@ -456,6 +468,7 @@ const NewCompetitionForm = () => {
             <CalendarForm
               control={form.control}
               name="startDate"
+              form={form}
               date={startDate}
               setDate={setStartDate}
               label={'Verseny kezdése'}
@@ -468,6 +481,7 @@ const NewCompetitionForm = () => {
             <CalendarForm
               control={form.control}
               name="endDate"
+              form={form}
               date={endDate}
               setDate={setEndDate}
               label={'Verseny befejezése'}
@@ -568,6 +582,11 @@ const NewCompetitionForm = () => {
                 data={questions}
               />
             </div>
+            <p className="text-sm text-muted-foreground">
+              Megjegyzés: feladatok számának számának hárommal oszthatónak kell
+              lennie, hiszen hármas csapatokba külön-külön kapnak feladatokat!
+            </p>
+
             <Separator />
 
             <br />

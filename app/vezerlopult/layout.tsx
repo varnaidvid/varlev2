@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { getUsers } from '@/lib/actions';
-import { vezerloContextType } from '@/types/vezerloContext';
+import { AllParsedQuestion, vezerloContextType } from '@/types/vezerloContext';
 import { ArrowClockwise } from '@phosphor-icons/react';
 import { Competition, Team, User } from '@prisma/client';
 import { useSession } from 'next-auth/react';

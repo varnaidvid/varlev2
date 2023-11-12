@@ -109,7 +109,7 @@ const NewTeamForm = () => {
   useEffect(() => {
     setDraggableItems(null);
     setDroppedItems(null);
-  });
+  }, []);
 
   useEffect(() => {
     form.setValue('competitors', droppedItems);
