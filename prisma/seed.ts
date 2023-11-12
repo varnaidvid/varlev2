@@ -439,8 +439,8 @@ async function seedSiteInfo() {
 // seedStudents()
 // seedQuestions()
 // seedZsurik()
-// seedCompetitions()
-seedSiteInfo()
+seedCompetitions()
+    // seedSiteInfo()
     .then(async () => {
         await prisma.$disconnect()
     })

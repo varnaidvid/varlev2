@@ -403,50 +403,7 @@ export async function getHtmlText() {
 
 // stats
 // based on competitionId -> get all teams -> get all competitors -> get all attempts | this action should return the stats of a team
-export async function getTeamStatsById(teamId: string) {
-  prisma.team.findUnique({
-    where: {
-      id: teamId // Replace with the actual team ID
-    },
-    include: {
-      competitors: {
-        include: {
-          attempts: {
-            select: {
-              isCorrect: true,
-              TimeTaken: true
-            }
-          }
-        }
-      }
-    }
-  })
-    .then(team => {
-      let totalAttempts = 0;
-      let correctAttempts = 0;
-      let totalTimeTaken = 0;
 
-      team?.competitors.forEach(competitor => {
-        competitor.attempts.forEach(attempt => {
-          totalAttempts++;
-          if (attempt.isCorrect) {
-            correctAttempts++;
-          }
-          totalTimeTaken += attempt.TimeTaken;
-        });
-      });
-
-      let averageTime = totalAttempts > 0 ? totalTimeTaken / totalAttempts : 0;
-
-      return {
-        teamId: team?.id,
-        totalAttempts: totalAttempts,
-        correctAttempts: correctAttempts,
-        averageTimeTaken: averageTime
-      };
-    });
-
-}
 
 
 // RELEVANT MODELS
