@@ -20,30 +20,24 @@ import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VezerloContext } from '../../layout';
 import { Separator } from '@/components/ui/separator';
-import EditTeamForm from './editTeamForm';
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import EditCompetitionForm from '@/components/vezerlopult/versenyek/editCompetitionForm';
 
 export default function UserPage({ params }: { params: { name: string } }) {
   const router = useRouter();
 
-  const isMobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-  const Backend = isMobile ? TouchBackend : HTML5Backend;
-
-  const { team } = useContext(VezerloContext);
+  const { competition } = useContext(VezerloContext);
 
   return (
     <>
-      <title>VarléV2 - Csapatok kezelése</title>
-      <meta name="description" content="VarléV2 - Csapatok kezelése" />
+      <title>VarléV2 - Versenyek kezelése</title>
+      <meta name="description" content="VarléV2 - Versenyek kezelése" />
 
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Csapat szerkesztése
+          Verseny szerkesztése
         </h1>
 
         <div className="flex items-center gap-4">
@@ -52,10 +46,10 @@ export default function UserPage({ params }: { params: { name: string } }) {
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          <Link href="/vezerlopult/csapatok/letrehozas">
+          <Link href="/vezerlopult/versenyek/letrehozas">
             <Button variant="default">
               {' '}
-              <UsersFour className="w-6 h-6 mr-2" color="white" /> Új csapat
+              <UsersFour className="w-6 h-6 mr-2" color="white" /> Új verseny
               létrehozása
             </Button>
           </Link>
@@ -71,20 +65,22 @@ export default function UserPage({ params }: { params: { name: string } }) {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/vezerlopult/csapatok">
+        <Link href="/vezerlopult/versenyek">
           <div className="flex items-center gap-[2px] hover:underline">
-            <UsersFour className="h-6 w-6" /> Csapatok
+            <UsersFour className="h-6 w-6" /> Versenyek
           </div>
         </Link>
 
         <CaretRight className="mx-1 h-4 w-4" />
 
         <Link
-          href={`/vezerlopult/csapatok/${team?.name ? team.name : params.name}`}
+          href={`/vezerlopult/versenyek/${
+            competition?.name ? competition.name : params.name
+          }`}
         >
           <div className="flex items-center gap-[2px] hover:underline">
             <UsersFour className="h-6 w-6" />{' '}
-            {team?.name ? team.name : params.name}
+            {competition?.name ? competition.name : params.name}
           </div>
         </Link>
       </span>
@@ -92,9 +88,7 @@ export default function UserPage({ params }: { params: { name: string } }) {
       <Separator className="mt-6 mb-8" />
 
       <>
-        <DndProvider backend={Backend}>
-          <EditTeamForm name={params.name} />
-        </DndProvider>
+        <EditCompetitionForm competitonName={params.name} />
       </>
     </>
   );

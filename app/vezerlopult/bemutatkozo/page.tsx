@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import * as z from 'zod';
 import Tiptap from '@/components/TipTap';
+import { uploadHtmlText } from '@/lib/actions';
 
 import {
   Form,
@@ -49,8 +50,7 @@ export default function BemutatkozoPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // itt mentjük el a db-be
-    console.log(values);
+    uploadHtmlText(values);
   }
 
   return (

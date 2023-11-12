@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { signIn } from 'next-auth/react';
-import { useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
@@ -32,6 +32,14 @@ import * as z from 'zod';
 
 const SignInPage = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user.username) {
+      toast.error('Már be vagy jelentkezve!');
+      router.push('/');
+    }
+  }, [session]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

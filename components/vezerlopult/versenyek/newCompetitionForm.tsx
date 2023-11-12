@@ -43,7 +43,6 @@ import {
   getQuestions,
   getTeamCreateCompetitors,
   getTeamNamesWhereCompetitionIdNullAndYearEquals,
-  getTeamsNamesWhoAreNotInACompetition,
   getUsersWhoAreNotInATeam,
 } from '@/lib/actions';
 import { Competitor, Question, User } from '@prisma/client';
@@ -51,7 +50,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import * as React from 'react';
 
-import { useDrop } from 'react-dnd';
+import { DndProvider, useDrop } from 'react-dnd';
 import { VezerloContext } from '@/app/vezerlopult/layout';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dustbin } from '@/components/vezerlopult/versenyek/draggableForJurys/Dustbin';
@@ -65,6 +64,8 @@ import QuestionsDataTableForCompetitions from './competitionsCreationDataTable/d
 import { QuestionsColumnsCompetitions } from './competitionsCreationDataTable/columns';
 import { Separator } from '@/components/ui/separator';
 import { CalendarForm } from './datePicker';
+import Backend from '@/lib/draggableBackend';
+import DraggableBackend from '@/lib/draggableBackend';
 
 type customCompetitorType = {
   id: string;
@@ -104,6 +105,13 @@ const NewCompetitionForm = () => {
 
   const [competitors, setCompetitors] = useState<customCompetitorType[]>([]);
 
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [startHour, setStartHour] = useState<number>(0);
+  const [startMinutes, setStartMinutes] = useState<number>(0);
+
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [endHour, setEndHour] = useState<number>(0);
+  const [endMinutes, setEndMinutes] = useState<number>(0);
   const {
     juryDraggableItems,
     setJuryDraggableItems,
@@ -200,9 +208,11 @@ const NewCompetitionForm = () => {
 
     startDate: z.date({
       required_error: 'Adja meg a verseny kezdő dátumát!',
+      invalid_type_error: 'Adjon meg egy dátumot!',
     }),
     endDate: z.date({
       required_error: 'Adja meg a verseny záró dátumát!',
+      invalid_type_error: 'Adjon meg egy dátumot!',
     }),
 
     questions: z.array(z.string()),
@@ -360,14 +370,6 @@ const NewCompetitionForm = () => {
     }
   }
 
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [startHour, setStartHour] = useState<number>(0);
-  const [startMinutes, setStartMinutes] = useState<number>(0);
-
-  const [endDate, setEndDate] = useState<Date>(new Date());
-  const [endHour, setEndHour] = useState<number>(0);
-  const [endMinutes, setEndMinutes] = useState<number>(0);
-
   return (
     <Card className="w-full">
       <CardHeader>
@@ -479,72 +481,74 @@ const NewCompetitionForm = () => {
             <br />
             <h4 className="font-bold">3. Versenyző csapatok</h4>
 
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Elérhető csapatok</FormLabel>
-                    <FormControl>
-                      <Card>
-                        <ScrollArea
-                          className={`h-[250px] ${
-                            juryDraggableItems?.length == 0 &&
-                            juryDroppedItems?.length! >= 0
-                              ? 'relative'
-                              : ''
-                          }`}
-                        >
-                          <>
-                            {!year ? (
-                              <span className="flex items-center justify-center mt-28">
-                                Válasszon ki évfolyamot
-                              </span>
-                            ) : (
-                              teamsDraggableItems?.length == 0 && (
+            <DraggableBackend>
+              <div className="flex gap-4">
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Elérhető csapatok</FormLabel>
+                      <FormControl>
+                        <Card>
+                          <ScrollArea
+                            className={`h-[250px] ${
+                              juryDraggableItems?.length == 0 &&
+                              juryDroppedItems?.length! >= 0
+                                ? 'relative'
+                                : ''
+                            }`}
+                          >
+                            <>
+                              {!year ? (
                                 <span className="flex items-center justify-center mt-28">
-                                  Nem található elérhető csapat
+                                  Válasszon ki évfolyamot
                                 </span>
-                              )
-                            )}
+                              ) : (
+                                teamsDraggableItems?.length == 0 && (
+                                  <span className="flex items-center justify-center mt-28">
+                                    Nem található elérhető csapat
+                                  </span>
+                                )
+                              )}
 
-                            <CardHeader>
-                              <div className="grid md:grid-cols-2 gap-3">
-                                {sortedTeamsDraggables?.map((item, index) => (
-                                  <TeamsBox
-                                    name={item}
-                                    key={index}
-                                    index={index}
-                                  />
-                                ))}
-                              </div>
-                            </CardHeader>
-                          </>
-                        </ScrollArea>
-                      </Card>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                              <CardHeader>
+                                <div className="grid md:grid-cols-2 gap-3">
+                                  {sortedTeamsDraggables?.map((item, index) => (
+                                    <TeamsBox
+                                      name={item}
+                                      key={index}
+                                      index={index}
+                                    />
+                                  ))}
+                                </div>
+                              </CardHeader>
+                            </>
+                          </ScrollArea>
+                        </Card>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Kiválasztott csapatok</FormLabel>
-                    <FormControl>
-                      <Card className="h-[250px]">
-                        <CardHeader>
-                          <TeamsDustbin />
-                        </CardHeader>
-                      </Card>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Kiválasztott csapatok</FormLabel>
+                      <FormControl>
+                        <Card className="h-[250px]">
+                          <CardHeader>
+                            <TeamsDustbin />
+                          </CardHeader>
+                        </Card>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </DraggableBackend>
             <p className="text-sm text-muted-foreground">
               Megjegyzés: csak azok a csapatok elérhetőek az adott évfolyamban
               kiválasztásra akik nincsenek jelenleg versenyen!
@@ -569,58 +573,64 @@ const NewCompetitionForm = () => {
             <br />
             <h4 className="font-bold">5. Zsűri tagok</h4>
 
-            <div className="flex gap-4">
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Elérhető zsűrik</FormLabel>
-                    <FormControl>
-                      <Card>
-                        <ScrollArea
-                          className={`h-[250px] ${
-                            juryDraggableItems?.length == 0 &&
-                            juryDroppedItems?.length! >= 0
-                              ? 'relative'
-                              : ''
-                          }`}
-                        >
-                          <>
-                            <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+            <DraggableBackend>
+              <div className="flex gap-4">
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Elérhető zsűrik</FormLabel>
+                      <FormControl>
+                        <Card>
+                          <ScrollArea
+                            className={`h-[250px] ${
+                              juryDraggableItems?.length == 0 &&
+                              juryDroppedItems?.length! >= 0
+                                ? 'relative'
+                                : ''
+                            }`}
+                          >
+                            <>
+                              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
 
-                            <CardHeader>
-                              <div className="grid md:grid-cols-2 gap-3">
-                                {sortedDraggables?.map((item, index) => (
-                                  <Box name={item} key={index} index={index} />
-                                ))}
-                              </div>
-                            </CardHeader>
-                          </>
-                        </ScrollArea>
-                      </Card>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                              <CardHeader>
+                                <div className="grid md:grid-cols-2 gap-3">
+                                  {sortedDraggables?.map((item, index) => (
+                                    <Box
+                                      name={item}
+                                      key={index}
+                                      index={index}
+                                    />
+                                  ))}
+                                </div>
+                              </CardHeader>
+                            </>
+                          </ScrollArea>
+                        </Card>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name=""
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Kiválasztott zsűrik</FormLabel>
-                    <FormControl>
-                      <Card className="h-[250px]">
-                        <CardHeader>
-                          <Dustbin />
-                        </CardHeader>
-                      </Card>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Kiválasztott zsűrik</FormLabel>
+                      <FormControl>
+                        <Card className="h-[250px]">
+                          <CardHeader>
+                            <Dustbin />
+                          </CardHeader>
+                        </Card>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </DraggableBackend>
           </CardContent>
 
           <CardFooter>

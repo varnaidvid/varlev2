@@ -101,27 +101,34 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
     },
   },
   {
-    accessorKey: 'description',
-    header: ({ column }) => <span>Rövid leírás</span>,
-    cell: ({ row }) => {
-      const description = row.getValue('description') as string;
-
-      return (
-        <span>
-          {description.length > 30
-            ? description.slice(0, 30) + '...'
-            : description}
-        </span>
-      );
-    },
-  },
-  {
     id: 'startDate',
     accessorKey: 'Kezdés',
+    cell: ({ row }) => {
+      const date = new Date(row.original.startDate);
+      const formatted = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
   },
   {
     id: 'endDate',
     accessorKey: 'Befejezés',
+    cell: ({ row }) => {
+      const date = new Date(row.original.endDate);
+      const formatted = `${date.getFullYear()}-${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
   },
   {
     accessorKey: 'createdAt',

@@ -21,18 +21,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VezerloContext } from '../../layout';
 import { Separator } from '@/components/ui/separator';
 import EditTeamForm from './editTeamForm';
-import { DndProvider } from 'react-dnd';
-import { TouchBackend } from 'react-dnd-touch-backend';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 
 export default function UserPage({ params }: { params: { name: string } }) {
   const router = useRouter();
-
-  const isMobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-  const Backend = isMobile ? TouchBackend : HTML5Backend;
 
   const { team } = useContext(VezerloContext);
 
@@ -92,9 +83,7 @@ export default function UserPage({ params }: { params: { name: string } }) {
       <Separator className="mt-6 mb-8" />
 
       <>
-        <DndProvider backend={Backend}>
-          <EditTeamForm name={params.name} />
-        </DndProvider>
+        <EditTeamForm name={params.name} />
       </>
     </>
   );

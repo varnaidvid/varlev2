@@ -22,9 +22,10 @@ export default function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
   const columnMap = {
-    name: 'Csapatnév',
-    description: 'Rövid leírás',
+    name: 'Verseny neve',
     year: 'Évfolyam',
+    startDate: 'Kezdés',
+    endDate: 'Befejezés',
     createdAt: 'Létrehozva',
   };
 

@@ -47,7 +47,7 @@ export const Box: FC<BoxProps> = function Box({ name, index }) {
         handlerId: monitor.getHandlerId(),
       }),
     }),
-    [name, droppedItems, draggableItems]
+    [name, droppedItems]
   );
 
   useEffect(() => {
