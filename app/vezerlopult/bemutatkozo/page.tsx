@@ -1,24 +1,23 @@
 'use client';
 
-/*import SignUpForm from '@/components/vezerlopult/signUpForm';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import columns from '@/components/vezerlopult/datatable/dataTableColumns';
-import { useEffect, useState } from 'react';
-import { prisma } from '@/prisma/db';
-import { getUsers } from '@/lib/actions';
-import { User } from '@prisma/client';
-import UsersDataTable from '@/components/vezerlopult/datatable/usersDataTable';*/
-
 import Head from 'next/head';
-import Editor from '@/components/RichTextBox';
+import Editor from '@/components/TipTap';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import * as z from 'zod';
+import Tiptap from '@/components/TipTap';
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 
 import {
   GearSix,
@@ -27,9 +26,31 @@ import {
   Monitor,
   PresentationChart,
 } from '@phosphor-icons/react';
-import Link from 'next/link';
 
 export default function BemutatkozoPage() {
+  const formSchema = z.object({
+    title: z
+      .string()
+      .min(3, { message: 'Túl rövid.' })
+      .max(255, { message: 'Túl hosszú.' }),
+    price: z
+      .number()
+      .min(5, { message: 'Túl rövid.' })
+      .max(1000, { message: 'Túl hosszú.' }),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    mode: 'onChange',
+    defaultValues: {
+      description: '',
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // VÁRNAIII
+  }
+
   return (
     <main className="mt-32">
       <div className="flex justify-between w-full">
@@ -69,7 +90,31 @@ export default function BemutatkozoPage() {
         </Link>
       </span>
 
-      <div className="mt-14">{Editor()}</div>
+      <div className="mt-14">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Tiptap
+                      description={field.name}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button className="mt-4" type="submit">
+              Save
+            </Button>
+          </form>
+        </Form>
+      </div>
     </main>
   );
 }
