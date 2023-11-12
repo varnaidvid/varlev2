@@ -146,14 +146,14 @@ export async function getCompetitorsByYearAndClass(year: number, _class: string)
   });
 }
 
-// COMPETITIONS
-export async function getCompetition(competitionId: string) {
-  return prisma.competition.findMany({ where: { id: competitionId } });
-}
 export async function getCompitetorIdByUserId(userId: string) {
   return prisma.competitor.findUnique({ where: { userId }, select: { id: true } });
 }
 
+
 // COMPETITIONS
+export async function getCompetition(competitionId: string) {
+  return prisma.competition.findMany({ where: { id: competitionId } });
+}
 export async function getCompetitions() { return prisma.competition.findMany() }
 export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }
