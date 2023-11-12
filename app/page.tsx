@@ -49,11 +49,14 @@ export default function Home() {
   };
 
   const [parsedHtml, setParsedHtml] = useState<string>('');
+  const [vmi, setVmi] = useState<any>();
 
   useEffect(() => {
     const fetchData = async () => {
       const htmlText: string = await getHtmlText();
       const parsed = await parse(htmlText);
+      setVmi(parsed);
+
       setParsedHtml(parsed + '');
     };
 
@@ -66,5 +69,5 @@ export default function Home() {
     setIsClient(true);
   }, []);
 
-  return <main className="container mt-10 overflow-hidden">{parsedHtml}</main>;
+  return <main className="container mt-10 overflow-hidden">{vmi}</main>;
 }
