@@ -8,6 +8,9 @@ import {
   List,
   ListOrdered,
   Heading2,
+  Code,
+  Minus,
+  Pilcrow,
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 type Props = {
@@ -23,7 +26,7 @@ export function Toolbar({ editor }: Props) {
     <div className="border border-input bg-transparent rounded">
       <Toggle
         size="sm"
-        pressed={editor.isActive('heading')}
+        pressed={editor.isActive('heading', { level: 2 })}
         onPressedChange={() =>
           editor.chain().focus().toggleHeading({ level: 2 }).run()
         }
@@ -57,8 +60,31 @@ export function Toolbar({ editor }: Props) {
 
       <Toggle
         size="sm"
-        pressed={editor.isActive('bulletlist')}
-        onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        disabled={!editor.can().chain().focus().toggleCode().run()}
+        className={editor.isActive('code') ? 'is-active' : ''}
+      >
+        <Code className="h-4 w-4"></Code>
+      </Toggle>
+
+      <Toggle
+        size="sm"
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+      >
+        <Minus className="h-4 w-4"/>
+      </Toggle>
+      
+      <Toggle
+        size="sm"
+        onClick={() => editor.chain().focus().setHardBreak().run()}
+      >
+        <Pilcrow className="h-4 w-4"/>
+      </Toggle>
+
+      {/*<Toggle
+        size="sm"
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        className={editor.isActive('bulletList') ? 'is-active' : ''}
       >
         <List className="h-4 w-4" />
       </Toggle>
@@ -69,7 +95,7 @@ export function Toolbar({ editor }: Props) {
         onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
       >
         <ListOrdered className="h-4 w-4" />
-      </Toggle>
+      </Toggle>*/}
     </div>
   );
 }
