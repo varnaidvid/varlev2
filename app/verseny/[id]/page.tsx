@@ -62,7 +62,7 @@ export default async function JatekOldal({
 
   // choose the correct questions from questions1 or questions2 and questions3 based on the competitorIndex
   let questions: Question[] = [];
-  console.log(competitorIndex);
+  // console.log(competitorIndex);
   if (competitorIndex === 0) {
     questions = competition?.questions1 as Question[];
   }
