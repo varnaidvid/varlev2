@@ -44,8 +44,8 @@ export default function BemutatkozoPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    uploadHtmlText(values.title);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await uploadHtmlText(values.title);
   }
 
   return (
@@ -96,16 +96,15 @@ export default function BemutatkozoPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Tiptap
-                      description={field.name}
-                      onChange={field.onChange}
-                    />
+                    <Tiptap description="" onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button className="mb-12">Save</Button>
+            <Button type="submit" className="mb-12">
+              Save
+            </Button>
           </form>
         </Form>
       </div>

@@ -56,16 +56,16 @@ const teamMembers = [
   {
     name: 'Várnai Dávid',
     description:
-      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eos magni, sequi atque quia officia tenetur eius? Aliquid quia consectetur vel assumenda at asperiores sed laborum iure, veniam expedita voluptates et.',
+      'Webes applikációk fejlesztésében mélyültem el az elmúlt 2 évben mely során kipróbáltam számos könyvtárat, illetve keretrendszert. Jelenleg NextJS-t és Supabase-t használom "szerver nélküli" applikációk fejlesztésére.',
   },
   {
     name: 'Várszegi Barnabás',
     description:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet vitae velit ducimus, libero corrupti repudiandae pariatur! Saepe asperiores quas, repellendus laboriosam eaque, labore quasi, tempora iusto repellat aliquid nostrum hic.',
+      '3 éve az egyik Arduinós projektemhez kellett egy program, akkor kezdtem programozói pályafutásomat. Azóta több térbe is belekóstoltam, de végig a webfejlesztés maradt fókuszban.',
   },
   {
     name: 'Lénárt Dániel',
     description:
-      'Lorem ipsum dolor sit, amet consectetur adipisicing elit. In quibusdam magnam sunt quos quae non, ipsa ipsum culpa asperiores animi ea alias amet quaerat illo repellendus expedita atque. Deleniti, iure.',
+      'Édesapám nyomán én is az informatika után kezdtem érdeklődni már gyerek koromban is. Pár éve komolyabban is foglalkozom az informatikával, főleg webfejlesztés keretein belül.',
   },
 ];
