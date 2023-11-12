@@ -41,6 +41,7 @@
     "@tiptap/starter-kit": "^2.1.12",
     "@uploadcare/blocks": "0.29.1",
     "@uploadcare/nextjs-loader": "^1.0.0",
+    "@uploadcare/react-widget": "^2.4.5",
     "@uploadcare/upload-client": "^6.8.0",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.0",
