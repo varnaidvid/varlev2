@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import GameCore from './gameCore';
 import { type QuestionWithScrambledWord } from './gameCore';
+import { createAttempt } from '@/lib/actions';
 
 export default function GameWrapper({
   questions,
@@ -24,6 +25,14 @@ export default function GameWrapper({
       correct = true;
     }
     // then upload the attempt to the database
+    createAttempt({
+      competitionId: 'c1',
+      questionId: questions[currentQuestionIndex].id,
+      competitorId: 'c1',
+      isCorrect: correct,
+      timeTaken: 8,
+      answer: answer,
+    });
 
     // check if there are still questions left
     if (currentQuestionIndex + 1 >= questions.length) {

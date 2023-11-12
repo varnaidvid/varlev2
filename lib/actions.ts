@@ -157,6 +157,6 @@ export async function deleteCompetitions(names: string[]) { return prisma.compet
 
 
 // ATTEMPTS
-export async function createAttemt(competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number) {
+export async function createAttempt({ competitionId, competitorId, questionId, answer, isCorrect, timeTaken }: { competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number }) {
   return prisma.attempt.create({ data: { competitionId, competitorId, questionId, answer, isCorrect, TimeTaken: timeTaken } })
 }

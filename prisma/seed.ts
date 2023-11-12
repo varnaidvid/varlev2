@@ -339,21 +339,24 @@ async function seedCompetitions() {
     }
 
     // upsert a competition to db
-    const competition = await prisma.competition.upsert({
-        where: { id: "c1" },
-        update: {},
-        create: {
-            id: "c1",
-            name: "Példa verseny",
-            description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
-            year: 5,
-            startDate: new Date("2023-11-11"),
-            endDate: new Date("2023-11-13"),
-            questions1: questions1,
-            questions2: questions2,
-            questions3: questions3,
-        },
-    })
+    // const competition = await prisma.competition.upsert({
+    //     where: { id: "c1" },
+    //     update: {},
+    //     create: {
+    //         id: "c1",
+    //         name: "Példa verseny",
+    //         description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
+    //         year: 5,
+    //         startDate: new Date("2023-11-11"),
+    //         endDate: new Date("2023-11-13"),
+    //         questions1: questions1,
+    //         questions2: questions2,
+    //         questions3: questions3,
+    //     },
+    // })
+
+    // delete this competition
+    await prisma.competition.delete({ where: { id: "c1" } })
 }
 
 // seedAllRoles()
