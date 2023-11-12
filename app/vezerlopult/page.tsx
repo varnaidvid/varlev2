@@ -49,7 +49,7 @@ export default function VezerloHome() {
           Üdvözöljük a vezérlőpultján!
         </h1>
 
-        <Link href="/vezerlopult/beallitasok">
+        <Link href="/beallitasok">
           <Button
             variant="outline"
             size="sm"
