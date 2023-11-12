@@ -31,11 +31,14 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import DashboardCard from '@/components/vezerlopult/dashboardCard';
+import { VezerloContext } from './layout';
 
 export default function VezerloHome() {
   const { data: session, status, update } = useSession();
+
+  const { competitions } = useContext(VezerloContext);
 
   const [view, setView] = useState('normal');
 
@@ -86,6 +89,20 @@ export default function VezerloHome() {
       </span>
 
       <Separator className="mt-6 mb-8" />
+
+      {session?.user.role == 'diak' && (
+        // competitions is the list of competitions that the student is in which can only be one
+
+        <div className="mt-6">
+          {competitions?.length == 0 || !competitions ? (
+            <h3>Nincs elkövetkezendő versenyed!</h3>
+          ) : (
+            <>
+              <h2>Elkövetkezendő versenyed: {competitions[0].name}</h2>
+            </>
+          )}
+        </div>
+      )}
 
       {session?.user.role == 'tanar' && (
         <div className="mt-6">

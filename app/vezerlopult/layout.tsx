@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { getUsers } from '@/lib/actions';
+import { getCompetitionsForDiak, getUsers } from '@/lib/actions';
 import { AllParsedQuestion, vezerloContextType } from '@/types/vezerloContext';
 import { ArrowClockwise } from '@phosphor-icons/react';
 import { Competition, Team, User } from '@prisma/client';
@@ -131,9 +131,14 @@ export default function VezerloLayout({
   const [tasksDataTable, setTasksDataTable] = useState<any[]>([]);
 
   useEffect(() => {
-    if (session && session.user.role == 'diak' && status == 'authenticated') {
-      toast.error('Hozzáférés megtagadva');
-      redirect('/');
+    async function getCompetitions() {
+      const competitions = await getCompetitionsForDiak(session?.user.id!);
+
+      setCompetitions(competitions);
+    }
+
+    if (status === 'authenticated' && session?.user.role === 'diak') {
+      getCompetitions();
     }
   }, [session, status]);
 

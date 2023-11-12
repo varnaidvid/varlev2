@@ -23,6 +23,7 @@ import toast from 'react-hot-toast';
 import { Button } from '../ui/button';
 import { VezerloContext } from '@/app/vezerlopult/layout';
 import { useContext } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -31,6 +32,7 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
+  const router = useRouter();
   const { users, setUsers } = useContext(VezerloContext);
 
   return (
@@ -112,71 +114,124 @@ export function DataTableToolbar<TData>({
         )}
         <DataTableViewOptions table={table} />
 
-        {table.getFilteredSelectedRowModel().rows.length !== 0 && (
-          <AlertDialog>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Biztos benne?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {table.getFilteredSelectedRowModel().rows.length == 1 ? (
-                    <div>
-                      Ezzel kifogja törölni{' '}
-                      <b>
-                        {table
-                          .getFilteredSelectedRowModel()
-                          .rows[0]?.getValue('username')}{' '}
-                      </b>
-                      nevű felhasználót.
-                    </div>
-                  ) : (
-                    <div>
-                      Ezzel ki kifogja törölni a kiválasztott{' '}
-                      <b>
-                        {table.getFilteredSelectedRowModel().rows.length} db{' '}
-                      </b>
-                      felhasználót.
-                    </div>
-                  )}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="w-full">
-                  <ArrowLeft className="w-6 h-6 mr-1" /> Vissza
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  className="w-full"
-                  onClick={async () => {
-                    const usernames: string[] = table
-                      .getFilteredSelectedRowModel()
-                      .rows.map((row) => row.getValue('username'));
+        {table.getFilteredSelectedRowModel().rows.length !== 0 &&
+          (table.getColumn('word1') ? (
+            <AlertDialog>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Biztos benne?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {table.getFilteredSelectedRowModel().rows.length == 0 ? (
+                      <div>Ezzel kifogja törölni ezt a feladatot.</div>
+                    ) : table.getFilteredSelectedRowModel().rows.length == 1 ? (
+                      <div>Ezzel kifogja törölni ezt a feladatot.</div>
+                    ) : (
+                      <div>
+                        Ezzel ki kifogja törölni a kiválasztott{' '}
+                        <b>
+                          {table.getFilteredSelectedRowModel().rows.length} db{' '}
+                        </b>
+                        feladatot.
+                      </div>
+                    )}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="w-full">
+                    <ArrowLeft className="w-6 h-6 mr-1" /> Vissza
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="w-full"
+                    onClick={async () => {
+                      const questionIds: string[] = table
+                        .getFilteredSelectedRowModel()
+                        // @ts-ignore
+                        .rows.map((row) => row.original.id);
 
-                    const res: any = await deleteUsers(usernames);
+                      const res: any = await deleteQuestions(questionIds);
+                      if (res.status == 500) toast.error(res.message);
+                      else toast.success('Sikeres törlés');
 
-                    if (res.status == 500) toast.error(res.message);
-                    else {
-                      setUsers(
-                        users?.filter(
-                          (user: any) => !usernames.includes(user.username)
-                        )!
-                      );
-                      table.toggleAllPageRowsSelected(false);
-                      toast.success('Sikeres törlés');
-                    }
-                  }}
-                >
-                  <Trash className="w-6 h-6 mr-1" /> Törlés
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
+                      window.location.reload();
+                    }}
+                  >
+                    <Trash className="w-6 h-6 mr-1" /> Törlés
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
 
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm" className="h-8">
-                <Trash className="w-4 h-4 mr-1.5" />{' '}
-                {table.getFilteredSelectedRowModel().rows.length} törlése
-              </Button>
-            </AlertDialogTrigger>
-          </AlertDialog>
-        )}
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="h-8">
+                  <Trash className="w-4 h-4 mr-1.5" />{' '}
+                  {table.getFilteredSelectedRowModel().rows.length} törlése
+                </Button>
+              </AlertDialogTrigger>
+            </AlertDialog>
+          ) : table.getColumn('username') ? (
+            <AlertDialog>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Biztos benne?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {table.getFilteredSelectedRowModel().rows.length == 1 ? (
+                      <div>
+                        Ezzel kifogja törölni{' '}
+                        <b>
+                          {table
+                            .getFilteredSelectedRowModel()
+                            .rows[0]?.getValue('username')}{' '}
+                        </b>
+                        nevű felhasználót.
+                      </div>
+                    ) : (
+                      <div>
+                        Ezzel ki kifogja törölni a kiválasztott{' '}
+                        <b>
+                          {table.getFilteredSelectedRowModel().rows.length} db{' '}
+                        </b>
+                        felhasználót.
+                      </div>
+                    )}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="w-full">
+                    <ArrowLeft className="w-6 h-6 mr-1" /> Vissza
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="w-full"
+                    onClick={async () => {
+                      const usernames: string[] = table
+                        .getFilteredSelectedRowModel()
+                        .rows.map((row) => row.getValue('username'));
+
+                      const res: any = await deleteUsers(usernames);
+
+                      if (res.status == 500) toast.error(res.message);
+                      else {
+                        setUsers(
+                          users?.filter(
+                            (user: any) => !usernames.includes(user.username)
+                          )!
+                        );
+                        table.toggleAllPageRowsSelected(false);
+                        toast.success('Sikeres törlés');
+                      }
+                    }}
+                  >
+                    <Trash className="w-6 h-6 mr-1" /> Törlés
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="h-8">
+                  <Trash className="w-4 h-4 mr-1.5" />{' '}
+                  {table.getFilteredSelectedRowModel().rows.length} törlése
+                </Button>
+              </AlertDialogTrigger>
+            </AlertDialog>
+          ) : null)}
       </div>
     </div>
   );

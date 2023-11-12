@@ -252,14 +252,14 @@ export const ownQuestionsColumns: ColumnDef<OwnParsedQuestion>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
-              <Link href={`/feladatok/szerkesztes/${row.original.id}`}>
+              {/* <Link href={`/feladatok/szerkesztes/${row.original.id}`}>
                 <DropdownMenuItem>
                   <div className="flex justify-between w-full">
                     Szerkesztés
                     <PencilSimple className="w-4 h-4 ml-4" />
                   </div>
                 </DropdownMenuItem>
-              </Link>
+              </Link> */}
               <DropdownMenuSeparator />
               <AlertDialogTrigger className="w-full">
                 <DropdownMenuItem>

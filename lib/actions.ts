@@ -45,7 +45,10 @@ export async function getJurysByCompetionId(competitionId: string) { return pris
 export async function getQuestions() { return prisma.question.findMany({ include: { creator: { select: { username: true, }, }, }, }); }
 export async function getOwnQuestions(username: string) { const session = await getServerSession(authOptions); return prisma.question.findMany({ where: { creatorId: session?.user.id } }); }
 export async function deleteQuestion(id: string) { return prisma.question.delete({ where: { id } }); }
-export async function deleteQuestions(ids: string[]) { console.log(ids); return prisma.question.deleteMany({ where: { id: { in: ids } } }); }
+export async function deleteQuestions(ids: string[]) {
+  await prisma.attempt.deleteMany({ where: { questionId: { in: ids } } });
+  return prisma.question.deleteMany({ where: { id: { in: ids } } });
+}
 export async function updateQuestion(id: string, question: string) { return prisma.question.update({ where: { id }, data: { question } }); }
 export async function getQuestionsByIds(ids: string[]) { return prisma.question.findMany({ where: { id: { in: ids } } }); }
 export async function getQuestionsByCompetitionId(competitionId: string) {
@@ -208,6 +211,9 @@ export async function getCompetitionByName(name: string) {
 export async function getCompetitionsForZsuri(userId: string) {
   return prisma.competition.findMany({ where: { jurys: { some: { id: userId } } } });
 }
+export async function getCompetitionsForDiak(userId: string) {
+  return prisma.competition.findMany({ where: { teams: { some: { competitors: { some: { userId } } } } } });
+}
 
 // ATTEMPTS
 export async function createAttempt({ competitionId, competitorId, questionId, answer, isCorrect, timeTaken }: { competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number }) {
@@ -306,4 +312,9 @@ export async function uploadHtmlText(htmlText: string) {
   const siteInfo = await prisma.siteInfo.findFirst();
 
   return prisma.siteInfo.update({ where: { id: siteInfo!.id }, data: { htmlText } });
+}
+export async function getHtmlText() {
+  const siteInfo = await prisma.siteInfo.findFirst();
+
+  return siteInfo?.htmlText;
 }
