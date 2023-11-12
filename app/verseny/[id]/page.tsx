@@ -77,7 +77,7 @@ export default async function JatekOldal({
 }) {
   const session = await getServerSession(authOptions);
   const competitions = await getCompetition(params.id);
-  console.log(competitions);
+  //   console.log(competitions);
 
   //get team members
   const team = await getTeamMembersByCompetitorId(
@@ -109,7 +109,7 @@ export default async function JatekOldal({
     questions = await getQuestionsByIds(competitions[0].questions3);
   }
 
-  console.log(questions);
+  //   console.log(questions);
 
   return (
     <div>

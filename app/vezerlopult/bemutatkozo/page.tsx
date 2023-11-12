@@ -43,7 +43,8 @@ export default function BemutatkozoPage() {
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     defaultValues: {
-      description: '',
+      title: '',
+      price: 0,
     },
   });
 
@@ -96,7 +97,7 @@ export default function BemutatkozoPage() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name={'this text should come from the database'}
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
