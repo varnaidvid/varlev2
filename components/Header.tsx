@@ -108,6 +108,14 @@ const Header = () => {
                 </Link>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    <ListItem title="Csapatok" href="/vezerlopult/csapatok">
+                      Itt kezelheti a csapatokat, létrehozhat újakat vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
+                    <ListItem title="Feladatok" href="/vezerlopult/feladatok">
+                      Itt kezelheti a feladatokat, létrehozhat újakat, vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
                     <ListItem title="Versenyek" href="/vezerlopult/versenyek">
                       Itt kezelheti a versenyeket, létrehozhat újakat vagy
                       szerkesztheti a meglévőket.

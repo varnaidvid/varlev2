@@ -56,6 +56,12 @@ export function humanizeTime(futureDate: Date) {
     return days + ' nap';
   }
 }
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 
 export default function VezerloHome() {
   const { data: session, status, update } = useSession();
@@ -104,16 +110,24 @@ export default function VezerloHome() {
                   Bemutatkozó oldal szerkesztése
                 </Button>
               </Link>
-              <Link href="/beallitasok">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="ml-auto hidden h-8 lg:flex"
-                >
-                  <GearSix className="mr-2 h-4 w-4" />
-                  Beállítások
-                </Button>
-              </Link>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-auto hidden h-8 lg:flex"
+                  >
+                    <GearSix className="mr-2 h-4 w-4" />
+                    Beállítások
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="">
+                    <Input className="mb-6" />
+                    <Input />
+                  </div>
+                </PopoverContent>
+              </Popover>
             </>
           )}
         </div>

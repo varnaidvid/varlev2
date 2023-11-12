@@ -399,3 +399,142 @@ export async function getHtmlText() {
 
   return siteInfo?.htmlText;
 }
+
+
+// stats
+// based on competitionId -> get all teams -> get all competitors -> get all attempts | this action should return the stats of a team
+export async function getTeamStatsById(teamId: string) {
+  prisma.team.findUnique({
+    where: {
+      id: teamId // Replace with the actual team ID
+    },
+    include: {
+      competitors: {
+        include: {
+          attempts: {
+            select: {
+              isCorrect: true,
+              TimeTaken: true
+            }
+          }
+        }
+      }
+    }
+  })
+    .then(team => {
+      let totalAttempts = 0;
+      let correctAttempts = 0;
+      let totalTimeTaken = 0;
+
+      team?.competitors.forEach(competitor => {
+        competitor.attempts.forEach(attempt => {
+          totalAttempts++;
+          if (attempt.isCorrect) {
+            correctAttempts++;
+          }
+          totalTimeTaken += attempt.TimeTaken;
+        });
+      });
+
+      let averageTime = totalAttempts > 0 ? totalTimeTaken / totalAttempts : 0;
+
+      return {
+        teamId: team?.id,
+        totalAttempts: totalAttempts,
+        correctAttempts: correctAttempts,
+        averageTimeTaken: averageTime
+      };
+    });
+
+}
+
+
+// RELEVANT MODELS
+
+// model Attempt {
+//   id String @id @default(uuid())
+
+//   competitor   Competitor @relation(fields: [competitorId], references: [id])
+//   competitorId String
+
+//   question   Question @relation(fields: [questionId], references: [id])
+//   questionId String
+
+//   isCorrect Boolean
+//   TimeTaken Int
+
+//   answer String
+
+//   Competition   Competition @relation(fields: [competitionId], references: [id])
+//   competitionId String
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+// model Team {
+//   id String @id @default(uuid())
+
+//   year  Int // évfolyam
+//   class String // osztály
+
+//   name        String @unique
+//   description String
+
+//   // csak 3 versenyző lehet egy csapatban
+//   competitors Competitor[]
+
+//   // egyszerre csak egy verseny
+//   competition   Competition? @relation(fields: [competitionId], references: [id])
+//   competitionId String?
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Competitor {
+//   id String @id @default(uuid())
+
+//   year  Int // évfolyam
+//   class String // osztály
+
+//   // csak egy csapatba tartozhat
+//   team   Team?   @relation(fields: [teamId], references: [id])
+//   teamId String?
+
+//   // csak egy felhasználóhoz tartozhat
+//   user   User   @relation(fields: [userId], references: [id])
+//   userId String @unique
+
+//   attempts Attempt[]
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Competition {
+//   id String @id @default(uuid())
+
+//   name        String @unique
+//   description String
+
+//   // 4 különböző évfolyam
+//   year String
+
+//   image_url String @default("")
+
+//   startDate DateTime
+//   endDate   DateTime
+
+//   questions1 Question[] @relation(name: "questions1Questions")
+//   questions2 Question[] @relation(name: "questions2Questions")
+//   questions3 Question[] @relation(name: "questions3Questions")
+
+//   // zsurik
+//   jurys User[]
+
+//   teams    Team[]
+//   attempts Attempt[]
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
