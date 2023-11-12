@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import MyPieChart from '@/components/Chart';
+import parse from 'html-react-parser';
 
 import {
   Table,
@@ -83,6 +84,7 @@ export default function Home() {
 
   return (
     <main className="container mt-10 overflow-hidden">
+      {parse('<h1>Ez már a db-ből jött... (volna?)<h1>')}
       <div>
         <UploadcareImage
           alt="Test image"
