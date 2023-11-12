@@ -9,8 +9,17 @@ import { Input } from '@/components/ui/input';
 type QuestionWithShuffledWord = {
   id: string;
   words: string[];
-  shuffledWord: string[];
+  shuffledWord: string;
   answer: string;
+};
+
+// creates a frequency map of the letters in the word for example: {a: 2, b: 1, c:3}
+type LetterCount = { [key: string]: number };
+const createLetterCounts = (word: string): LetterCount => {
+  return word.split('').reduce((acc: LetterCount, letter: string) => {
+    acc[letter] = acc[letter] ? acc[letter] + 1 : 1;
+    return acc;
+  }, {});
 };
 
 export default function Jatek({
@@ -19,10 +28,15 @@ export default function Jatek({
   questions: QuestionWithShuffledWord[];
 }) {
   const [words, setWords] = useState(questions[0].words);
-  const [allLetters, setAllLetters] = useState(questions[0].shuffledWord);
-  const [availableLetters, setAvailableLetters] = useState(allLetters);
+  const [letters, setLetters] = useState(
+    createLetterCounts(questions[0].shuffledWord)
+  );
   const [answer, setAnswer] = useState(questions[0].answer);
   const [input, setInput] = useState('');
+
+  const handleInvalidInput = () => {
+    console.log('invalid input');
+  };
 
   return (
     <div className="w-full items-center mx-auto max-w-screen-xl flex flex-col py-16">
@@ -38,77 +52,51 @@ export default function Jatek({
         value={input}
         type="text"
         onChange={(e) => {
-          const value = e.target.value;
-          const lastLetter = value[value.length - 1];
-          // check if the last letter is in the available letters
-          // if yes, remove it from the available letters
-          // if no, do nothing
-          console.log(availableLetters);
-          console.log(value);
-          console.log(lastLetter);
-          if (
-            availableLetters.find(
-              (letter) => letter === lastLetter.toLocaleLowerCase()
-            )
-          ) {
-            console.log('available');
-            // remove a single instance of the letter from the array
+          let value = e.target.value;
 
-            // subtract the value from the available letters
-            //hint:
-            // let array1 = ["a", "a", "b", "b", "c"];
-            // let array2 = ["a", "b"];
+          // this is a backspace
+          if (value.length < input.length) {
+            // add the deleted letter back to the letters
+            const deletedLetter = input.charAt(input.length - 1);
+            setLetters((prevLetters) => ({
+              ...prevLetters,
+              [deletedLetter]: prevLetters[deletedLetter] + 1,
+            }));
+            setInput(value);
+            return;
+          }
 
-            // let freqMap = array2.reduce((acc, e) => {
-            //   acc[e] = (acc[e] || 0) + 1;
-            //   return acc;
-            // }, {});
+          const lastChar = value.charAt(value.length - 1);
 
-            // let result = array1.filter(e => {
-            //   if (!freqMap[e]) {
-            //     return true;
-            //   }
-            //   freqMap[e]--;
-            //   return freqMap[e] >= 0;
-            // });
-
-            type FrequencyMap = { [key: string]: number };
-            //subtract the value letters from the available letters
-            const valueArray = value.split('');
-            const freqMap = valueArray.reduce(
-              (acc: FrequencyMap, e: string) => {
-                acc[e] = (acc[e] || 0) + 1;
-                return acc;
-              },
-              {}
-            );
-
-            console.log(freqMap);
-
-            // Filter availableLettersArray based on freqMap
-            const result = availableLetters.filter((e: string) => {
-              if (!freqMap[e]) {
-                return true;
-              }
-              freqMap[e]--;
-              return freqMap[e] >= 0;
-            });
-            console.log(result);
-            setAvailableLetters(result);
-
-            // set the input
-            setInput(value.toLocaleLowerCase());
+          if (letters[lastChar] > 0) {
+            setLetters((prevLetters) => ({
+              ...prevLetters,
+              [lastChar]: prevLetters[lastChar] - 1,
+            }));
+            setInput(value);
           } else {
-            setInput(value.slice(0, value.length - 1));
+            handleInvalidInput();
           }
         }}
       />
 
       {/* betűk container-je */}
       <div className="flex w-fit mx-auto justify-between gap-4 mt-48">
-        {allLetters.map((letter) => (
+        {/* {allLetters.map((letter) => (
           <LetterCard letter={letter} used={false} key={letter} />
-        ))}
+        ))} */}
+        {
+          // render all the letters
+          Object.entries(letters).flatMap(([letter, count]) =>
+            Array.from({ length: count }, (_, index) => (
+              <LetterCard
+                letter={letter}
+                used={false}
+                key={letter + index} // Unique key for each element
+              />
+            ))
+          )
+        }
       </div>
     </div>
   );

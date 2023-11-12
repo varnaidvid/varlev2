@@ -62,7 +62,7 @@ const parseQuestions = (questions: Question[]) => {
     return {
       id: question.id,
       words: words,
-      shuffledWord: shuffledWord.split(''),
+      shuffledWord: shuffledWord,
       answer: questionWords[3],
     };
   });
