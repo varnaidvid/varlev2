@@ -150,3 +150,31 @@ export async function getCompetitorsByYearAndClass(year: number, _class: string)
     },
   });
 }
+
+// COMPETITIONS
+export async function createCompetition({ name, description, year, startDate, endDate, questionIds }: {
+  name: string,
+  description: string,
+  year: number,
+  startDate: Date,
+  endDate: Date,
+  questionIds: string[]
+}) {
+  const competition = await prisma.competition.create({
+    data:
+    {
+      name: name,
+      description,
+      year,
+      startDate,
+      endDate,
+      // questions: { connect: questions.map(question => ({ id: question.id })) }
+      questions: { connect: questionIds.map(id => ({ id })) }
+    }
+  });
+  return competition;
+}
+
+export async function getCompetitions(competitionId: string) {
+  return prisma.competition.findMany({ where: { id: competitionId }, include: { questions: true } });
+} 
