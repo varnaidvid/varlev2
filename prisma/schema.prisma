@@ -82,9 +82,9 @@ model Competition {
   startDate DateTime
   endDate   DateTime
 
-  questions1 String[]
-  questions2 String[]
-  questions3 String[]
+  questions1 Question[] @relation(name: "questions1Questions")
+  questions2 Question[] @relation(name: "questions2Questions")
+  questions3 Question[] @relation(name: "questions3Questions")
 
   // zsurik
   jurys User[]
@@ -110,6 +110,10 @@ model Question {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  compatition1s Competition[] @relation(name: "questions1Questions")
+  compatition2s Competition[] @relation(name: "questions2Questions")
+  compatition3s Competition[] @relation(name: "questions3Questions")
 }
 
 model Attempt {
