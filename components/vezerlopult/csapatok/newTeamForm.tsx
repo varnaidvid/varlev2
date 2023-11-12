@@ -150,6 +150,8 @@ const NewTeamForm = () => {
         id: 'registration',
       });
 
+      form.reset();
+
       setIsLoading(false);
       router.push('/vezerlopult/csapatok');
     } catch (error: any) {
