@@ -496,6 +496,33 @@ async function seedCompetitions() {
     // await prisma.competition.delete({ where: { id: "c1" } })
 }
 
+
+async function seedSiteInfo() {
+    // model SiteInfo {
+    //     id String @id @default(uuid())
+
+    //     htmlText String @default("")
+
+    //     websiteName        String @default("")
+    //     websiteDescription String @default("")
+
+    //     createdAt DateTime @default(now())
+    //     updatedAt DateTime @updatedAt
+    //   }
+
+    return await prisma.siteInfo.upsert({
+        where: { id: "si1" },
+        update: {},
+        create: {
+            id: "si1",
+            htmlText: "",
+            websiteName: "",
+            websiteDescription: "",
+        },
+    })
+
+}
+
 seedAllRoles()
     // seedStudents()
     // seedQuestions()

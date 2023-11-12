@@ -10,7 +10,18 @@ export async function getUsers() { return prisma.user.findMany() }
 export async function getUser(username: string) { return prisma.user.findUnique({ where: { username } }) }
 export async function updateUsernameAndRole(username: string, newUsername: string, role: string) { return prisma.user.update({ where: { username }, data: { username: newUsername, role } }) }
 export async function updateUserRole(username: string, role: string) { return prisma.user.update({ where: { username }, data: { role } }) }
-export async function deleteUser(username: string) { return prisma.user.delete({ where: { username } }) }
+export async function deleteUser(username: string) {
+  const session = await getServerSession(authOptions);
+
+  if (username === session?.user!.username!) {
+    return {
+      status: 500,
+      message: "Nem sikerült a törlés, mert saját a fiókja benne volt."
+    }
+  }
+
+  return prisma.user.delete({ where: { username } })
+}
 
 export async function createUser(username: string, password: string, role: string, year?: number, _class?: string) {
   const user = await prisma.user.create({ data: { username, password, role } })
@@ -92,7 +103,17 @@ export async function createTeam(name: string, description: string, year: string
     throw error;
   }
 }
-export async function deleteTeams(names: string[]) { return prisma.team.deleteMany({ where: { name: { in: names } } }); }
+export async function deleteTeams(names: string[]) {
+  const teams = await prisma.team.findMany({ where: { name: { in: names } } });
+  const competitors = await prisma.competitor.findMany({ where: { teamId: { in: teams.map(team => team.id) } } });
+  const competitorIds = competitors.map(competitor => competitor.id);
+
+  await prisma.attempt.deleteMany({ where: { competitorId: { in: competitorIds } } });
+
+  await prisma.team.updateMany({ where: { name: { in: names } }, data: { competitionId: null } });
+
+  return prisma.team.deleteMany({ where: { name: { in: names } } });
+}
 export async function updateTeam(oldTeamId: string, newName: string, newDescription: string, newYear: string, newClass: string, oldCompetitors: string[], newCompetitors: string[]) {
   try {
     const oldTeam = await prisma.team.findUnique({ where: { id: oldTeamId }, include: { competitors: true } });
@@ -204,7 +225,11 @@ export async function getCompetitionById(competitionId: string) {
   )
 }
 export async function getCompetitions() { return prisma.competition.findMany() }
-export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }
+export async function deleteCompetitions(names: string[]) {
+  await prisma.team.updateMany({ where: { competitionId: { in: names } }, data: { competitionId: null } });
+
+  return prisma.competition.deleteMany({ where: { name: { in: names } } })
+}
 export async function getCompetitionByName(name: string) {
   return prisma.competition.findUnique({ where: { name } });
 }
@@ -216,6 +241,15 @@ export async function getCompetitionsForDiak(userId: string) {
 }
 
 // ATTEMPTS
+export async function didUserFinish(competitionId: string, competitorId: string) {
+  const competition = await prisma.competition.findUnique({ where: { id: competitionId }, include: { questions1: true, questions2: true, questions3: true } });
+  const questions = [...competition!.questions1, ...competition!.questions2, ...competition!.questions3];
+
+  const attempts = await prisma.attempt.findMany({ where: { competitorId, questionId: { in: questions.map(question => question.id) } } });
+
+  return attempts.length === questions.length;
+}
+
 export async function createAttempt({ competitionId, competitorId, questionId, answer, isCorrect, timeTaken }: { competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number }) {
   return prisma.attempt.create({ data: { competitionId, competitorId, questionId, answer, isCorrect, TimeTaken: timeTaken } })
 }
@@ -254,7 +288,8 @@ export async function createCompetition(
       },
     });
 
-    await prisma.team.updateMany({ where: { id: { in: _teams.map(team => team.id) } }, data: { competitionId: competition.id } });
+    let temp = await prisma.team.updateMany({ where: { id: { in: _teams.map(team => team.id) } }, data: { competitionId: competition.id } });
+    console.log(temp)
 
     return competition;
   } catch (error) {
@@ -306,6 +341,52 @@ export async function updateCompetition(
 
   }
 }
+export async function getCompetitionData(name: string) {
+  const competition = await prisma.competition.findUnique({ where: { name: name }, include: { teams: true, jurys: true, questions1: true, questions2: true, questions3: true } });
+
+  const teamNames = competition!.teams.map(team => team.name);
+  const teams = await prisma.team.findMany({ where: { name: { in: teamNames } }, include: { competitors: true } });
+
+  const juryNames = competition!.jurys.map(jury => jury.username);
+  const jurys = await prisma.user.findMany({ where: { username: { in: juryNames } } });
+
+  const questions = [...competition!.questions1, ...competition!.questions2, ...competition!.questions3];
+
+  return { teams, jurys, questions };
+}
+
+export async function getAttemptsByTeamId(teamId: string) {
+  const competitors = await prisma.competitor.findMany({ where: { teamId } });
+
+  const competitorIds = competitors.map(competitor => competitor.id);
+
+  return prisma.attempt.findMany({ where: { competitorId: { in: competitorIds } } });
+}
+
+export async function getTeamStatsById(teamId: string, competitionId: string) {
+  const teams = await prisma.team.findMany({ where: { competitionId } });
+  const teamIds = teams.map(team => team.id);
+
+  const competitors = await prisma.competitor.findMany({ where: { teamId: { in: teamIds } } });
+  const competitorIds = competitors.map(competitor => competitor.id);
+
+  const attempts = await prisma.attempt.findMany({ where: { competitorId: { in: competitorIds } } });
+
+  const correctAttempts = attempts.filter(attempt => attempt.isCorrect).length;
+  const totalAttempts = attempts.length;
+  const totalTimeTaken = attempts.reduce((acc, attempt) => acc + attempt.TimeTaken, 0);
+  const averageTimeTaken = totalAttempts > 0 ? totalTimeTaken / totalAttempts : 0;
+
+  const points = correctAttempts * 100 - totalTimeTaken / 1000
+
+  return {
+    teamId,
+    totalAttempts,
+    correctAttempts,
+    averageTimeTaken,
+    points,
+  };
+}
 
 // SiteInfo
 export async function uploadHtmlText(htmlText: string) {
@@ -322,50 +403,7 @@ export async function getHtmlText() {
 
 // stats
 // based on competitionId -> get all teams -> get all competitors -> get all attempts | this action should return the stats of a team
-export async function getTeamStatsById(teamId: string) {
-  prisma.team.findUnique({
-    where: {
-      id: teamId // Replace with the actual team ID
-    },
-    include: {
-      competitors: {
-        include: {
-          attempts: {
-            select: {
-              isCorrect: true,
-              TimeTaken: true
-            }
-          }
-        }
-      }
-    }
-  })
-    .then(team => {
-      let totalAttempts = 0;
-      let correctAttempts = 0;
-      let totalTimeTaken = 0;
 
-      team?.competitors.forEach(competitor => {
-        competitor.attempts.forEach(attempt => {
-          totalAttempts++;
-          if (attempt.isCorrect) {
-            correctAttempts++;
-          }
-          totalTimeTaken += attempt.TimeTaken;
-        });
-      });
-
-      let averageTime = totalAttempts > 0 ? totalTimeTaken / totalAttempts : 0;
-
-      return {
-        teamId: team?.id,
-        totalAttempts: totalAttempts,
-        correctAttempts: correctAttempts,
-        averageTimeTaken: averageTime
-      };
-    });
-
-}
 
 
 // RELEVANT MODELS

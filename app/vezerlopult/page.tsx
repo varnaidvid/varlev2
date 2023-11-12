@@ -1,10 +1,13 @@
 'use client';
 
 import {
+  Check,
+  Clock,
   Flag,
   Gauge,
   GearSix,
   Monitor,
+  Pencil,
   PresentationChart,
   Question,
   SlidersHorizontal,
@@ -12,6 +15,7 @@ import {
   UserCirclePlus,
   UserList,
   UsersFour,
+  X,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
@@ -31,9 +35,27 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import DashboardCard from '@/components/vezerlopult/dashboardCard';
 import { VezerloContext } from './layout';
+import { didUserFinish } from '@/lib/actions';
+
+export function humanizeTime(futureDate: Date) {
+  const diff = futureDate.getTime() - new Date().getTime();
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(diff / 1000 / 60);
+  const hours = Math.floor(diff / 1000 / 60 / 60);
+  const days = Math.floor(diff / 1000 / 60 / 60 / 24);
+
+  if (minutes < 60) {
+    return minutes + ' perc';
+  } else if (hours < 24) {
+    return hours + ' óra';
+  } else {
+    return days + ' nap';
+  }
+}
 import {
   Popover,
   PopoverContent,
@@ -46,7 +68,24 @@ export default function VezerloHome() {
 
   const { competitions } = useContext(VezerloContext);
 
-  const [view, setView] = useState('normal');
+  const [isUserFinished, setIsUserFinished] = useState(false);
+
+  useEffect(() => {
+    async function checkUser() {
+      const temp = await didUserFinish(competitions![0].id, session!.user.id);
+
+      setIsUserFinished(temp);
+    }
+
+    if (
+      competitions &&
+      competitions.length > 0 &&
+      session &&
+      session.user.role == 'diak'
+    ) {
+      checkUser();
+    }
+  }, [competitions, session]);
 
   return (
     <>
@@ -112,7 +151,85 @@ export default function VezerloHome() {
             <h3>Nincs elkövetkezendő versenyed!</h3>
           ) : (
             <>
-              <h2>Elkövetkezendő versenyed: {competitions[0].name}</h2>
+              <h3 className="text-lg mb-4">{competitions[0].name}</h3>
+
+              <div className="flex gap-4">
+                <Button
+                  variant="outline"
+                  type="button"
+                  size="sm"
+                  className="hidden h-8 lg:flex mb-4 hover:cursor-default"
+                >
+                  <Clock color="blue" className="mr-2 h-4 w-4" />
+                  {humanizeTime(competitions[0].endDate)} kitöltésig
+                </Button>
+
+                {isUserFinished ? (
+                  <Button
+                    variant="outline"
+                    type="button"
+                    size="sm"
+                    className="hidden h-8 lg:flex mb-4 hover:cursor-default"
+                  >
+                    <Check className="mr-2 h-4 w-4" color="green" />
+                    Kitöltve
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    type="button"
+                    size="sm"
+                    className="hidden h-8 lg:flex mb-4 hover:cursor-default"
+                  >
+                    <X className="mr-2 h-4 w-4" color="red" />
+                    Még nem lett kitöltve
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <h3 className="text-base">Rövid leírása:</h3>
+
+                <span className="text-base font-light">
+                  {competitions[0].description}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <h3 className="text-base">Kezdés:</h3>
+
+                <span className="text-base font-light">
+                  {new Date(competitions[0].startDate).toLocaleString()}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <h3 className="text-base">Zárás:</h3>
+
+                <span className="text-base font-light">
+                  {new Date(competitions[0].endDate).toLocaleString()}
+                </span>
+              </div>
+
+              {/* if date is between startDate and endDate */}
+              {new Date().getTime() >
+                new Date(competitions[0].startDate).getTime() &&
+              new Date().getTime() <
+                new Date(competitions[0].endDate).getTime() ? (
+                <div className="mt-4">
+                  <Link href={`/verseny/${competitions[0].id}`}>
+                    <Button className="flex gap-2">
+                      <Pencil className="h-6 w-6" />
+                      Kitöltés
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Megjegyzés: amennyiben kezdésen belül vagy és nem jelenik meg
+                  a kitöltés gomb, frissíts rá az oldalra!
+                </p>
+              )}
             </>
           )}
         </div>
