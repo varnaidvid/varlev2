@@ -184,6 +184,53 @@ async function seedAllRoles() {
     console.log({ webmester, zsuri, tanar, diak, diakCompetitor })
 }
 
+async function seedZsurik() {
+    let userNames = [
+        "Zsuri-Gipsz-Jakab",
+        "Zsuri-Kovács-Béla",
+        "Zsuri-Kiss-Pista",
+        "Zsuri-Nagy-Ferenc",
+        "Zsuri-Lakatos-János",
+        "Zsuri-Szabó-Géza",
+        "Zsuri-Horváth-Gábor",
+        "Zsuri-Varga-László",
+        "Zsuri-Tóth-István",
+        "Zsuri-Kiss-Péter",
+        "Zsuri-Jakab-Gipsz",
+        "Zsuri-Béla-Kovács",
+        "Zsuri-Pista-Kiss",
+        "Zsuri-Ferenc-Nagy",
+        "Zsuri-János-Lakatos",
+        "Zsuri-Géza-Szabó",
+        "Zsuri-Gábor-Horváth",
+        "Zsuri-László-Varga",
+        "Zsuri-István-Tóth",
+        "Zsuri-Péter-Kiss",
+    ]
+
+    let password = "Zsuri-Jelszo"
+
+    let hashedPassword = await hash(password, 10)
+
+    let users = userNames.map((userName) => {
+        return {
+            username: userName,
+            password: hashedPassword,
+            role: "zsuri",
+        }
+    })
+
+    let upsertedUsers = await Promise.all(users.map(async (user) => {
+        return await prisma.user.upsert({
+            where: { username: user.username },
+            update: {},
+            create: user,
+        })
+    }))
+
+    console.log({ upsertedUsers })
+}
+
 
 // medve oroszlán elefánt zsiráf 6
 // hétfő kedd szerda csütörtök 5
@@ -346,7 +393,7 @@ async function seedCompetitions() {
             id: "c1",
             name: "Példa verseny",
             description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
-            year: 5,
+            year: "5" as any,
             startDate: new Date("2023-11-11"),
             endDate: new Date("2023-11-13"),
             questions1: questions1,
@@ -358,8 +405,9 @@ async function seedCompetitions() {
 
 // seedAllRoles()
 // seedStudents()
-// seedQuestions()
-seedCompetitions()
+seedQuestions()
+    // seedZsurik()
+    // seedCompetitions()
     .then(async () => {
         await prisma.$disconnect()
     })

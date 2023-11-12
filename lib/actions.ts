@@ -38,6 +38,7 @@ export async function deleteUsers(usernames: string[]) {
   return await prisma.user.deleteMany({ where: { username: { in: usernames } } });
 }
 export async function getUsersWhoAreNotInATeam() { return prisma.user.findMany({ where: { Competitor: { is: null } } }) }
+export async function getJurys() { return prisma.user.findMany({ where: { role: "zsuri" }, select: { username: true } }) }
 
 // QUESTIONS
 export async function getQuestions() { return prisma.question.findMany({ include: { creator: { select: { username: true, }, }, }, }); }
@@ -49,6 +50,8 @@ export async function updateQuestion(id: string, question: string) { return pris
 
 // TEAMS
 export async function getTeams() { return prisma.team.findMany({ include: { competitors: true } }); }
+export async function getTeamNamesWhereCompetitionIdNullAndYearEquals(year: number) { return prisma.team.findMany({ where: { competitionId: null, year } }); }
+
 export async function getTeam(name: string) { return prisma.team.findUnique({ where: { name } }); }
 export async function createTeam(name: string, description: string, year: string, _class: string, competitors: string[]) {
   try {
@@ -157,3 +160,45 @@ export async function getCompetition(competitionId: string) {
 }
 export async function getCompetitions() { return prisma.competition.findMany() }
 export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }
+export async function createCompetition(
+  name: string,
+  description: string,
+  year: string,
+  startDate: Date,
+  endDate: Date,
+  questions: string[],
+  jurys: string[],
+  teams: string[]) {
+  try {
+    const _questions = await prisma.question.findMany({ where: { id: { in: questions } } });
+    const _jurys = await prisma.user.findMany({ where: { username: { in: jurys } } });
+    const _teams = await prisma.team.findMany({ where: { name: { in: teams } } });
+
+    const questions1 = _questions.slice(0, _questions.length / 3).map(question => ({ id: question.id }));
+    const questions2 = _questions.slice(_questions.length / 3, _questions.length / 3 * 2).map(question => ({ id: question.id }));
+    const questions3 = _questions.slice(_questions.length / 3 * 2, _questions.length).map(question => ({ id: question.id }));
+
+    const competition = await prisma.competition.create({
+      data: {
+        name,
+        description,
+        year: year,
+        startDate,
+        endDate,
+
+        questions1: { connect: questions1 },
+        questions2: { connect: questions2 },
+        questions3: { connect: questions3 },
+
+        jurys: { connect: _jurys.map(jury => ({ id: jury.id })) },
+        teams: { connect: _teams.map(team => ({ id: team.id })) },
+      },
+    });
+
+    await prisma.team.updateMany({ where: { id: { in: _teams.map(team => team.id) } }, data: { competitionId: competition.id } });
+
+    return competition;
+  } catch (error) {
+    throw error;
+  }
+}

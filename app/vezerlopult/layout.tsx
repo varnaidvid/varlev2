@@ -47,6 +47,27 @@ export const VezerloContext = createContext<vezerloContextType>({
   setCompetition: () => null as any,
   isCompetitionLoading: false,
   setIsCompetitionLoading: () => null as any,
+
+  juryDraggableItems: null as string[] | null,
+  setJuryDraggableItems: () => null as any,
+  juryDroppedItems: null as string[] | null,
+  setJuryDroppedItems: () => null as any,
+  isJuryDragging: false,
+  setIsJuryDragging: () => null as any,
+  isJuryLoading: false,
+  setIsJuryLoading: () => null as any,
+
+  teamsDraggableItems: null as string[] | null,
+  setTeamsDraggableItems: () => null as any,
+  teamsDroppedItems: null as string[] | null,
+  setTeamsDroppedItems: () => null as any,
+  isTeamsDragging: false,
+  setIsTeamsDragging: () => null as any,
+  isTeamsDroppableLoading: false,
+  setIsTeamsDroppableLoading: () => null as any,
+
+  tasksDataTable: null as any,
+  setTasksDataTable: () => null as any,
 });
 
 export default function VezerloLayout({
@@ -87,6 +108,27 @@ export default function VezerloLayout({
   const [competitions, setCompetitions] = useState<Competition[] | null>(null);
   const [isCompetitionsLoading, setIsCompetitionsLoading] =
     useState<boolean>(false);
+
+  const [juryDraggableItems, setJuryDraggableItems] = useState<string[] | null>(
+    null
+  );
+  const [juryDroppedItems, setJuryDroppedItems] = useState<string[] | null>(
+    null
+  );
+  const [isJuryDragging, setIsJuryDragging] = useState<boolean>(false);
+  const [isJuryLoading, setIsJuryLoading] = useState<boolean>(false);
+
+  const [teamsDraggableItems, setTeamsDraggableItems] = useState<
+    string[] | null
+  >(null);
+  const [teamsDroppedItems, setTeamsDroppedItems] = useState<string[] | null>(
+    null
+  );
+  const [isTeamsDragging, setIsTeamsDragging] = useState<boolean>(false);
+  const [isTeamsDroppableLoading, setIsTeamsDroppableLoading] =
+    useState<boolean>(false);
+
+  const [tasksDataTable, setTasksDataTable] = useState<any[]>([]);
 
   useEffect(() => {
     if (session && session.user.role == 'diak' && status == 'authenticated') {
@@ -135,6 +177,27 @@ export default function VezerloLayout({
           setCompetition,
           isCompetitionLoading,
           setIsCompetitionLoading,
+
+          juryDraggableItems,
+          setJuryDraggableItems,
+          juryDroppedItems,
+          setJuryDroppedItems,
+          isJuryDragging,
+          setIsJuryDragging,
+          isJuryLoading,
+          setIsJuryLoading,
+
+          teamsDraggableItems,
+          setTeamsDraggableItems,
+          teamsDroppedItems,
+          setTeamsDroppedItems,
+          isTeamsDragging,
+          setIsTeamsDragging,
+          isTeamsDroppableLoading,
+          setIsTeamsDroppableLoading,
+
+          tasksDataTable,
+          setTasksDataTable,
         }}
       >
         <main className="mt-24">{children}</main>
