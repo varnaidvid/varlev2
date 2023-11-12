@@ -108,10 +108,7 @@ export const ownQuestionsColumns: ColumnDef<OwnParsedQuestion>[] = [
               ' ' +
               value.toString();
 
-            const question = await updateQuestion(
-              row.getValue('id'),
-              newQuestion
-            );
+            const question = await updateQuestion(row.original.id, newQuestion);
           }}
         >
           <SelectTrigger className="w-max border-none justify-start gap-1 bg-transparent">
@@ -185,28 +182,7 @@ export const ownQuestionsColumns: ColumnDef<OwnParsedQuestion>[] = [
       return <div className="text-right font-medium">{formatted}</div>;
     },
   },
-  {
-    accessorKey: 'id',
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        className="text-right"
-        title="ID"
-      />
-    ),
 
-    cell: ({ row }) => {
-      const id = row.getValue('id') as string;
-      return (
-        <div className="text-right font-medium">
-          {
-            // only the first 8 characters of the id
-            id.substring(0, 5) + '...'
-          }
-        </div>
-      );
-    },
-  },
   {
     id: 'actions',
     cell: ({ row, table }) => {
@@ -241,13 +217,13 @@ export const ownQuestionsColumns: ColumnDef<OwnParsedQuestion>[] = [
                 className="w-full"
                 onClick={async () => {
                   if (table.getFilteredSelectedRowModel().rows.length == 0) {
-                    const res: any = await deleteQuestion(row.getValue('id'));
+                    const res: any = await deleteQuestion(row.original.id);
                     if (res.status == 500) toast.error(res.message);
                     else toast.success('Sikeres törlés');
                   } else {
                     const questionIds: string[] = table
                       .getFilteredSelectedRowModel()
-                      .rows.map((row) => row.getValue('id'));
+                      .rows.map((row) => row.original.id);
 
                     const res: any = await deleteQuestions(questionIds);
                     if (res.status == 500) toast.error(res.message);
@@ -256,7 +232,7 @@ export const ownQuestionsColumns: ColumnDef<OwnParsedQuestion>[] = [
 
                   //   const questionIds: string[] = table
                   //     .getFilteredSelectedRowModel()
-                  //     .rows.map((row) => row.getValue('id'));
+                  //     .rows.map((row) => row.original.id);
                   //   const res: any = await deleteQuestions(questionIds);
                   //   if (res.status == 500) toast.error(res.message);
                   //   else toast.success('Sikeres törlés');
@@ -276,7 +252,7 @@ export const ownQuestionsColumns: ColumnDef<OwnParsedQuestion>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
-              <Link href={`/feladatok/szerkesztes/${row.getValue('id')}`}>
+              <Link href={`/feladatok/szerkesztes/${row.original.id}`}>
                 <DropdownMenuItem>
                   <div className="flex justify-between w-full">
                     Szerkesztés

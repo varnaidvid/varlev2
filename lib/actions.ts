@@ -205,6 +205,9 @@ export async function deleteCompetitions(names: string[]) { return prisma.compet
 export async function getCompetitionByName(name: string) {
   return prisma.competition.findUnique({ where: { name } });
 }
+export async function getCompetitionsForZsuri(userId: string) {
+  return prisma.competition.findMany({ where: { jurys: { some: { id: userId } } } });
+}
 
 // ATTEMPTS
 export async function createAttempt({ competitionId, competitorId, questionId, answer, isCorrect, timeTaken }: { competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number }) {

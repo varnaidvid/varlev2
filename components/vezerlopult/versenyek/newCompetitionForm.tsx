@@ -152,7 +152,7 @@ const NewCompetitionForm = () => {
       );
     }
 
-    if (session?.user?.role == 'webmester') {
+    if (session?.user?.role == 'webmester' || session?.user?.role == 'zsuri') {
       fetchJurys();
     }
   }, []);
@@ -174,7 +174,10 @@ const NewCompetitionForm = () => {
       );
     }
 
-    if (session?.user?.role == 'webmester' && year) {
+    if (
+      (session?.user?.role == 'webmester' || session?.user.role == 'zsuri') &&
+      year
+    ) {
       fetchTeams();
     }
   }, [year]);

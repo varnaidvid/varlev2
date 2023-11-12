@@ -137,7 +137,7 @@ export default function VezerloLayout({
     }
   }, [session, status]);
 
-  if (status === 'authenticated' && session.user.role == 'webmester') {
+  if (status === 'authenticated') {
     return (
       <VezerloContext.Provider
         value={{

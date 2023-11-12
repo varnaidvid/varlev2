@@ -50,26 +50,30 @@ export default function VezerloHome() {
         </h1>
 
         <div className="flex gap-2">
-          <Link href="/vezerlopult/bemutatkozo">
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto hidden h-8 lg:flex"
-            >
-              <Monitor className="mr-2 h-4 w-4" />
-              Bemutatkozó oldal szerkesztése
-            </Button>
-          </Link>
-          <Link href="/beallitasok">
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto hidden h-8 lg:flex"
-            >
-              <GearSix className="mr-2 h-4 w-4" />
-              Beállítások
-            </Button>
-          </Link>
+          {session?.user.role == 'webmester' && (
+            <>
+              <Link href="/vezerlopult/bemutatkozo">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto hidden h-8 lg:flex"
+                >
+                  <Monitor className="mr-2 h-4 w-4" />
+                  Bemutatkozó oldal szerkesztése
+                </Button>
+              </Link>
+              <Link href="/beallitasok">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto hidden h-8 lg:flex"
+                >
+                  <GearSix className="mr-2 h-4 w-4" />
+                  Beállítások
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -82,6 +86,38 @@ export default function VezerloHome() {
       </span>
 
       <Separator className="mt-6 mb-8" />
+
+      {session?.user.role == 'tanar' && (
+        <div className="mt-6">
+          <div className="grid md:grid-cols-2 gap-4">
+            <DashboardCard
+              Icon={Question}
+              title="Feladatok"
+              description="Itt található a feladatok kezelő felülete, ahol új feladatok hozhat létre, illetve meglévőket módosíthat."
+              buttonText="Feladatok"
+              link="/vezerlopult/feladatok"
+              secondLink="/vezerlopult/feladatok/letrehozas"
+              secondLinkText="Új feladat"
+            />
+          </div>
+        </div>
+      )}
+
+      {session?.user.role == 'zsuri' && (
+        <div className="mt-6">
+          <div className="grid md:grid-cols-2 gap-4">
+            <DashboardCard
+              Icon={Flag}
+              title="Versenyek"
+              description="Itt található a versenyek kezelő felülete, ahol új versenyek hozhat létre, illetve meglévőket módosíthat."
+              buttonText="Versenyek"
+              link="/vezerlopult/versenyek"
+              secondLink="/vezerlopult/versenyek/letrehozas"
+              secondLinkText="Új verseny"
+            />
+          </div>
+        </div>
+      )}
 
       {session?.user.role == 'webmester' && (
         <div className="mt-6">

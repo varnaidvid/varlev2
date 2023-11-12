@@ -104,7 +104,7 @@ export function EditQuestionsTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Nincs találat.
                 </TableCell>
               </TableRow>
             )}
