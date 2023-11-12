@@ -11,10 +11,47 @@ import { getServerSession } from 'next-auth';
 import authOptions from '@/lib/auth/authOptions';
 
 const scramble = (word: string) => {
-  const scrambledWord = word
-    .split('')
-    .sort(() => Math.random() - 0.5)
-    .join('');
+  if (word.length <= 2) {
+    // For words of length 2 or less, scrambling isn't really meaningful.
+    return word;
+  }
+
+  // Separate the first and last characters
+  const firstChar = word[0];
+  const lastChar = word[word.length - 1];
+  const middleChars = word.substring(1, word.length - 1);
+
+  // Function to check if a character is a vowel
+  const isVowel = (char: string) => 'aeiouAEIOU'.includes(char);
+
+  // Extract vowels and consonants
+  const vowels = middleChars.split('').filter((char) => isVowel(char));
+  const consonants = middleChars.split('').filter((char) => !isVowel(char));
+
+  // Scramble the vowels and consonants separately
+  const scrambleArray = (array: string[]) =>
+    array.sort(() => Math.random() - 0.5);
+
+  const scrambledVowels = scrambleArray(vowels);
+  const scrambledConsonants = scrambleArray(consonants);
+
+  // Reassemble the word with the first and last characters also scrambled
+  const scrambledMiddle = [...scrambledVowels, ...scrambledConsonants].sort(
+    () => Math.random() - 0.5
+  );
+  let scrambledWord = '';
+  if (word.length === 3) {
+    scrambledWord = lastChar + middleChars + firstChar;
+  } else {
+    // Reassemble the word with the first and last characters also scrambled
+    const scrambledMiddle = [...scrambledVowels, ...scrambledConsonants].sort(
+      () => Math.random() - 0.5
+    );
+    scrambledWord = [firstChar, ...scrambledMiddle, lastChar]
+      .sort(() => Math.random() - 0.5)
+      .join('');
+  }
+
   return scrambledWord;
 };
 
