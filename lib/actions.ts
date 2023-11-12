@@ -46,6 +46,8 @@ export async function getOwnQuestions(username: string) { const session = await 
 export async function deleteQuestion(id: string) { return prisma.question.delete({ where: { id } }); }
 export async function deleteQuestions(ids: string[]) { console.log(ids); return prisma.question.deleteMany({ where: { id: { in: ids } } }); }
 export async function updateQuestion(id: string, question: string) { return prisma.question.update({ where: { id }, data: { question } }); }
+export async function getQuestionsByIds(ids: string[]) { return prisma.question.findMany({ where: { id: { in: ids } } }); }
+
 
 
 // TEAMS
@@ -98,6 +100,10 @@ export async function updateTeam(oldTeamId: string, newName: string, newDescript
   } catch (error) {
     throw error;
   }
+}
+
+export async function getTeamMembersByCompetitorId(competitorId: string) {
+  return prisma.team.findFirst({ where: { competitors: { some: { id: competitorId } } }, include: { competitors: true } });
 }
 
 // COMPETITORS
@@ -160,6 +166,12 @@ export async function getCompetition(competitionId: string) {
 }
 export async function getCompetitions() { return prisma.competition.findMany() }
 export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }
+
+
+// ATTEMPTS
+export async function createAttempt({ competitionId, competitorId, questionId, answer, isCorrect, timeTaken }: { competitionId: string, competitorId: string, questionId: string, answer: string, isCorrect: boolean, timeTaken: number }) {
+  return prisma.attempt.create({ data: { competitionId, competitorId, questionId, answer, isCorrect, TimeTaken: timeTaken } })
+}
 export async function createCompetition(
   name: string,
   description: string,

@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/card';
 
 import UploadcareImage from '@uploadcare/nextjs-loader';
-import DragExample from '@/components/draggable';
 
 export default function Home() {
   const { data: session, status } = useSession();

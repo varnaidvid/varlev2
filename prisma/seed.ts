@@ -401,6 +401,9 @@ async function seedCompetitions() {
             questions3: questions3,
         },
     })
+
+    // delete this competition
+    // await prisma.competition.delete({ where: { id: "c1" } })
 }
 
 // seedAllRoles()
