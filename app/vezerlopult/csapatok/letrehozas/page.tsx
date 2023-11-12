@@ -22,15 +22,16 @@ import {
   UserList,
   Gauge,
   UsersFour,
+  Flag,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Separator } from '@/components/ui/separator';
 import { VezerloContext } from '../../layout';
-import NewTeamForm from '@/components/vezerlopult/csapatok/newTeamForm';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
+import NewCompetitionForm from '@/components/vezerlopult/versenyek/newCompetitionForm';
 
 export default function CsapatLetrehozas() {
   const isMobile =
@@ -41,12 +42,12 @@ export default function CsapatLetrehozas() {
 
   return (
     <>
-      <title>VarléV2 - Új csapat létrehozás</title>
-      <meta name="description" content="VarléV2 - Új csapat létrehozás" />
+      <title>VarléV2 - Új verseny létrehozás</title>
+      <meta name="description" content="VarléV2 - Új verseny létrehozás" />
 
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Új csapat regisztrálás
+          Új verseny regisztrálás
         </h1>
 
         <div className="flex items-center gap-4">
@@ -55,10 +56,10 @@ export default function CsapatLetrehozas() {
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          <Link href="/vezerlopult/csapatok">
+          <Link href="/vezerlopult/versenyek">
             <Button variant="default">
               {' '}
-              <UsersFour className="w-6 h-6 mr-2" color="white" /> Csapatok
+              <Flag className="w-6 h-6 mr-2" color="white" /> Versenyek
             </Button>
           </Link>
         </div>
@@ -73,9 +74,9 @@ export default function CsapatLetrehozas() {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/vezerlopult/csapatok/letrehozas">
+        <Link href="/vezerlopult/versenyek/letrehozas">
           <div className="flex items-center gap-[2px] hover:underline">
-            <UsersFour className="h-6 w-6 mr-1" /> Új csapat
+            <UsersFour className="h-6 w-6 mr-1" /> Új verseny
           </div>
         </Link>
       </span>
@@ -84,7 +85,7 @@ export default function CsapatLetrehozas() {
 
       <>
         <DndProvider backend={Backend}>
-          <NewTeamForm />
+          <NewCompetitionForm />
         </DndProvider>
       </>
     </>

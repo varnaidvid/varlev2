@@ -48,6 +48,7 @@ export default function BemutatkozoPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    // itt mentjük el a db-be
     console.log(values);
   }
 
@@ -95,7 +96,7 @@ export default function BemutatkozoPage() {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="description"
+              name={'this text should come from the database'}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -108,9 +109,7 @@ export default function BemutatkozoPage() {
                 </FormItem>
               )}
             />
-            <Button className="mb-12 mt-2" type="submit">
-              Save
-            </Button>
+            <Button className="mb-12">Save</Button>
           </form>
         </Form>
       </div>
