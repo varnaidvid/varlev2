@@ -39,7 +39,7 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         {table.getColumn('name') && (
           <Input
-            placeholder="Keresés felhasználónév alapján..."
+            placeholder="Keresés csapatnév alapján..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -49,6 +49,31 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <div className="flex gap-2">
+        {table.getColumn('year') && (
+          <DataTableFacetedFilter
+            column={table.getColumn('year')}
+            title="Évfolyam"
+            options={[
+              {
+                label: '5. évfolyam',
+                value: '5',
+              },
+              {
+                label: '6. évfolyam',
+                value: '6',
+              },
+              {
+                label: '7. évfolyam',
+                value: '7',
+              },
+              {
+                label: '8. évfolyam',
+                value: '8',
+              },
+            ]}
+          />
+        )}
+
         <DataTableViewOptions table={table} />
 
         {table.getFilteredSelectedRowModel().rows.length !== 0 && (

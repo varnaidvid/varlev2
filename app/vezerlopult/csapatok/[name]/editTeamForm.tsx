@@ -109,10 +109,8 @@ const EditTeamForm = ({ name }: { name: string }) => {
       setDraggableItems(
         competitors
           .map((competitor) => competitor.user.username)
+          .filter((competitor) => !droppedItems?.includes(competitor))
           .sort((a, b) => a.localeCompare(b))
-      );
-      setDroppedItems(
-        teamMembers.map((teamMember) => teamMember.user.username)
       );
 
       setCompetitors(competitors);
@@ -129,6 +127,9 @@ const EditTeamForm = ({ name }: { name: string }) => {
   useEffect(() => {
     async function getMembers() {
       const teamMembers = await getTeamMembers(decodeURI(name));
+      setDroppedItems(
+        teamMembers.map((teamMember) => teamMember.user.username)
+      );
 
       setTeamMembers(teamMembers);
     }
