@@ -21,6 +21,9 @@ model User {
 
   Competitor Competitor?
 
+  // ha zsuri
+  competitions Competition[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -36,6 +39,10 @@ model Team {
 
   // csak 3 versenyző lehet egy csapatban
   competitors Competitor[]
+
+  // egyszerre csak egy verseny
+  competition   Competition? @relation(fields: [competitionId], references: [id])
+  competitionId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -64,17 +71,25 @@ model Competitor {
 model Competition {
   id String @id @default(uuid())
 
-  name        String
+  name        String @unique
   description String
 
-  image_url String @default("")
-
   year Int // évfolyam
+
+  image_url String @default("")
 
   startDate DateTime
   endDate   DateTime
 
-  questions Question[]
+  questions1 String[]
+  questions2 String[]
+  questions3 String[]
+
+  // zsurik
+  jurys User[]
+
+  teams    Team[]
+  attempts Attempt[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -87,8 +102,7 @@ model Question {
   // syntax: word1 word2 word3 word4 6 
   // (4 szó, utolsó szám évfolyam)
 
-  competitions Competition[]
-  attempts     Attempt[]
+  attempts Attempt[]
 
   creator   User   @relation(fields: [creatorId], references: [id])
   creatorId String
@@ -110,6 +124,9 @@ model Attempt {
   TimeTaken Int
 
   answer String
+
+  Competition   Competition @relation(fields: [competitionId], references: [id])
+  competitionId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

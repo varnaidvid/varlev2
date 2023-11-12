@@ -1,53 +1,49 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import columns from '@/components/datatable/dataTableColumns';
-import { useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
-import { getUsers } from '@/lib/actions';
+import { getUser, getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
-import UsersDataTable from '@/components/datatable/usersDataTable';
 import {
   GearSix,
   CaretRight,
   UserCirclePlus,
   UserList,
   Gauge,
+  UserCircle,
   UsersFour,
-  Flag,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import { Separator } from '@/components/ui/separator';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VezerloContext } from '../../layout';
+import { Separator } from '@/components/ui/separator';
+import EditTeamForm from './editTeamForm';
 import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import NewCompetitionForm from '@/components/vezerlopult/versenyek/newCompetitionForm';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
-export default function CsapatLetrehozas() {
+export default function UserPage({ params }: { params: { name: string } }) {
+  const router = useRouter();
+
   const isMobile =
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     );
   const Backend = isMobile ? TouchBackend : HTML5Backend;
 
+  const { team } = useContext(VezerloContext);
+
   return (
     <>
-      <title>VarléV2 - Új verseny létrehozás</title>
-      <meta name="description" content="VarléV2 - Új verseny létrehozás" />
+      <title>VarléV2 - Csapatok kezelése</title>
+      <meta name="description" content="VarléV2 - Csapatok kezelése" />
 
       <div className="flex justify-between w-full">
         <h1 className="text-2xl font-semibold leading-none tracking-tight mb-2">
-          Új verseny regisztrálás
+          Csapat szerkesztése
         </h1>
 
         <div className="flex items-center gap-4">
@@ -56,10 +52,11 @@ export default function CsapatLetrehozas() {
               Vissza a vezérlőpulthoz
             </span>
           </Link>
-          <Link href="/vezerlopult/versenyek">
+          <Link href="/vezerlopult/csapatok/letrehozas">
             <Button variant="default">
               {' '}
-              <Flag className="w-6 h-6 mr-2" color="white" /> Versenyek
+              <UsersFour className="w-6 h-6 mr-2" color="white" /> Új csapat
+              létrehozása
             </Button>
           </Link>
         </div>
@@ -74,9 +71,20 @@ export default function CsapatLetrehozas() {
 
         <CaretRight className="mx-1 h-4 w-4" />
 
-        <Link href="/vezerlopult/versenyek/letrehozas">
+        <Link href="/vezerlopult/csapatok">
           <div className="flex items-center gap-[2px] hover:underline">
-            <UsersFour className="h-6 w-6 mr-1" /> Új verseny
+            <UsersFour className="h-6 w-6" /> Csapatok
+          </div>
+        </Link>
+
+        <CaretRight className="mx-1 h-4 w-4" />
+
+        <Link
+          href={`/vezerlopult/csapatok/${team?.name ? team.name : params.name}`}
+        >
+          <div className="flex items-center gap-[2px] hover:underline">
+            <UsersFour className="h-6 w-6" />{' '}
+            {team?.name ? team.name : params.name}
           </div>
         </Link>
       </span>
@@ -85,7 +93,7 @@ export default function CsapatLetrehozas() {
 
       <>
         <DndProvider backend={Backend}>
-          <NewCompetitionForm />
+          <EditTeamForm name={params.name} />
         </DndProvider>
       </>
     </>

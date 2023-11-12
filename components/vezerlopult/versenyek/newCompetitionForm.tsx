@@ -66,7 +66,7 @@ type customCompetitorType = {
   };
 };
 
-const NewTeamForm = () => {
+const NewCompetitionForm = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -128,8 +128,17 @@ const NewTeamForm = () => {
     }),
     description: z.string(),
     year: z.string(),
-    class: z.string(),
-    competitors: z.array(z.string()),
+
+    startDate: z.date(),
+    endDate: z.date(),
+
+    questions1: z.array(z.string()),
+    questions2: z.array(z.string()),
+    questions3: z.array(z.string()),
+
+    jurys: z.array(z.string()),
+
+    teams: z.array(z.string()),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -137,7 +146,9 @@ const NewTeamForm = () => {
       name: '',
       description: '',
       year: '',
-      class: '',
+
+      startDate: '',
+      endDate: '',
       competitors: ['', '', ''],
     },
   });
@@ -396,4 +407,4 @@ const NewTeamForm = () => {
   );
 };
 
-export default NewTeamForm;
+export default NewCompetitionForm;
