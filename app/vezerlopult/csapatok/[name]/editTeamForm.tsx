@@ -37,11 +37,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import {
-  createTeam,
   getCompetitorsByYearAndClass,
-  getTeamCreateCompetitors,
   getTeamMembers,
-  getUsersWhoAreNotInATeam,
   updateTeam,
 } from '@/lib/actions';
 import { Competitor, User } from '@prisma/client';
@@ -211,7 +208,7 @@ const EditTeamForm = ({ name }: { name: string }) => {
 
   useEffect(() => {
     console.log(draggableItems);
-  }, []);
+  }, [draggableItems]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);

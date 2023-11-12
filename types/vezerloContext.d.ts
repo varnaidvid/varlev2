@@ -1,5 +1,19 @@
-import { Competition, Team, User } from '@prisma/client';
+import { Competition, Question, Team, User } from '@prisma/client';
 import React from 'react';
+
+export type AllParsedQuestion = Array<{
+    id: string;
+    word1: string;
+    word2: string;
+    word3: string;
+    word4: string;
+    year: number;
+    createdAt: Date;
+    updatedAt: Date;
+    username: string;
+}>;
+
+
 
 export interface vezerloContextType {
     user: User | null;

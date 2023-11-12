@@ -25,6 +25,8 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useContext, useEffect, useState } from 'react';
+import { VezerloContext } from '@/app/vezerlopult/layout';
 
 const FormSchema = z.object({
   date: z.date(),
@@ -33,6 +35,7 @@ const FormSchema = z.object({
 export function CalendarForm({
   control,
   name,
+  form,
   date,
   setDate,
   label,
@@ -43,6 +46,7 @@ export function CalendarForm({
 }: {
   control: any;
   name: string;
+  form: any;
   date: Date;
   setDate: (date: Date) => void;
   label: string;
@@ -51,14 +55,56 @@ export function CalendarForm({
   minutes: number;
   setMinutes: (minutes: number) => void;
 }) {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const { competition } = useContext(VezerloContext);
+
+  const [initialStartDate, setInitialStartDate] = useState<Date>();
+  const [initialEndDate, setInitialEndDate] = useState<Date>();
+
+  const [initialStartHour, setInitialStartHour] = useState<number>();
+  const [initialStartMinutes, setInitialStartMinutes] = useState<number>();
+  const [initialEndHour, setInitialEndHour] = useState<number>();
+  const [initialEndMinutes, setInitialEndMinutes] = useState<number>();
+
+  useEffect(() => {
+    if (competition) {
+      setInitialEndDate(competition?.endDate && new Date(competition.endDate));
+      setInitialStartDate(
+        competition?.startDate && new Date(competition.startDate)
+      );
+    }
+  }, [competition]);
+
+  useEffect(() => {
+    if (initialEndDate && initialStartDate) {
+      form.setValue('startDate', initialEndDate);
+      form.setValue('endDate', initialStartDate);
+
+      setInitialStartHour(initialStartDate?.getHours());
+      setInitialStartMinutes(initialStartDate?.getMinutes());
+      setInitialEndHour(initialEndDate?.getHours());
+      setInitialEndMinutes(initialEndDate?.getMinutes());
+    }
+  }, [initialEndDate, initialStartDate]);
+
+  useEffect(() => {
+    console.log(
+      initialStartHour,
+      initialStartMinutes,
+      initialEndHour,
+      initialEndMinutes
+    );
+  }, [
+    initialStartHour,
+    initialStartMinutes,
+    initialEndHour,
+    initialEndMinutes,
+  ]);
 
   return (
     <FormField
       control={control}
       name={name}
+      defaultValue={name === 'startDate' ? initialStartDate : initialEndDate}
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel>{label}</FormLabel>
@@ -111,6 +157,9 @@ export function CalendarForm({
                     setHour(parseInt(e.target.value));
                   }}
                   type="number"
+                  defaultValue={
+                    name == 'startDate' ? initialStartHour : initialEndHour
+                  }
                   max={23}
                   min={0}
                   placeholder="0"
@@ -121,6 +170,11 @@ export function CalendarForm({
                 <p className="text-sm text-muted-foreground">Perc:</p>
                 <Input
                   placeholder="0"
+                  defaultValue={
+                    name == 'startDate'
+                      ? initialStartMinutes
+                      : initialEndMinutes
+                  }
                   onChange={(e) => {
                     if (parseInt(e.target.value) > 59) e.target.value = '59';
                     if (parseInt(e.target.value) < 0) e.target.value = '0';

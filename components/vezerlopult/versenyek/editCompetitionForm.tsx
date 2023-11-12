@@ -40,10 +40,14 @@ import {
   createCompetition,
   createTeam,
   getJurys,
+  getJurysByCompetionId,
   getQuestions,
+  getQuestionsByCompetitionId,
   getTeamCreateCompetitors,
   getTeamNamesWhereCompetitionIdNullAndYearEquals,
+  getTeamsByCompetitionId,
   getUsersWhoAreNotInATeam,
+  updateCompetition,
 } from '@/lib/actions';
 import { Competitor, Question, User } from '@prisma/client';
 import { Textarea } from '@/components/ui/textarea';
@@ -67,18 +71,6 @@ import { CalendarForm } from './datePicker';
 import Backend from '@/lib/draggableBackend';
 import DraggableBackend from '@/lib/draggableBackend';
 
-type customCompetitorType = {
-  id: string;
-  year: number;
-  class: string;
-  teamId: string | null;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  user: {
-    username: string;
-  };
-};
 type QuestionWithUsername = Question & {
   creator: {
     username: string;
@@ -107,8 +99,8 @@ const EditCompetitionForm = ({
   const [year, setYear] = useState<number>();
 
   const [teams, setTeams] = useState<string[]>([]);
-  const [competitors, setCompetitors] = useState<customCompetitorType[]>([]);
   const [questions, setQuestions] = useState<AllParsedQuestion[]>([]);
+  const [jurys, setJurys] = useState<string[]>([]);
 
   const {
     juryDraggableItems,
@@ -127,14 +119,78 @@ const EditCompetitionForm = ({
     setCompetition,
   } = React.useContext(VezerloContext);
 
+  const [isEverythingLoaded, setIsEverythingLoaded] = useState<boolean>(false);
   useEffect(() => {
-    if (competition) {
-      setYear(parseInt(competition.year));
+    async function fetchData() {
+      const allJurys = await getJurys();
+      const jurys = await getJurysByCompetionId(competition?.id!);
+      console.log('jurys', jurys);
 
-      setJuryDroppedItems(competition.jurys.map((jury) => jury.username));
-      setTeamsDroppedItems(competition.teams.map((team) => team.name));
+      const allTeams = await getTeamNamesWhereCompetitionIdNullAndYearEquals(
+        parseInt(competition?.year!)
+      );
+      const teams = await getTeamsByCompetitionId(competition?.id!);
+      console.log('teams', teams);
+
+      const allQuestions = await getQuestions();
+      const questions = await getQuestionsByCompetitionId(competition?.id!);
+      console.log('questions', questions);
+
+      setQuestions(parseAllQuestions(allQuestions));
+
+      setJuryDraggableItems(
+        allJurys
+          .map((jury) => jury.username)
+          .filter((jury) => !jurys.map((jury) => jury.username).includes(jury))
+      );
+      setJuryDroppedItems(jurys.map((jury) => jury.username));
+
+      setTeamsDraggableItems(
+        allTeams
+          .map((team) => team.name)
+          .filter((team) => !teams.map((team) => team.name).includes(team))
+      );
+      setTeamsDroppedItems(teams.map((team) => team.name));
+
+      setTeams(
+        allTeams.map((team) => team.name).sort((a, b) => a.localeCompare(b))
+      );
+      setJurys(
+        allJurys.map((jury) => jury.username).sort((a, b) => a.localeCompare(b))
+      );
+
+      setIsEverythingLoaded(true);
+    }
+
+    if (competition) {
+      setYear(parseInt(competition?.year!));
+
+      fetchData();
     }
   }, [competition]);
+
+  useEffect(() => {
+    async function fetchTeams() {
+      const teams = await getTeamNamesWhereCompetitionIdNullAndYearEquals(
+        year!
+      );
+
+      setTeams(
+        teams.map((team) => team.name).sort((a, b) => a.localeCompare(b))
+      );
+      setTeamsDraggableItems(
+        teams.map((team) => team.name).sort((a, b) => a.localeCompare(b))
+      );
+    }
+
+    if (session?.user?.role == 'webmester' && year) {
+      fetchTeams();
+    }
+  }, [year]);
+  useEffect(() => {
+    setTeamsDraggableItems([]);
+    setTeamsDroppedItems([]);
+  }, [year]);
 
   useEffect(() => {
     form.setValue(
@@ -149,45 +205,6 @@ const EditCompetitionForm = ({
   const sortedTeamsDraggables = React.useMemo(() => {
     return teamsDraggableItems?.sort((a, b) => a.localeCompare(b));
   }, [teamsDraggableItems]);
-
-  const [jurys, setJurys] = useState<string[]>([]);
-  useEffect(() => {
-    async function fetchJurys() {
-      const jurys = await getJurys();
-
-      setJurys(
-        jurys.map((jury) => jury.username).sort((a, b) => a.localeCompare(b))
-      );
-      setJuryDraggableItems(
-        jurys.map((jury) => jury.username).sort((a, b) => a.localeCompare(b))
-      );
-    }
-
-    if (session?.user?.role == 'webmester') {
-      fetchJurys();
-    }
-  }, []);
-
-  useEffect(() => {
-    async function fetchTeams() {
-      const teams = await getTeamNamesWhereCompetitionIdNullAndYearEquals(
-        year!
-      );
-
-      console.log(teams);
-
-      setTeams(
-        teams.map((team) => team.name).sort((a, b) => a.localeCompare(b))
-      );
-      setTeamsDraggableItems(
-        teams.map((team) => team.name).sort((a, b) => a.localeCompare(b))
-      );
-    }
-
-    if (session?.user?.role == 'webmester' && year) {
-      fetchTeams();
-    }
-  }, [year]);
 
   useEffect(() => {
     const sorted = juryDraggableItems?.sort((a, b) => a.localeCompare(b));
@@ -213,7 +230,9 @@ const EditCompetitionForm = ({
       required_error: 'Adja meg a verseny rövid leírását!',
     }),
 
-    year: z.string(),
+    year: z.string({
+      required_error: 'Adja meg a verseny évfolyamát!',
+    }),
 
     startDate: z.date({
       required_error: 'Adja meg a verseny kezdő dátumát!',
@@ -231,9 +250,9 @@ const EditCompetitionForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      year: '',
+      name: competition?.name,
+      description: competition?.description,
+      year: competition?.year,
 
       startDate: '',
       endDate: '',
@@ -260,31 +279,16 @@ const EditCompetitionForm = ({
     }));
   };
 
-  useEffect(() => {
-    async function fetchQuestions() {
-      const questions = await getQuestions();
-
-      setQuestions(parseAllQuestions(questions));
-    }
-
-    if (
-      (!questions || questions.length == 0) &&
-      session?.user?.role == 'webmester'
-    ) {
-      fetchQuestions();
-    }
-  }, []);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    toast.loading('Verseny létrehozása folyamatban...', {
-      id: 'registration',
+    toast.loading('Verseny frissítése folyamatban...', {
+      id: 'update',
     });
 
-    if (values.questions.length % 3 != 0) {
+    if (values.questions.length % 3 != 0 || values.questions.length == 0) {
       toast.error('A feladatok száma nem osztható 3-mal!', {
-        id: 'registration',
+        id: 'update',
       });
 
       setIsLoading(false);
@@ -292,7 +296,7 @@ const EditCompetitionForm = ({
     }
     if (startHour == undefined || startMinutes == undefined) {
       toast.error('Adja meg a verseny kezdésének óráját és percét!', {
-        id: 'registration',
+        id: 'update',
       });
 
       setIsLoading(false);
@@ -300,7 +304,7 @@ const EditCompetitionForm = ({
     }
     if (endHour == undefined || endMinutes == undefined) {
       toast.error('Adja meg a verseny zárásának óráját és percét!', {
-        id: 'registration',
+        id: 'update',
       });
 
       setIsLoading(false);
@@ -323,7 +327,8 @@ const EditCompetitionForm = ({
     );
 
     try {
-      const res = await createCompetition(
+      const res = await updateCompetition(
+        competition?.id!,
         values.name,
         values.description,
         year?.toString()!,
@@ -334,8 +339,8 @@ const EditCompetitionForm = ({
         values.teams
       );
 
-      toast.success('Sikeres létrehozás!', {
-        id: 'registration',
+      toast.success('Sikeres módosítás!', {
+        id: 'update',
       });
 
       console.log(res);
@@ -365,13 +370,13 @@ const EditCompetitionForm = ({
         });
 
         toast.error('Létezik már ilyen nevű verseny!', {
-          id: 'registration',
+          id: 'update',
         });
         return;
       }
 
       toast.error('Hiba történt a létrehozás során!', {
-        id: 'registration',
+        id: 'update',
       });
       return;
     }
@@ -385,18 +390,28 @@ const EditCompetitionForm = ({
   const [endHour, setEndHour] = useState<number>(0);
   const [endMinutes, setEndMinutes] = useState<number>(0);
 
-  const [isEverythingLoaded, setIsEverythingLoaded] = useState<boolean>(false);
+  useEffect(() => {
+    if (competition) {
+      form.setValue('name', competition?.name);
+      form.setValue('description', competition?.description);
+      form.setValue('year', competition?.year);
+    }
+  }, [competition]);
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Új verseny létrehozása</CardTitle>
+        <CardTitle>Új verseny frissítése</CardTitle>
         <CardDescription>
-          Alábbi űrlap segítségével hozhat létre új versenyt.
+          Alábbi űrlap segítségével módosíthat meglévő versenyt.
         </CardDescription>
       </CardHeader>
 
-      {isEverythingLoaded && (
+      {!isEverythingLoaded ? (
+        <>
+          <h2 className="p-6 animate-pulse">Adatok betöltése folyamatban...</h2>
+        </>
+      ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="space-y-5">
@@ -405,6 +420,7 @@ const EditCompetitionForm = ({
               <FormField
                 control={form.control}
                 name="name"
+                defaultValue={competition?.name}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Verseny név</FormLabel>
@@ -423,6 +439,7 @@ const EditCompetitionForm = ({
               <FormField
                 control={form.control}
                 name="description"
+                defaultValue={competition?.description}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Verseny rövid leírása</FormLabel>
@@ -475,6 +492,7 @@ const EditCompetitionForm = ({
               <CalendarForm
                 control={form.control}
                 name="startDate"
+                form={form}
                 date={startDate}
                 setDate={setStartDate}
                 label={'Verseny kezdése'}
@@ -487,6 +505,7 @@ const EditCompetitionForm = ({
               <CalendarForm
                 control={form.control}
                 name="endDate"
+                form={form}
                 date={endDate}
                 setDate={setEndDate}
                 label={'Verseny befejezése'}
@@ -589,6 +608,10 @@ const EditCompetitionForm = ({
                   data={questions}
                 />
               </div>
+              <p className="text-sm text-muted-foreground">
+                Megjegyzés: hárommal osztható mennyiségű feladat kell, hiszen
+                hármas csapatokba külön-külön kapnak feladatokat!
+              </p>
               <Separator />
 
               <br />
@@ -657,7 +680,7 @@ const EditCompetitionForm = ({
                 {isLoading && (
                   <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Létrehozás
+                Frissítés
               </Button>
             </CardFooter>
           </form>

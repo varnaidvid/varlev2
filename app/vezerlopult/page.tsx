@@ -4,6 +4,7 @@ import {
   Flag,
   Gauge,
   GearSix,
+  Monitor,
   PresentationChart,
   Question,
   SlidersHorizontal,
@@ -31,7 +32,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState } from 'react';
-import MainCompetitonCards from '@/components/vezerlopult/versenyek/mainCompetitionCards';
 import DashboardCard from '@/components/vezerlopult/dashboardCard';
 
 export default function VezerloHome() {
@@ -49,16 +49,28 @@ export default function VezerloHome() {
           Üdvözöljük a vezérlőpultján!
         </h1>
 
-        <Link href="/beallitasok">
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-auto hidden h-8 lg:flex"
-          >
-            <GearSix className="mr-2 h-4 w-4" />
-            Beállítások
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/vezerlopult/bemutatkozo">
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto hidden h-8 lg:flex"
+            >
+              <Monitor className="mr-2 h-4 w-4" />
+              Bemutatkozó oldal szerkesztése
+            </Button>
+          </Link>
+          <Link href="/beallitasok">
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto hidden h-8 lg:flex"
+            >
+              <GearSix className="mr-2 h-4 w-4" />
+              Beállítások
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <span className="tracking-tight text-base text-gray-500">
