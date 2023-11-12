@@ -34,10 +34,6 @@ export default function BemutatkozoPage() {
       .string()
       .min(3, { message: 'Túl rövid.' })
       .max(255, { message: 'Túl hosszú.' }),
-    price: z
-      .number()
-      .min(5, { message: 'Túl rövid.' })
-      .max(1000, { message: 'Túl hosszú.' }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,12 +41,11 @@ export default function BemutatkozoPage() {
     mode: 'onChange',
     defaultValues: {
       title: '',
-      price: 0,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    uploadHtmlText(values);
+    uploadHtmlText(values.title);
   }
 
   return (

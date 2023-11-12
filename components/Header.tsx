@@ -18,51 +18,20 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { LogOut } from 'lucide-react';
 
 const Header = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  const components: { title: string; href: string; description: string }[] = [
-    {
-      title: 'Alert Dialog',
-      href: '/docs/primitives/alert-dialog',
-      description:
-        'A modal dialog that interrupts the user with important content and expects a response.',
-    },
-    {
-      title: 'Hover Card',
-      href: '/docs/primitives/hover-card',
-      description:
-        'For sighted users to preview content available behind a link.',
-    },
-    {
-      title: 'Progress',
-      href: '/docs/primitives/progress',
-      description:
-        'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-    },
-    {
-      title: 'Scroll-area',
-      href: '/docs/primitives/scroll-area',
-      description: 'Visually or semantically separates content.',
-    },
-    {
-      title: 'Tabs',
-      href: '/docs/primitives/tabs',
-      description:
-        'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-    },
-    {
-      title: 'Tooltip',
-      href: '/docs/primitives/tooltip',
-      description:
-        'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-    },
-  ];
-
   return (
-    <header className="flex p-12 py-6 bg-gray-700 text-gray-300 items-center justify-between">
+    <header className="flex p-4 bg-gray-800/75 text-gray-300 items-center justify-between">
       <div className="flex">
         <Link href="/">VarleV2</Link>
       </div>
@@ -120,6 +89,7 @@ const Header = () => {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
+
       <div className="flex">
         {!session && status != 'loading' ? (
           <>
@@ -135,7 +105,16 @@ const Header = () => {
               signOut({ redirect: true, callbackUrl: '/' });
             }}
           >
-            Kijelentkezés
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <LogOut />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Kijelentkezés</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </Button>
         ) : (
           ''
