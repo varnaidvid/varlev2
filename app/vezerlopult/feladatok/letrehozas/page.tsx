@@ -104,6 +104,8 @@ export default function FeladatLetrehozas() {
         if (words.length !== 5) return;
         const year = parseInt(words[4]);
         if (isNaN(year)) return;
+        //check if the 4. words legth is shorter than five
+        if (words[3].length < 5) return;
         // check if year is between 5 and 8
         if (year < 5 || year > 8) return;
         const question = {
