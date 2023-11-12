@@ -161,8 +161,24 @@ export async function getCompitetorIdByUserId(userId: string) {
 
 
 // COMPETITIONS
-export async function getCompetition(competitionId: string) {
-  return prisma.competition.findMany({ where: { id: competitionId } });
+// export async function getCompetition(competitionId: string) {
+//   return prisma.competition.findMany({ where: { id: competitionId } });
+// }
+export async function getCompetitionById(competitionId: string) {
+  return prisma.competition.findUnique(
+    {
+      where: {
+        id:
+          competitionId
+      }
+      ,
+      include: {
+        questions1: true,
+        questions2: true,
+        questions3: true,
+      }
+    }
+  )
 }
 export async function getCompetitions() { return prisma.competition.findMany() }
 export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }

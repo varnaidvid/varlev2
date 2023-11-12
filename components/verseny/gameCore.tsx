@@ -72,8 +72,7 @@ export default function Game({
   }, [question]);
 
   return (
-    <div className="w-full items-center mx-auto max-w-screen-xl flex flex-col py-16">
-      <Progress value={(7 / 10) * 100} className="h-1 w-full max-w-lg" />
+    <div className="w-full items-center mx-auto max-w-screen-xl flex flex-col ">
       {/* 3 kész szó container-je */}
       <div className="flex w-fit mx-auto justify-between gap-8 mt-48">
         {question.words.map((word) => (

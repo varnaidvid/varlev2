@@ -6,6 +6,7 @@ import { type QuestionWithScrambledWord } from './gameCore';
 import { createAttempt } from '@/lib/actions';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import { Progress } from '../ui/progress';
 
 export default function GameWrapper({
   questions,
@@ -27,21 +28,21 @@ export default function GameWrapper({
   }, [status]);
 
   const submitAnswer = (answer: string) => {
-    console.log(answer);
+    // console.log(answer);
     let correct: boolean = false;
     // check if the answer is correct
     if (
       answer.toLocaleLowerCase() ===
       questions[currentQuestionIndex].answer.toLocaleLowerCase()
     ) {
-      console.log('correct');
+      // console.log('correct');
       correct = true;
     }
     // then upload the attempt to the database
     if (session?.user.competitorId === undefined)
       return console.log('no competitor id');
 
-    console.log(questions[currentQuestionIndex].id);
+    // console.log(questions[currentQuestionIndex].id);
     createAttempt({
       competitionId: 'c1',
       questionId: questions[currentQuestionIndex].id,
@@ -53,7 +54,7 @@ export default function GameWrapper({
 
     // check if there are still questions left
     if (currentQuestionIndex + 1 >= questions.length) {
-      console.log('no more questions');
+      // console.log('no more questions');
       setGameEnded(true);
       return;
     }
@@ -61,7 +62,12 @@ export default function GameWrapper({
   };
 
   return (
-    <div>
+    <div className="flex flex-col items-center pt-16">
+      <Progress
+        value={((currentQuestionIndex + 1) / questions.length) * 100}
+        className="h-2.5 w-full max-w-lg"
+      />
+      {currentQuestionIndex + 1} / {questions.length} kérdés
       {!gameEnded ? (
         <GameCore
           question={questions[currentQuestionIndex]}
