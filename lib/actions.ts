@@ -65,11 +65,12 @@ export async function createTeam(name: string, description: string, year: string
   }
 }
 export async function deleteTeams(names: string[]) { return prisma.team.deleteMany({ where: { name: { in: names } } }); }
-export async function updateTeam(oldTeamName: string, newName: string, newDescription: string, newYear: string, newClass: string, oldCompetitors: string[], newCompetitors: string[]) {
+export async function updateTeam(oldTeamId: string, newName: string, newDescription: string, newYear: string, newClass: string, oldCompetitors: string[], newCompetitors: string[]) {
   try {
-    const oldTeam = await prisma.team.findUnique({ where: { name: oldTeamName }, include: { competitors: true } });
+    const oldTeam = await prisma.team.findUnique({ where: { id: oldTeamId }, include: { competitors: true } });
+
     if (!oldTeam) {
-      throw new Error(`Team ${oldTeamName} not found`);
+      throw new Error(`Team ${oldTeamId} not found`);
     }
 
     const users = await prisma.user.findMany({ where: { username: { in: newCompetitors } } });
@@ -171,4 +172,8 @@ export async function createCompetition({ name, description, year, startDate, en
 
 export async function getCompetitions(competitionId: string) {
   return prisma.competition.findMany({ where: { id: competitionId }, include: { questions: true } });
-} 
+}
+
+// COMPETITIONS
+export async function getCompetitions() { return prisma.competition.findMany() }
+export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }

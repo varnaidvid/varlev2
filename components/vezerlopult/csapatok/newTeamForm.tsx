@@ -105,8 +105,12 @@ const NewTeamForm = () => {
   }, [year, classNumber]);
 
   useEffect(() => {
+    console.log('asd');
     setDraggableItems([]);
     setDroppedItems([]);
+    setCompetitors([]);
+
+    console.log(sortedDraggables);
   }, []);
 
   useEffect(() => {
