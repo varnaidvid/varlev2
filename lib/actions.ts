@@ -322,10 +322,10 @@ export async function getHtmlText() {
 
 // stats
 // based on competitionId -> get all teams -> get all competitors -> get all attempts | this action should return the stats of a team
-export async function getTeamStatsByCompetitionId(teamId: string) {
+export async function getTeamStatsById(teamId: string) {
   prisma.team.findUnique({
     where: {
-      id: "teamId" // Replace with the actual team ID
+      id: teamId // Replace with the actual team ID
     },
     include: {
       competitors: {
