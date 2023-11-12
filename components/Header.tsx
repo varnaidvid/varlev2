@@ -24,7 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { LogOut } from 'lucide-react';
+import { LogOut, LogIn } from 'lucide-react';
 
 const Header = () => {
   const router = useRouter();
@@ -57,10 +57,61 @@ const Header = () => {
                 </Link>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                    <ListItem>Leirás</ListItem>
-                    <ListItem>Leirás</ListItem>
-                    <ListItem>Leirás</ListItem>
-                    <ListItem>Leirás</ListItem>
+                    <ListItem
+                      title="Felhasználók"
+                      href="/vezerlopult/felhasznalok"
+                    >
+                      Itt kezelheti a felhasználókat, létrehozhat újakat vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
+                    <ListItem title="Csapatok" href="/vezerlopult/csapatok">
+                      Itt kezelheti a csapatokat, létrehozhat újakat vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
+                    <ListItem title="Versenyek" href="/vezerlopult/versenyek">
+                      Itt kezelheti a versenyeket, létrehozhat újakat vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
+                    <ListItem title="Feladatok" href="/vezerlopult/feladatok">
+                      Itt kezelheti a feladatokat, létrehozhat újakat, vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
+
+            {session?.user.role == 'tanar' && (
+              <NavigationMenuItem>
+                <Link href="/vezerlopult" legacyBehavior passHref>
+                  <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-lg font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                    Vezérlőpult
+                  </NavigationMenuTrigger>
+                </Link>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    <ListItem title="Feladatok" href="/vezerlopult/feladatok">
+                      Itt kezelheti a feladatokat, létrehozhat újakat, vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
+
+            {session?.user.role == 'zsuri' && (
+              <NavigationMenuItem>
+                <Link href="/vezerlopult" legacyBehavior passHref>
+                  <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-lg font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                    Vezérlőpult
+                  </NavigationMenuTrigger>
+                </Link>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    <ListItem title="Versenyek" href="/vezerlopult/versenyek">
+                      Itt kezelheti a versenyeket, létrehozhat újakat vagy
+                      szerkesztheti a meglévőket.
+                    </ListItem>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -81,7 +132,18 @@ const Header = () => {
         {!session && status != 'loading' ? (
           <>
             <Button variant={'ghost'}>
-              <Link href="/bejelentkezes">Bejelentkezés</Link>
+              <Link href="/bejelentkezes">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <LogIn />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Bejelentkezés</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Link>
             </Button>
           </>
         ) : status != 'loading' ? (
