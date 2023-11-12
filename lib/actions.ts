@@ -65,38 +65,32 @@ export async function createTeam(name: string, description: string, year: string
   }
 }
 export async function deleteTeams(names: string[]) { return prisma.team.deleteMany({ where: { name: { in: names } } }); }
-export async function updateTeam(teamName: string, newName: string, description: string, year: string, _class: string, competitors: string[], newCompetitors: string[]) {
+export async function updateTeam(oldTeamName: string, newName: string, newDescription: string, newYear: string, newClass: string, oldCompetitors: string[], newCompetitors: string[]) {
   try {
-    const users = await prisma.user.findMany({ where: { username: { in: competitors } } });
-    console.log("users", users)
+    const oldTeam = await prisma.team.findUnique({ where: { name: oldTeamName }, include: { competitors: true } });
+    if (!oldTeam) {
+      throw new Error(`Team ${oldTeamName} not found`);
+    }
 
-    const _competitors = await prisma.competitor.findMany({ where: { userId: { in: users.map(user => user.id) } } });
-    console.log("_competitors", _competitors)
+    const users = await prisma.user.findMany({ where: { username: { in: newCompetitors } } });
+    const newCompetitorIds = await prisma.competitor.findMany({ where: { userId: { in: users.map(user => user.id) } } }).then(competitors => competitors.map(competitor => competitor.id));
 
-    const newUsers = await prisma.user.findMany({ where: { username: { in: newCompetitors } } });
-    console.log("newUsers", newUsers)
-
-    const new_competitors = await prisma.competitor.findMany({ where: { userId: { in: newUsers.map(user => user.id) } } });
-    console.log("new_competitors", new_competitors)
-
-
-    const team = await prisma.team.update({
-      where: { name: teamName },
+    const updatedTeam = await prisma.team.update({
+      where: { id: oldTeam.id },
       data: {
         name: newName,
-        description,
-        year: parseInt(year),
-        class: _class,
+        description: newDescription,
+        year: parseInt(newYear),
+        class: newClass,
         competitors: {
-          disconnect: _competitors.map(competitor => ({ id: competitor.id })),
-          connect: new_competitors.map(competitor => ({ id: competitor.id })),
+          disconnect: oldTeam.competitors.filter(competitor => !newCompetitorIds.includes(competitor.id)).map(competitor => ({ id: competitor.id })),
+          connect: newCompetitorIds.filter(id => !oldTeam.competitors.some(competitor => competitor.id === id)).map(id => ({ id })),
         },
       },
+      include: { competitors: true },
     });
 
-    console.log("team", team)
-
-    return team;
+    return updatedTeam;
   } catch (error) {
     throw error;
   }

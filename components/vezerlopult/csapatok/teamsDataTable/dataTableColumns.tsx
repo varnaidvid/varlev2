@@ -88,10 +88,29 @@ const TeamsColumns: ColumnDef<Team>[] = [
   {
     id: 'year',
     accessorKey: 'Évfolyam',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Évfolyam" />
+    ),
+    cell: ({ row }) => {
+      const year = row.original.year;
+
+      return <span>{year}</span>;
+    },
+    filterFn: (row: any, id: any, value: any) => {
+      return row.original[id] == value;
+    },
   },
   {
     id: 'class',
     accessorKey: 'Osztály',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Osztály" />
+    ),
+    cell: ({ row }) => {
+      const classNumber = row.original.class;
+
+      return <span>{classNumber}</span>;
+    },
   },
   {
     accessorKey: 'description',
@@ -101,8 +120,8 @@ const TeamsColumns: ColumnDef<Team>[] = [
 
       return (
         <span>
-          {description.length > 50
-            ? description.slice(0, 50) + '...'
+          {description.length > 30
+            ? description.slice(0, 30) + '...'
             : description}
         </span>
       );

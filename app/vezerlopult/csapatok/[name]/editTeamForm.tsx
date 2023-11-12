@@ -109,10 +109,8 @@ const EditTeamForm = ({ name }: { name: string }) => {
       setDraggableItems(
         competitors
           .map((competitor) => competitor.user.username)
+          .filter((competitor) => !droppedItems?.includes(competitor))
           .sort((a, b) => a.localeCompare(b))
-      );
-      setDroppedItems(
-        teamMembers.map((teamMember) => teamMember.user.username)
       );
 
       setCompetitors(competitors);
@@ -129,6 +127,9 @@ const EditTeamForm = ({ name }: { name: string }) => {
   useEffect(() => {
     async function getMembers() {
       const teamMembers = await getTeamMembers(decodeURI(name));
+      setDroppedItems(
+        teamMembers.map((teamMember) => teamMember.user.username)
+      );
 
       setTeamMembers(teamMembers);
     }
@@ -174,6 +175,35 @@ const EditTeamForm = ({ name }: { name: string }) => {
       competitors: ['', '', ''],
     },
   });
+
+  useEffect(() => {
+    async function fetchNewCompetitors() {
+      setDraggableItems([]);
+      setDroppedItems([]);
+
+      const competitors = await getCompetitorsByYearAndClass(
+        year!,
+        classNumber!
+      );
+
+      setDraggableItems(
+        competitors
+          .map((competitor) => competitor.user.username)
+          .filter((competitor) => !droppedItems?.includes(competitor))
+          .sort((a, b) => a.localeCompare(b))
+      );
+
+      setCompetitors(competitors);
+    }
+
+    if (
+      year &&
+      classNumber &&
+      (team?.year != year || team?.class != classNumber)
+    ) {
+      fetchNewCompetitors();
+    }
+  }, [year, classNumber]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -257,7 +287,11 @@ const EditTeamForm = ({ name }: { name: string }) => {
                 <FormItem>
                   <FormLabel>Csapat név</FormLabel>
                   <FormControl>
-                    <Input placeholder="A Bosszúállók" {...field} required />
+                    {isTeamLoading ? (
+                      <Skeleton className="h-12 w-full" />
+                    ) : (
+                      <Input placeholder="A Bosszúállók" {...field} required />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -271,11 +305,15 @@ const EditTeamForm = ({ name }: { name: string }) => {
                 <FormItem>
                   <FormLabel>Csapat rövid leírása</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="A Bosszúállók egy szuperhősökből álló csapat, melynek célja..."
-                      {...field}
-                      required
-                    />
+                    {isTeamLoading ? (
+                      <Skeleton className="h-16 w-full" />
+                    ) : (
+                      <Textarea
+                        placeholder="A Bosszúállók egy szuperhősökből álló csapat, melynek célja..."
+                        {...field}
+                        required
+                      />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -290,23 +328,28 @@ const EditTeamForm = ({ name }: { name: string }) => {
                   <FormItem className="w-full">
                     <FormLabel>Évfolyam kiválasztása</FormLabel>
                     <FormControl>
-                      <Select
-                        onValueChange={(value: string) =>
-                          setYear(parseInt(value))
-                        }
-                        value={year?.toString()}
-                        required
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Évfolyam" />
-                        </SelectTrigger>
-                        <SelectContent className="w-2">
-                          <SelectItem value="5">5.</SelectItem>
-                          <SelectItem value="6">6.</SelectItem>
-                          <SelectItem value="7">7.</SelectItem>
-                          <SelectItem value="8">8.</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {isTeamLoading && !classNumber ? (
+                        <Skeleton className="h-12 w-full" />
+                      ) : (
+                        <Select
+                          defaultValue={team?.year.toString()!}
+                          onValueChange={(value: string) =>
+                            setYear(parseInt(value))
+                          }
+                          value={year?.toString()}
+                          required
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Évfolyam" />
+                          </SelectTrigger>
+                          <SelectContent className="w-2">
+                            <SelectItem value="5">5.</SelectItem>
+                            <SelectItem value="6">6.</SelectItem>
+                            <SelectItem value="7">7.</SelectItem>
+                            <SelectItem value="8">8.</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
                     </FormControl>
                   </FormItem>
                 )}
@@ -319,21 +362,28 @@ const EditTeamForm = ({ name }: { name: string }) => {
                   <FormItem className="w-full">
                     <FormLabel>Osztály kiválasztása</FormLabel>
                     <FormControl>
-                      <Select
-                        onValueChange={(value: string) => setClassNumber(value)}
-                        value={classNumber}
-                        required
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Osztály" />
-                        </SelectTrigger>
-                        <SelectContent className="w-2">
-                          <SelectItem value="A">A</SelectItem>
-                          <SelectItem value="B">B</SelectItem>
-                          <SelectItem value="C">C</SelectItem>
-                          <SelectItem value="D">D</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {isTeamLoading && !year ? (
+                        <Skeleton className="h-12 w-full" />
+                      ) : (
+                        <Select
+                          defaultValue={team?.class}
+                          onValueChange={(value: string) =>
+                            setClassNumber(value)
+                          }
+                          value={classNumber}
+                          required
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Osztály" />
+                          </SelectTrigger>
+                          <SelectContent className="w-2">
+                            <SelectItem value="A">A</SelectItem>
+                            <SelectItem value="B">B</SelectItem>
+                            <SelectItem value="C">C</SelectItem>
+                            <SelectItem value="D">D</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
                     </FormControl>
                   </FormItem>
                 )}
@@ -347,9 +397,9 @@ const EditTeamForm = ({ name }: { name: string }) => {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>
-                      {year && classNumber ? (
+                      {team?.year && team?.class ? (
                         <span>
-                          {year}. {classNumber} osztály tanulói
+                          {team?.year}. {team?.class} osztály tanulói
                         </span>
                       ) : (
                         <span>Nincs kiválasztva osztály</span>

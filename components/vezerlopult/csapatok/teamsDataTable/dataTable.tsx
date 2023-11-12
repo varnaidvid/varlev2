@@ -11,6 +11,8 @@ import {
   getFilteredRowModel,
   ColumnFiltersState,
   VisibilityState,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
 } from '@tanstack/react-table';
 
 import {
@@ -43,19 +45,28 @@ export function TeamsDataTable<TData, TValue>({
   ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+
   const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
+      rowSelection,
+      columnVisibility,
       columnFilters,
     },
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (

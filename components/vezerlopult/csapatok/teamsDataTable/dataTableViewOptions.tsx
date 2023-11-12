@@ -24,6 +24,8 @@ export default function DataTableViewOptions<TData>({
   const columnMap = {
     name: 'Csapatnév',
     description: 'Rövid leírás',
+    year: 'Évfolyam',
+    class: 'Osztály',
     createdAt: 'Létrehozva',
     updatedAt: 'Frissítve',
   };
