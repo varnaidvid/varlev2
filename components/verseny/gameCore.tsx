@@ -72,22 +72,24 @@ export default function Game({
   }, [question]);
 
   return (
-    <div className="w-full items-center mx-auto max-w-screen-xl flex flex-col py-16">
-      <Progress value={(7 / 10) * 100} className="h-1 w-full max-w-lg" />
+    <div className="w-full items-center flex flex-col gap-8">
       {/* 3 kész szó container-je */}
-      <div className="flex w-fit mx-auto justify-between gap-8 mt-48">
+      <div className="w-full justify-between gap-6 grid grid-cols-1 sm:grid-cols-3">
         {question.words.map((word) => (
           <WordCard word={word} key={word} />
         ))}
       </div>
       <form
         onSubmit={handleAnswerSubmit}
-        className="flex flex-col w-full max-w-2xl"
+        className="flex flex-col w-full gap-2"
       >
+        <label htmlFor="answer" className="font-medium text-gray-500">
+          Tipp:
+        </label>
         <Input
           name="answer"
           ref={inputRef}
-          className="mt-16 text-4xl py-10 rounded-xl text-center font-mono uppercase font-bold tracking-widest"
+          className="text-4xl border-blue-600 border-[2px] rounded-lg text-center font-mono uppercase font-bold tracking-widest"
           value={input}
           type="text"
           onMouseDown={preventCursorMovement}
@@ -121,16 +123,21 @@ export default function Game({
           }}
         />
         <Button
-          className="mt-4 text-xl font-mono"
+          size={'lg'}
+          className="mt-4 group font-mono bg-blue-600 hover:bg-blue-700 font-extrabold text-white text-base disabled:bg-gray-400 disabled:opacity-100 disabled:cursor-not-allowed"
           disabled={Object.values(letters).some((count) => count > 0)}
         >
           Következő
-          <ArrowRight className="ml-2" size={20} />
+          <ArrowRight
+            className="ml-2 group-hover:translate-x-3 transition-transform"
+            weight="bold"
+            size={22}
+          />
         </Button>
       </form>
 
       {/* betűk container-je */}
-      <div className="flex w-fit mx-auto justify-between gap-4 mt-36">
+      <div className="flex w-fit mx-auto justify-between gap-4 mt-8">
         {
           // render all the letters
           Object.entries(letters).flatMap(([letter, count]) =>

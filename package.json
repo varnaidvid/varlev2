@@ -50,6 +50,7 @@
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
     "env": "^0.0.2",
+    "html-react-parser": "^5.0.6",
     "lexical": "^0.12.2",
     "lucide-react": "^0.292.0",
     "next": "14.0.1",

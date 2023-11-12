@@ -6,7 +6,7 @@ export default function LetterCard({
   used: boolean;
 }) {
   return (
-    <div className="flex w-12 h-12 items-center justify-center text-xl font-mono font-bold bg-neutral-100 border-neutral-300 rounded-xl border border-border shadow capitalize text-neutral-700">
+    <div className="flex w-10 h-10 font-mono items-center justify-center rounded-lg bg-gray-200 font-medium">
       {letter}
     </div>
   );
