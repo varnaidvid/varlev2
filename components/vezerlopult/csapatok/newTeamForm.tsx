@@ -105,13 +105,9 @@ const NewTeamForm = () => {
   }, [year, classNumber]);
 
   useEffect(() => {
-    console.log('asd');
-    setDraggableItems([]);
-    setDroppedItems([]);
-    setCompetitors([]);
-
-    console.log(sortedDraggables);
-  }, []);
+    setDraggableItems(null);
+    setDroppedItems(null);
+  });
 
   useEffect(() => {
     form.setValue('competitors', droppedItems);
@@ -345,9 +341,15 @@ const NewTeamForm = () => {
 
                             <CardHeader>
                               <div className="grid md:grid-cols-2 gap-3">
-                                {sortedDraggables?.map((item, index) => (
-                                  <Box name={item} key={index} index={index} />
-                                ))}
+                                {draggableItems &&
+                                  draggableItems?.length != 0 &&
+                                  sortedDraggables?.map((item, index) => (
+                                    <Box
+                                      name={item}
+                                      key={index}
+                                      index={index}
+                                    />
+                                  ))}
                               </div>
                             </CardHeader>
                           </>

@@ -12,6 +12,7 @@ declare module "next-auth" {
             avatar: string;
             createdAt: string;
             updatedAt: string;
+            competitorId?: string;
         } & DefaultSession["user"];
     }
 }

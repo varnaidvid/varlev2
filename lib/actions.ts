@@ -145,7 +145,47 @@ export async function getCompetitorsByYearAndClass(year: number, _class: string)
     },
   });
 }
+export async function getCompitetorIdByUserId(userId: string) {
+  return prisma.competitor.findUnique({ where: { userId }, select: { id: true } });
+}
 
 // COMPETITIONS
 export async function getCompetitions() { return prisma.competition.findMany() }
 export async function deleteCompetitions(names: string[]) { return prisma.competition.deleteMany({ where: { name: { in: names } } }) }
+export async function createCompetition(name: string, description: string, year: string, startDate: Date, endDate: Date, questions: string[], jurys: string[], teams: string[]) {
+  try {
+    const _questions = await prisma.question.findMany({ where: { id: { in: questions } } });
+    const _jurys = await prisma.user.findMany({ where: { username: { in: jurys } } });
+    const _teams = await prisma.team.findMany({ where: { name: { in: teams } } });
+
+    const questions1 = _questions.slice(0, _questions.length / 3);
+    const questions2 = _questions.slice(_questions.length / 3, _questions.length / 3 * 2);
+    const questions3 = _questions.slice(_questions.length / 3 * 2, _questions.length);
+
+    const competition = await prisma.competition.create({
+      data: {
+        name,
+        description,
+        year: year.toString(),
+        startDate,
+        endDate,
+
+        // @ts-ignore
+        questions1: { connect: questions1.map(question => ({ id: question.id })) },
+
+        // @ts-ignore
+        questions2: { connect: questions2.map(question => ({ id: question.id })) },
+
+        // @ts-ignore
+        questions3: { connect: questions3.map(question => ({ id: question.id })) },
+
+        jurys: { connect: _jurys.map(jury => ({ id: jury.id })) },
+        teams: { connect: _teams.map(team => ({ id: team.id })) },
+      },
+    });
+
+    return competition;
+  } catch (error) {
+    throw error;
+  }
+}
