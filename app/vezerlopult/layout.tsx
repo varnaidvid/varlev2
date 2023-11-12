@@ -39,7 +39,7 @@ export default function VezerloLayout({
     required: true,
     onUnauthenticated() {
       toast.error('Hozzáférés megtagadva');
-      redirect('/');
+      redirect('/bejelentkezes');
     },
   });
   const [user, setUser] = useState<User | null>(null);
@@ -50,6 +50,7 @@ export default function VezerloLayout({
 
   const [draggableItems, setDraggableItems] = useState<string[] | null>(null);
   const [droppedItems, setDroppedItems] = useState<string[] | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   useEffect(() => {
     if (session && session.user.role == 'diak' && status == 'authenticated') {
@@ -76,6 +77,8 @@ export default function VezerloLayout({
           setDraggableItems,
           droppedItems,
           setDroppedItems,
+          isDragging,
+          setIsDragging,
         }}
       >
         <main className="mt-24">{children}</main>

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CaretUp, Check, CircleNotch } from '@phosphor-icons/react';
+import { CaretUp, Check, CircleNotch, Trash } from '@phosphor-icons/react';
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import {
 import Link from 'next/link';
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import {
   Form,
@@ -47,9 +47,11 @@ import { Textarea } from '@/components/ui/textarea';
 import * as React from 'react';
 
 import { useDrop } from 'react-dnd';
-import { DraggableItem } from './draggableItem';
-import Draggable from '@/components/draggable';
 import { VezerloContext } from '@/app/vezerlopult/layout';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Dustbin } from '@/components/vezerlopult/csapatok/draggable/Dustbin';
+import { Box } from '@/components/vezerlopult/csapatok/draggable/Box';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type customCompetitorType = {
   id: string;
@@ -73,14 +75,21 @@ const NewTeamForm = () => {
 
   const [competitors, setCompetitors] = useState<customCompetitorType[]>([]);
 
-  const { setDraggableItems } = React.useContext(VezerloContext);
+  const { draggableItems, setDraggableItems, droppedItems, setDroppedItems } =
+    React.useContext(VezerloContext);
+
+  const sortedDraggables = React.useMemo(() => {
+    return draggableItems?.sort((a, b) => a.localeCompare(b));
+  }, [draggableItems]);
 
   useEffect(() => {
     async function getCompetitors() {
       const competitors = await getTeamCreateCompetitors(year!, classNumber!);
 
       setDraggableItems(
-        competitors.map((competitor) => competitor.user.username)
+        competitors
+          .map((competitor) => competitor.user.username)
+          .sort((a, b) => a.localeCompare(b))
       );
 
       setCompetitors(competitors);
@@ -88,10 +97,21 @@ const NewTeamForm = () => {
 
     if (session?.user?.role != 'diak' && year && classNumber) {
       form.setValue('competitors', ['', '', '']);
+      setDraggableItems([]);
+      setDroppedItems([]);
 
       getCompetitors();
     }
   }, [year, classNumber]);
+
+  useEffect(() => {
+    form.setValue('competitors', droppedItems);
+  }, [droppedItems]);
+
+  useEffect(() => {
+    const sorted = draggableItems?.sort((a, b) => a.localeCompare(b));
+    setDraggableItems(sorted ?? []);
+  }, [draggableItems]);
 
   const formSchema: any = z.object({
     name: z.string().min(3, {
@@ -116,52 +136,46 @@ const NewTeamForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     toast.loading('Csapat létrehozása folyamatban...', {
-      id: 'signup',
+      id: 'registration',
     });
 
     try {
-      // const res = await createTeam(values.name, values.description, values.competitors);
+      const res = await createTeam(
+        values.name,
+        values.description,
+        values.competitors
+      );
 
       toast.success('Sikeres létrehozás!', {
-        id: 'signup',
+        id: 'registration',
       });
 
+      form.reset();
+
       setIsLoading(false);
-      redirect('/vezerlopult/csapatok');
-    } catch (error) {
+      router.push('/vezerlopult/csapatok');
+    } catch (error: any) {
       setIsLoading(false);
 
+      console.log(error);
+
       if ((error as Error).message.includes('Unique')) {
-        form.setError('username', {
+        form.setError('name', {
           type: 'manual',
           message: 'Létezik már ilyen nevű csapat!',
         });
 
+        toast.error('Létezik már ilyen nevű csapat!', {
+          id: 'registration',
+        });
         return;
       }
 
-      toast.error('Hiba történt a frissítés során!', {
-        id: 'signup',
+      toast.error('Hiba történt a létrehozás során!', {
+        id: 'registration',
       });
       return;
     }
-  }
-
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: '',
-    drop: () => ({ name: 'Dustbin' }),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }));
-
-  const isActive = canDrop && isOver;
-  let backgroundColor = '#222';
-  if (isActive) {
-    backgroundColor = 'darkgreen';
-  } else if (canDrop) {
-    backgroundColor = 'darkkhaki';
   }
 
   return (
@@ -178,7 +192,7 @@ const NewTeamForm = () => {
           <CardContent className="space-y-5">
             <FormField
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Csapat név</FormLabel>
@@ -208,7 +222,7 @@ const NewTeamForm = () => {
               )}
             />
 
-            <div className="flex gap-2">
+            <div className="flex gap-4">
               <FormField
                 control={form.control}
                 name=""
@@ -262,30 +276,75 @@ const NewTeamForm = () => {
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name=""
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Kiválasztott osztály tanulói</FormLabel>
-                  <FormControl>
-                    <Card>
-                      <CardHeader>
-                        {year && classNumber ? (
-                          <span>
-                            {year}. {classNumber} osztály tanulói
-                          </span>
-                        ) : (
-                          <CardTitle>...</CardTitle>
-                        )}
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name=""
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>
+                      {year && classNumber ? (
+                        <span>
+                          {year}. {classNumber} osztály tanulói
+                        </span>
+                      ) : (
+                        <span>Nincs kiválasztva osztály</span>
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Card>
+                        <ScrollArea
+                          className={`h-[250px] ${
+                            draggableItems?.length == 0 &&
+                            droppedItems?.length! >= 0
+                              ? 'relative'
+                              : ''
+                          }`}
+                        >
+                          <>
+                            <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                              {draggableItems?.length == 0
+                                ? year && classNumber
+                                  ? 'Nincsenek versenyzők az osztályban'
+                                  : 'Válasszon ki egy osztályt...'
+                                : droppedItems?.length! >= 0 &&
+                                  draggableItems?.length == 0
+                                ? 'Nincs több tanuló'
+                                : ''}
+                            </span>
 
-                        <Draggable />
-                      </CardHeader>
-                    </Card>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                            <CardHeader>
+                              <div className="grid md:grid-cols-2 gap-3">
+                                {sortedDraggables?.map((item, index) => (
+                                  <Box name={item} key={index} index={index} />
+                                ))}
+                              </div>
+                            </CardHeader>
+                          </>
+                        </ScrollArea>
+                      </Card>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name=""
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Csapattagok</FormLabel>
+                    <FormControl>
+                      <Card className="h-[250px]">
+                        <CardHeader>
+                          <Dustbin />
+                        </CardHeader>
+                      </Card>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <p className="text-sm text-muted-foreground">
               Megjegyzés: csak azok a versenyzők elérhetőek kiválasztásra akik
