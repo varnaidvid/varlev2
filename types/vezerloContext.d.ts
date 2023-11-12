@@ -1,4 +1,4 @@
-import { Team, User } from '@prisma/client';
+import { Competition, Team, User } from '@prisma/client';
 import React from 'react';
 
 export interface vezerloContextType {
@@ -28,4 +28,14 @@ export interface vezerloContextType {
     setTeam: React.Dispatch<React.SetStateAction<Team | null>>;
     isTeamLoading: boolean;
     setIsTeamLoading: React.Dispatch<React.SetStateAction<boolean>>;
+
+    competitions: Competition[] | null;
+    setCompetitions: React.Dispatch<React.SetStateAction<Competition[] | null>>;
+    isCompetitionsLoading: boolean;
+    setIsCompetitionsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+
+    competition: Competition | null;
+    setCompetition: React.Dispatch<React.SetStateAction<Competition | null>>;
+    isCompetitionLoading: boolean;
+    setIsCompetitionLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }

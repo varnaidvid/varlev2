@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { getUsers } from '@/lib/actions';
 import { vezerloContextType } from '@/types/vezerloContext';
 import { ArrowClockwise } from '@phosphor-icons/react';
-import { Team, User } from '@prisma/client';
+import { Competition, Team, User } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 import { createContext, useEffect, useState } from 'react';
@@ -37,6 +37,16 @@ export const VezerloContext = createContext<vezerloContextType>({
   setTeam: () => null as any,
   isTeamLoading: false,
   setIsTeamLoading: () => null as any,
+
+  competitions: null as Competition[] | null,
+  setCompetitions: () => null as any,
+  isCompetitionsLoading: false,
+  setIsCompetitionsLoading: () => null as any,
+
+  competition: null as Competition | any,
+  setCompetition: () => null as any,
+  isCompetitionLoading: false,
+  setIsCompetitionLoading: () => null as any,
 });
 
 export default function VezerloLayout({
@@ -69,6 +79,14 @@ export default function VezerloLayout({
 
   const [team, setTeam] = useState<Team | null>(null);
   const [isTeamLoading, setIsTeamLoading] = useState<boolean>(false);
+
+  const [competition, setCompetition] = useState<Competition | null>(null);
+  const [isCompetitionLoading, setIsCompetitionLoading] =
+    useState<boolean>(false);
+
+  const [competitions, setCompetitions] = useState<Competition[] | null>(null);
+  const [isCompetitionsLoading, setIsCompetitionsLoading] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (session && session.user.role == 'diak' && status == 'authenticated') {
@@ -107,6 +125,16 @@ export default function VezerloLayout({
           setTeam,
           isTeamLoading,
           setIsTeamLoading,
+
+          competitions,
+          setCompetitions,
+          isCompetitionsLoading,
+          setIsCompetitionsLoading,
+
+          competition,
+          setCompetition,
+          isCompetitionLoading,
+          setIsCompetitionLoading,
         }}
       >
         <main className="mt-24">{children}</main>
