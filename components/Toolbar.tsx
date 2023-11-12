@@ -11,8 +11,11 @@ import {
   Code,
   Minus,
   Pilcrow,
+  Undo,
+  Image,
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
+import { unstable_renderSubtreeIntoContainer } from 'react-dom';
 type Props = {
   editor: Editor | null;
 };
@@ -71,14 +74,35 @@ export function Toolbar({ editor }: Props) {
         size="sm"
         onClick={() => editor.chain().focus().setHorizontalRule().run()}
       >
-        <Minus className="h-4 w-4"/>
+        <Minus className="h-4 w-4" />
       </Toggle>
-      
+
       <Toggle
         size="sm"
         onClick={() => editor.chain().focus().setHardBreak().run()}
       >
-        <Pilcrow className="h-4 w-4"/>
+        <Pilcrow className="h-4 w-4" />
+      </Toggle>
+
+      <Toggle
+        size="sm"
+        onClick={() => editor.chain().focus().undo().run()}
+        disabled={!editor.can().chain().focus().undo().run()}
+      >
+        <Undo className="h-4 w-4" />
+      </Toggle>
+
+      <Toggle
+        size="sm"
+        onClick={() => {
+          const url = window.prompt('URL');
+
+          if (url) {
+            editor.chain().focus().setImage({ src: url }).run();
+          }
+        }}
+      >
+        <Image className="h-4 w-4" />
       </Toggle>
 
       {/*<Toggle
