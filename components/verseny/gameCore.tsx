@@ -3,8 +3,10 @@
 import { Progress } from '@/components/ui/progress';
 import WordCard from './wordCard';
 import LetterCard from './letterCard';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
+import { Button } from '../ui/button';
+import { ArrowRight } from '@phosphor-icons/react';
 
 export type QuestionWithScrambledWord = {
   id: string;
@@ -63,6 +65,11 @@ export default function Game({
     setInput('');
   };
 
+  useEffect(() => {
+    console.log('use effect');
+    setLetters(createLetterCounts(question.scrambledWord));
+  }, [question]);
+
   return (
     <div className="w-full items-center mx-auto max-w-screen-xl flex flex-col py-16">
       <Progress value={(7 / 10) * 100} className="h-1 w-full max-w-lg" />
@@ -72,11 +79,14 @@ export default function Game({
           <WordCard word={word} key={word} />
         ))}
       </div>
-      <form onSubmit={handleAnswerSubmit}>
+      <form
+        onSubmit={handleAnswerSubmit}
+        className="flex flex-col w-full max-w-lg"
+      >
         <Input
           name="answer"
           ref={inputRef}
-          className="mt-16"
+          className="mt-16 text-5xl py-10 rounded-xl text-center font-mono uppercase font-bold tracking-widest"
           value={input}
           type="text"
           onMouseDown={preventCursorMovement}
@@ -109,10 +119,17 @@ export default function Game({
             }
           }}
         />
+        <Button
+          className="mt-4 text-xl font-mono"
+          disabled={Object.values(letters).some((count) => count > 0)}
+        >
+          Következő
+          <ArrowRight className="ml-2" size={20} />
+        </Button>
       </form>
 
       {/* betűk container-je */}
-      <div className="flex w-fit mx-auto justify-between gap-4 mt-48">
+      <div className="flex w-fit mx-auto justify-between gap-4 mt-36">
         {
           // render all the letters
           Object.entries(letters).flatMap(([letter, count]) =>
