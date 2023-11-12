@@ -48,7 +48,7 @@ export default function BemutatkozoPage() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // VÁRNAIII
+    console.log(values);
   }
 
   return (
@@ -98,7 +98,6 @@ export default function BemutatkozoPage() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Tiptap
                       description={field.name}
@@ -109,7 +108,7 @@ export default function BemutatkozoPage() {
                 </FormItem>
               )}
             />
-            <Button className="mt-4" type="submit">
+            <Button className="mb-12 mt-2" type="submit">
               Save
             </Button>
           </form>
