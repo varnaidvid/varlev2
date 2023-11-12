@@ -4,7 +4,7 @@ import { Table } from '@tanstack/react-table';
 
 import { Input } from '@/components/ui/input';
 
-import { DataTableFacetedFilter } from './dataTableFacetedFilter';
+import { DataTableFacetedFilter } from '@/components/datatable/dataTableFacetedFilter';
 import DataTableViewOptions from './dataTableViewOptions';
 import {
   AlertDialog,
@@ -16,13 +16,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '../ui/alert-dialog';
+} from '@/components/ui/alert-dialog';
 import { ArrowLeft, Trash } from '@phosphor-icons/react';
-import { deleteQuestion, deleteQuestions, deleteUsers } from '@/lib/actions';
+import { deleteQuestion, deleteQuestions, deleteTeams } from '@/lib/actions';
 import toast from 'react-hot-toast';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { VezerloContext } from '@/app/vezerlopult/layout';
 import { useContext } from 'react';
+import { Team } from '@prisma/client';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -31,85 +32,23 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const { users, setUsers } = useContext(VezerloContext);
+  const { teams, setTeams } = useContext(VezerloContext);
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        {table.getColumn('username') && (
+        {table.getColumn('name') && (
           <Input
             placeholder="Keresés felhasználónév alapján..."
-            value={
-              (table.getColumn('username')?.getFilterValue() as string) ?? ''
-            }
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table.getColumn('username')?.setFilterValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
             }
-            className="max-w-sm"
-          />
-        )}
-        {table.getColumn('word4') && (
-          <Input
-            placeholder="Keresés 4. szavak alapján..."
-            value={(table.getColumn('word4')?.getFilterValue() as string) || ''}
-            onChange={(event) => {
-              const value = event.target.value;
-              table.getColumn('word4')?.setFilterValue(value);
-            }}
             className="max-w-sm"
           />
         )}
       </div>
       <div className="flex gap-2">
-        {table.getColumn('role') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('role')}
-            title="Szerepkör"
-            options={[
-              {
-                label: 'Webmester',
-                value: 'webmester',
-                icon: undefined,
-              },
-              {
-                label: 'Zsűri',
-                value: 'zsuri',
-              },
-              {
-                label: 'Tanár',
-                value: 'tanar',
-              },
-              {
-                label: 'Diák',
-                value: 'diak',
-              },
-            ]}
-          />
-        )}
-        {table.getColumn('year') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('year')}
-            title="Évfolyam"
-            options={[
-              {
-                label: '5. évfolyam',
-                value: '5',
-              },
-              {
-                label: '6. évfolyam',
-                value: '6',
-              },
-              {
-                label: '7. évfolyam',
-                value: '7',
-              },
-              {
-                label: '8. évfolyam',
-                value: '8',
-              },
-            ]}
-          />
-        )}
         <DataTableViewOptions table={table} />
 
         {table.getFilteredSelectedRowModel().rows.length !== 0 && (
@@ -124,9 +63,9 @@ export function DataTableToolbar<TData>({
                       <b>
                         {table
                           .getFilteredSelectedRowModel()
-                          .rows[0]?.getValue('username')}{' '}
+                          .rows[0]?.getValue('name')}{' '}
                       </b>
-                      nevű felhasználót.
+                      nevű csapatot.
                     </div>
                   ) : (
                     <div>
@@ -134,7 +73,7 @@ export function DataTableToolbar<TData>({
                       <b>
                         {table.getFilteredSelectedRowModel().rows.length} db{' '}
                       </b>
-                      felhasználót.
+                      csapatot.
                     </div>
                   )}
                 </AlertDialogDescription>
@@ -146,19 +85,20 @@ export function DataTableToolbar<TData>({
                 <AlertDialogAction
                   className="w-full"
                   onClick={async () => {
-                    const usernames: string[] = table
+                    const teamNames: string[] = table
                       .getFilteredSelectedRowModel()
-                      .rows.map((row) => row.getValue('username'));
+                      .rows.map((row) => row.getValue('name'));
 
-                    const res: any = await deleteUsers(usernames);
+                    const res: any = await deleteTeams(teamNames);
 
                     if (res.status == 500) toast.error(res.message);
                     else {
-                      setUsers(
-                        users?.filter(
-                          (user: any) => !usernames.includes(user.username)
-                        )!
-                      );
+                      setTeams((prevTeams) => {
+                        if (!prevTeams) return null;
+                        return prevTeams.filter(
+                          (team) => !teamNames.includes(team.name)
+                        );
+                      });
                       table.toggleAllPageRowsSelected(false);
                       toast.success('Sikeres törlés');
                     }

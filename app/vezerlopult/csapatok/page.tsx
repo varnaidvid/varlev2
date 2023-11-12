@@ -12,7 +12,7 @@ import {
 import columns from '@/components/datatable/dataTableColumns';
 import { useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
-import { getUsers } from '@/lib/actions';
+import { getTeams, getUsers } from '@/lib/actions';
 import { User } from '@prisma/client';
 import UsersDataTable from '@/components/datatable/usersDataTable';
 import {
@@ -27,30 +27,32 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Separator } from '@/components/ui/separator';
 import { VezerloContext } from '../layout';
+import { TeamsDataTable } from '@/components/vezerlopult/csapatok/teamsDataTable/dataTable';
+import TeamsColumns from '@/components/vezerlopult/csapatok/teamsDataTable/dataTableColumns';
 
 export default function UserPage() {
   const { data: session, status } = useSession();
 
-  //   const { users, setUsers, isUsersLoading, setIsUsersLoading } =
-  //     useContext(VezerloContext);
+  const { teams, setTeams, isTeamsLoading, setIsTeamsLoading } =
+    useContext(VezerloContext);
 
-  //   useEffect(() => {
-  //     const fetchUser = async () => {
-  //       setIsUsersLoading(true);
+  useEffect(() => {
+    const fetchUser = async () => {
+      setIsTeamsLoading(true);
 
-  //       const users = await getUsers();
+      const teams = await getTeams();
 
-  //       if (!users) {
-  //         setIsUsersLoading(false);
-  //         return;
-  //       } else {
-  //         setUsers(users);
-  //         setIsUsersLoading(false);
-  //       }
-  //     };
+      if (!teams) {
+        setIsTeamsLoading(false);
+        return;
+      } else {
+        setTeams(teams);
+        setIsTeamsLoading(false);
+      }
+    };
 
-  //     if (session?.user.role == 'webmester' && !isUsersLoading) fetchUser();
-  //   }, [session]);
+    if (session?.user.role == 'webmester' && !isTeamsLoading) fetchUser();
+  }, [session]);
 
   return (
     <>
@@ -97,8 +99,7 @@ export default function UserPage() {
       <Separator className="mt-6 mb-8" />
 
       <>
-        {/* {users && users.length == 0 && ( */}
-        {true && (
+        {!teams || teams?.length == 0 ? (
           <Card>
             <CardHeader>
               <CardTitle>Csapatok</CardTitle>
@@ -113,6 +114,16 @@ export default function UserPage() {
                   létrehozása
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>Csapatok</CardTitle>
+              <CardDescription>Itt tudod kezelni a csapatokat.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {teams && <TeamsDataTable columns={TeamsColumns} data={teams} />}
             </CardContent>
           </Card>
         )}

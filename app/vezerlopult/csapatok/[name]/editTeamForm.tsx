@@ -38,8 +38,11 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import {
   createTeam,
+  getCompetitorsByYearAndClass,
   getTeamCreateCompetitors,
+  getTeamMembers,
   getUsersWhoAreNotInATeam,
+  updateTeam,
 } from '@/lib/actions';
 import { Competitor, User } from '@prisma/client';
 import { Textarea } from '@/components/ui/textarea';
@@ -52,6 +55,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dustbin } from '@/components/vezerlopult/csapatok/draggable/Dustbin';
 import { Box } from '@/components/vezerlopult/csapatok/draggable/Box';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type customCompetitorType = {
   id: string;
@@ -66,47 +70,77 @@ type customCompetitorType = {
   };
 };
 
-const NewTeamForm = () => {
+const EditTeamForm = ({ name }: { name: string }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
   const [year, setYear] = useState<number>();
   const [classNumber, setClassNumber] = useState<string>();
 
-  const [competitors, setCompetitors] = useState<customCompetitorType[]>([]);
+  const [teamMembers, setTeamMembers] = useState<customCompetitorType[]>([]);
 
-  const { draggableItems, setDraggableItems, droppedItems, setDroppedItems } =
-    React.useContext(VezerloContext);
+  const [competitors, setCompetitors] = useState<customCompetitorType[]>([]);
+  const [oldCompetitors, setOldCompetitors] = useState<string[]>([]);
+
+  const {
+    team,
+    setTeam,
+    draggableItems,
+    setDraggableItems,
+    droppedItems,
+    setDroppedItems,
+    isTeamLoading,
+    setIsTeamLoading,
+  } = React.useContext(VezerloContext);
 
   const sortedDraggables = React.useMemo(() => {
     return draggableItems?.sort((a, b) => a.localeCompare(b));
   }, [draggableItems]);
 
   useEffect(() => {
-    async function getCompetitors() {
-      const competitors = await getTeamCreateCompetitors(year!, classNumber!);
+    async function getData() {
+      const competitors = await getCompetitorsByYearAndClass(
+        teamMembers[0].year,
+        teamMembers[0].class
+      );
+      setYear(teamMembers[0].year);
+      setClassNumber(teamMembers[0].class);
 
       setDraggableItems(
         competitors
           .map((competitor) => competitor.user.username)
           .sort((a, b) => a.localeCompare(b))
       );
+      setDroppedItems(
+        teamMembers.map((teamMember) => teamMember.user.username)
+      );
 
       setCompetitors(competitors);
+      setOldCompetitors(competitors.map((competitor) => competitor.id));
+
+      setIsTeamLoading(false);
     }
 
-    if (session?.user?.role != 'diak' && year && classNumber) {
+    if (teamMembers && teamMembers.length > 0) {
+      getData();
+    }
+  }, [teamMembers]);
+
+  useEffect(() => {
+    async function getMembers() {
+      const teamMembers = await getTeamMembers(decodeURI(name));
+
+      setTeamMembers(teamMembers);
+    }
+    if (session?.user?.role != 'diak' && name && teamMembers.length == 0) {
+      setIsTeamLoading(true);
+
       form.setValue('competitors', ['', '', '']);
       setDraggableItems([]);
       setDroppedItems([]);
 
-      getCompetitors();
+      getMembers();
     }
-  }, [year, classNumber]);
-
-  useEffect(() => {
-    setDraggableItems([]);
-    setDroppedItems([]);
   }, []);
 
   useEffect(() => {
@@ -118,13 +152,18 @@ const NewTeamForm = () => {
     setDraggableItems(sorted ?? []);
   }, [draggableItems]);
 
+  useEffect(() => {
+    if (form) {
+      form.setValue('name', team?.name);
+      form.setValue('description', team?.description);
+    }
+  }, [team]);
+
   const formSchema: any = z.object({
     name: z.string().min(3, {
       message: 'Legalább 3 karakter hosszú legyen a név.',
     }),
     description: z.string(),
-    year: z.string(),
-    class: z.string(),
     competitors: z.array(z.string()),
   });
   const form = useForm<z.infer<typeof formSchema>>({
@@ -132,8 +171,6 @@ const NewTeamForm = () => {
     defaultValues: {
       name: '',
       description: '',
-      year: '',
-      class: '',
       competitors: ['', '', ''],
     },
   });
@@ -142,13 +179,13 @@ const NewTeamForm = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    toast.loading('Csapat létrehozása folyamatban...', {
-      id: 'registration',
+    toast.loading('Csapat módosítása folyamatban...', {
+      id: 'updateTeam',
     });
 
     if (values.competitors.length != 3) {
       toast.error('3 versenyzőnek kell lennie egy csapatban!', {
-        id: 'registration',
+        id: 'updateTeam',
       });
 
       setIsLoading(false);
@@ -156,24 +193,27 @@ const NewTeamForm = () => {
     }
 
     try {
-      const res = await createTeam(
+      const res = await updateTeam(
+        name,
         values.name,
         values.description,
-        values.year,
-        values.class,
+        year?.toString()!,
+        classNumber!,
+        oldCompetitors,
         values.competitors
       );
 
-      toast.success('Sikeres létrehozás!', {
-        id: 'registration',
+      toast.success('Sikeres frissítés!', {
+        id: 'updateTeam',
       });
 
       form.reset();
       setDroppedItems([]);
       setDraggableItems([]);
 
+      setTeam(res);
+
       setIsLoading(false);
-      router.push('/vezerlopult/csapatok');
     } catch (error: any) {
       setIsLoading(false);
 
@@ -186,13 +226,13 @@ const NewTeamForm = () => {
         });
 
         toast.error('Létezik már ilyen nevű csapat!', {
-          id: 'registration',
+          id: 'updateTeam',
         });
         return;
       }
 
       toast.error('Hiba történt a létrehozás során!', {
-        id: 'registration',
+        id: 'updateTeam',
       });
       return;
     }
@@ -201,9 +241,9 @@ const NewTeamForm = () => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Új csapat létrehozása</CardTitle>
+        <CardTitle>Csapat szerkesztése</CardTitle>
         <CardDescription>
-          Alábbi űrlap segítségével hozhat létre új csapatot.
+          Alábbi űrlap segítségével módosíthat egy meglévő csapatot.
         </CardDescription>
       </CardHeader>
 
@@ -251,11 +291,11 @@ const NewTeamForm = () => {
                     <FormLabel>Évfolyam kiválasztása</FormLabel>
                     <FormControl>
                       <Select
-                        onValueChange={(value: string) => {
-                          setYear(parseInt(value));
-                          form.setValue('year', value);
-                        }}
+                        onValueChange={(value: string) =>
+                          setYear(parseInt(value))
+                        }
                         value={year?.toString()}
+                        required
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Évfolyam" />
@@ -280,11 +320,9 @@ const NewTeamForm = () => {
                     <FormLabel>Osztály kiválasztása</FormLabel>
                     <FormControl>
                       <Select
-                        onValueChange={(value: string) => {
-                          form.setValue('class', value);
-                          setClassNumber(value);
-                        }}
+                        onValueChange={(value: string) => setClassNumber(value)}
                         value={classNumber}
+                        required
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Osztály" />
@@ -329,21 +367,37 @@ const NewTeamForm = () => {
                         >
                           <>
                             <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                              {draggableItems?.length == 0
-                                ? year && classNumber
-                                  ? 'Nincsenek versenyzők az osztályban'
-                                  : 'Válasszon ki egy osztályt...'
-                                : droppedItems?.length! >= 0 &&
-                                  draggableItems?.length == 0
-                                ? 'Nincs több tanuló'
-                                : ''}
+                              {!isTeamLoading &&
+                                (draggableItems?.length == 0
+                                  ? year && classNumber
+                                    ? 'Nincsenek versenyzők az osztályban'
+                                    : 'Válasszon ki egy osztályt...'
+                                  : droppedItems?.length! >= 0 &&
+                                    draggableItems?.length == 0
+                                  ? 'Nincs több tanuló'
+                                  : '')}
                             </span>
 
                             <CardHeader>
                               <div className="grid md:grid-cols-2 gap-3">
-                                {sortedDraggables?.map((item, index) => (
-                                  <Box name={item} key={index} index={index} />
-                                ))}
+                                {isTeamLoading
+                                  ? Array.from(Array(3).keys()).map(
+                                      (item, index) => (
+                                        <div>
+                                          <Skeleton
+                                            key={index}
+                                            className="h-12 w-full"
+                                          />
+                                        </div>
+                                      )
+                                    )
+                                  : sortedDraggables?.map((item, index) => (
+                                      <Box
+                                        name={item}
+                                        key={index}
+                                        index={index}
+                                      />
+                                    ))}
                               </div>
                             </CardHeader>
                           </>
@@ -383,7 +437,7 @@ const NewTeamForm = () => {
               {isLoading && (
                 <CircleNotch className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Létrehozás
+              Frissítés
             </Button>
           </CardFooter>
         </form>
@@ -392,4 +446,4 @@ const NewTeamForm = () => {
   );
 };
 
-export default NewTeamForm;
+export default EditTeamForm;

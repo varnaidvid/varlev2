@@ -1,20 +1,16 @@
 'use client';
 
-import * as React from 'react';
-
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getPaginationRowModel,
   SortingState,
   getSortedRowModel,
-  getPaginationRowModel,
+  getFilteredRowModel,
   ColumnFiltersState,
   VisibilityState,
-  getFilteredRowModel,
-  getFacetedUniqueValues,
-  getFacetedRowModel,
 } from '@tanstack/react-table';
 
 import {
@@ -25,10 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
+import { DataTablePagination } from '@/components/datatable/dataTablePagination';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { DataTablePagination } from './dataTablePagination';
 import { DataTableToolbar } from './dataTableToolbar';
 
 interface DataTableProps<TData, TValue> {
@@ -36,40 +31,31 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export default function usersDataTable<TData, TValue>({
+export function TeamsDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'role', desc: true },
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      id: 'createdAt',
+      desc: true,
+    },
   ]);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
     data,
     columns,
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
-      rowSelection,
-      columnVisibility,
       columnFilters,
     },
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
@@ -103,7 +89,7 @@ export default function usersDataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && 'kiválasztva'}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

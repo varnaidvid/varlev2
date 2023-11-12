@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { getUsers } from '@/lib/actions';
 import { vezerloContextType } from '@/types/vezerloContext';
 import { ArrowClockwise } from '@phosphor-icons/react';
-import { User } from '@prisma/client';
+import { Team, User } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 import { createContext, useEffect, useState } from 'react';
@@ -25,6 +25,18 @@ export const VezerloContext = createContext<vezerloContextType>({
   setDraggableItems: () => null as any,
   droppedItems: null as string[] | null,
   setDroppedItems: () => null as any,
+  isDragging: false,
+  setIsDragging: () => null as any,
+
+  teams: null as Team[] | null,
+  setTeams: () => null as any,
+  isTeamsLoading: false,
+  setIsTeamsLoading: () => null as any,
+
+  team: null as Team | null,
+  setTeam: () => null as any,
+  isTeamLoading: false,
+  setIsTeamLoading: () => null as any,
 });
 
 export default function VezerloLayout({
@@ -51,6 +63,12 @@ export default function VezerloLayout({
   const [draggableItems, setDraggableItems] = useState<string[] | null>(null);
   const [droppedItems, setDroppedItems] = useState<string[] | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+
+  const [teams, setTeams] = useState<Team[] | null>(null);
+  const [isTeamsLoading, setIsTeamsLoading] = useState<boolean>(false);
+
+  const [team, setTeam] = useState<Team | null>(null);
+  const [isTeamLoading, setIsTeamLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (session && session.user.role == 'diak' && status == 'authenticated') {
@@ -79,6 +97,16 @@ export default function VezerloLayout({
           setDroppedItems,
           isDragging,
           setIsDragging,
+
+          teams,
+          setTeams,
+          isTeamsLoading,
+          setIsTeamsLoading,
+
+          team,
+          setTeam,
+          isTeamLoading,
+          setIsTeamLoading,
         }}
       >
         <main className="mt-24">{children}</main>

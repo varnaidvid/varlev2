@@ -28,6 +28,9 @@ model User {
 model Team {
   id String @id @default(uuid())
 
+  year  Int // évfolyam
+  class String // osztály
+
   name        String @unique
   description String
 

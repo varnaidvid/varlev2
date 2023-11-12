@@ -48,15 +48,53 @@ export async function updateQuestion(id: string, question: string) { return pris
 
 
 // TEAMS
-export async function createTeam(name: string, description: string, competitors: string[]) {
+export async function getTeams() { return prisma.team.findMany({ include: { competitors: true } }); }
+export async function getTeam(name: string) { return prisma.team.findUnique({ where: { name } }); }
+export async function createTeam(name: string, description: string, year: string, _class: string, competitors: string[]) {
   try {
     const users = await prisma.user.findMany({ where: { username: { in: competitors } } });
     const _competitors = await prisma.competitor.findMany({ where: { userId: { in: users.map(user => user.id) } } });
 
-    const team = await prisma.team.create(
-      { data: { name, description, competitors: { connect: _competitors.map(competitor => ({ id: competitor.id })) } } });
+    const team = await prisma.team.create({ data: { name, description, year: parseInt(year), class: _class, competitors: { connect: _competitors.map(competitor => ({ id: competitor.id })) } } });
 
     const updatedCompetitors = await prisma.competitor.updateMany({ where: { userId: { in: users.map(user => user.id) } }, data: { teamId: team.id } });
+
+    return team;
+  } catch (error) {
+    throw error;
+  }
+}
+export async function deleteTeams(names: string[]) { return prisma.team.deleteMany({ where: { name: { in: names } } }); }
+export async function updateTeam(teamName: string, newName: string, description: string, year: string, _class: string, competitors: string[], newCompetitors: string[]) {
+  try {
+    const users = await prisma.user.findMany({ where: { username: { in: competitors } } });
+    console.log("users", users)
+
+    const _competitors = await prisma.competitor.findMany({ where: { userId: { in: users.map(user => user.id) } } });
+    console.log("_competitors", _competitors)
+
+    const newUsers = await prisma.user.findMany({ where: { username: { in: newCompetitors } } });
+    console.log("newUsers", newUsers)
+
+    const new_competitors = await prisma.competitor.findMany({ where: { userId: { in: newUsers.map(user => user.id) } } });
+    console.log("new_competitors", new_competitors)
+
+
+    const team = await prisma.team.update({
+      where: { name: teamName },
+      data: {
+        name: newName,
+        description,
+        year: parseInt(year),
+        class: _class,
+        competitors: {
+          disconnect: _competitors.map(competitor => ({ id: competitor.id })),
+          connect: new_competitors.map(competitor => ({ id: competitor.id })),
+        },
+      },
+    });
+
+    console.log("team", team)
 
     return team;
   } catch (error) {
@@ -71,6 +109,37 @@ export async function getTeamCreateCompetitors(year: number, _class: string) {
       year: year,
       class: _class,
       teamId: null,
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+}
+export async function getTeamMembers(teamName: string) {
+  return prisma.competitor.findMany({
+    where: {
+      team: {
+        name: teamName,
+      },
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+}
+export async function getCompetitorsByYearAndClass(year: number, _class: string) {
+  return prisma.competitor.findMany({
+    where: {
+      year: year,
+      class: _class,
     },
     include: {
       user: {

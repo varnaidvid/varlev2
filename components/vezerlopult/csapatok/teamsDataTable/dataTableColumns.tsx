@@ -1,6 +1,6 @@
 'use client';
 
-import { User } from '@prisma/client';
+import { Team, User } from '@prisma/client';
 import { ColumnDef, filterFns } from '@tanstack/react-table';
 
 import {
@@ -21,7 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { DataTableColumnHeader } from './dataTableColumnHeader';
 import { Checkbox } from '@/components/ui/checkbox';
 
 import {
@@ -46,13 +45,14 @@ import {
 
 import toast from 'react-hot-toast';
 
-import { deleteUser, deleteUsers, updateUserRole } from '@/lib/actions';
+import { deleteTeams } from '@/lib/actions';
 import Link from 'next/link';
 import { useContext } from 'react';
 import { useSession } from 'next-auth/react';
 import { VezerloContext } from '@/app/vezerlopult/layout';
+import { DataTableColumnHeader } from '@/components/datatable/dataTableColumnHeader';
 
-const columns: ColumnDef<User>[] = [
+const TeamsColumns: ColumnDef<Team>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -62,83 +62,50 @@ const columns: ColumnDef<User>[] = [
         aria-label="Összes kijelölése"
       />
     ),
-    cell: ({ row }) => {
-      {
-        const { data: session } = useSession();
-
-        return (
-          <Checkbox
-            disabled={session?.user.username == row.getValue('username')}
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Sor kijelölése"
-          />
-        );
-      }
-    },
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Sor kijelölése"
+      />
+    ),
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'username',
+    accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Felhasználónév" />
+      <DataTableColumnHeader column={column} title="Csapatnév" />
     ),
     cell: ({ row }) => {
       return (
-        <Link href={`/vezerlopult/felhasznalok/${row.getValue('username')}`}>
-          <span>{row.getValue('username')}</span>
+        <Link href={`/vezerlopult/csapatok/${row.getValue('name')}`}>
+          <span>{row.getValue('name')}</span>
         </Link>
       );
     },
   },
   {
-    accessorKey: 'role',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Szerepkör" />
-    ),
+    id: 'year',
+    accessorKey: 'Évfolyam',
+  },
+  {
+    id: 'class',
+    accessorKey: 'Osztály',
+  },
+  {
+    accessorKey: 'description',
+    header: ({ column }) => <span>Rövid leírás</span>,
     cell: ({ row }) => {
-      const role = row.getValue('role') as string;
-      const username = row.getValue('username') as string;
-
-      const { data: session } = useSession();
+      const description = row.getValue('description') as string;
 
       return (
-        <Select
-          defaultValue={role}
-          onValueChange={async (value) => {
-            const user = await updateUserRole(username, value);
-            if (user) {
-              toast.success(
-                `Sikeresen frissítette a szerepkörét ${username}-nek`
-              );
-            }
-          }}
-        >
-          <SelectTrigger
-            className="w-max border-none justify-start gap-1 bg-transparent"
-            disabled={session?.user.username == username}
-          >
-            <SelectValue defaultValue={role} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="webmester">Webmester</SelectItem>
-            <SelectItem value="zsuri">Zsűri</SelectItem>
-            <SelectItem value="tanar">Tanár</SelectItem>
-            <SelectItem value="diak">Diák</SelectItem>
-          </SelectContent>
-        </Select>
+        <span>
+          {description.length > 50
+            ? description.slice(0, 50) + '...'
+            : description}
+        </span>
       );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-    sortingFn: (rowA, rowB, id) => {
-      const roleOrder = ['diak', 'tanar', 'zsuri', 'webmester'];
-      const roleA = rowA.getValue(id) as string;
-      const roleB = rowB.getValue(id) as string;
-
-      return roleOrder.indexOf(roleA) - roleOrder.indexOf(roleB);
     },
   },
   {
@@ -186,7 +153,7 @@ const columns: ColumnDef<User>[] = [
   {
     id: 'actions',
     cell: ({ row, table }) => {
-      const { users, setUsers } = useContext(VezerloContext);
+      const { teams, setTeams } = useContext(VezerloContext);
 
       return (
         <AlertDialog>
@@ -225,24 +192,22 @@ const columns: ColumnDef<User>[] = [
               <AlertDialogAction
                 className="w-full"
                 onClick={async () => {
-                  let usernames: string[] = [];
+                  let names: string[] = [];
 
                   if (table.getFilteredSelectedRowModel().rows.length == 0) {
-                    usernames = [row.getValue('username')];
+                    names = [row.getValue('name')];
                   } else {
-                    usernames = table
+                    names = table
                       .getFilteredSelectedRowModel()
-                      .rows.map((row) => row.getValue('username'));
+                      .rows.map((row) => row.getValue('names'));
                   }
 
-                  const res: any = await deleteUsers(usernames);
+                  const res: any = await deleteTeams(names);
 
                   if (res.status == 500) toast.error(res.message);
                   else {
-                    setUsers(
-                      users?.filter(
-                        (user: any) => !usernames.includes(user.username)
-                      )!
+                    setTeams(
+                      teams?.filter((user: any) => !teams.includes(user.name))!
                     );
                     table.toggleAllPageRowsSelected(false);
                     toast.success('Sikeres törlés');
@@ -263,9 +228,7 @@ const columns: ColumnDef<User>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Műveletek</DropdownMenuLabel>
-              <Link
-                href={`/vezerlopult/felhasznalok/${row.getValue('username')}`}
-              >
+              <Link href={`/vezerlopult/csapatok/${row.getValue('name')}`}>
                 <DropdownMenuItem>
                   <div className="flex justify-between w-full">
                     Szerkesztés
@@ -290,4 +253,4 @@ const columns: ColumnDef<User>[] = [
   },
 ];
 
-export default columns;
+export default TeamsColumns;

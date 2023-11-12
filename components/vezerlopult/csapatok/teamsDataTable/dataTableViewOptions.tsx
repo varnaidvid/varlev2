@@ -22,16 +22,10 @@ export default function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
   const columnMap = {
-    username: 'Fh. név',
-    role: 'Szerepkör',
+    name: 'Csapatnév',
+    description: 'Rövid leírás',
     createdAt: 'Létrehozva',
     updatedAt: 'Frissítve',
-    year: 'Évfolyam',
-    word1: '1. szó',
-    word2: '2. szó',
-    word3: '3. szó',
-    word4: '4. szó',
-    id: 'ID',
   };
 
   return (

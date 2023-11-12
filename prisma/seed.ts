@@ -136,37 +136,37 @@ async function seedAllRoles() {
     const diakPwd = await hash("diakJelszo", 10);
 
     const webmester = await prisma.user.upsert({
-        where: { username: 'webmester-webmester5' },
+        where: { username: 'webmester-webmester' },
         update: {},
         create: {
-            username: 'webmester-webmester5',
+            username: 'webmester-webmester',
             password: webmesterPwd,
             role: 'webmester',
         },
     })
     const zsuri = await prisma.user.upsert({
-        where: { username: 'zsuri-zsuri5' },
+        where: { username: 'zsuri-zsuri' },
         update: {},
         create: {
-            username: 'zsuri-zsuri5',
+            username: 'zsuri-zsuri',
             password: zsuriPwd,
             role: 'zsuri',
         },
     })
     const tanar = await prisma.user.upsert({
-        where: { username: 'tanar-tanar5' },
+        where: { username: 'tanar-tanar' },
         update: {},
         create: {
-            username: 'tanar-tanar5',
+            username: 'tanar-tanar',
             password: tanarPwd,
             role: 'tanar',
         },
     })
     const diak = await prisma.user.upsert({
-        where: { username: 'diak-diak5' },
+        where: { username: 'diak-diak' },
         update: {},
         create: {
-            username: 'diak-diak5',
+            username: 'diak-diak',
             password: diakPwd,
             role: 'diak',
         },
@@ -176,8 +176,8 @@ async function seedAllRoles() {
         update: {},
         create: {
             userId: diak.id,
-            year: 6,
-            class: 'A',
+            year: 7,
+            class: 'B',
         },
     })
 
