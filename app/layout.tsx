@@ -27,7 +27,7 @@ const customMonoFont = Source_Code_Pro({
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={poppins.className + ' ' + customMonoFont.variable}>
+      <body className={poppins.className + ' ' + customMonoFont.variable + ' ' + 'bg-gray-50'}>
         <IconContext.Provider
           value={{
             size: 32,
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <AuthProvider>
             <div className="flex flex-col min-h-screen">
               <Header />
-              <main className="max-w-screen-lg w-full ml-auto mr-auto flex-1">
+              <main className="max-w-screen-lg w-full ml-auto mr-auto flex-1 pt-24">
                 {children}
               </main>
             </div>

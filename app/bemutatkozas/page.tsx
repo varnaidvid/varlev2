@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className="container mx-auto text-gray-700">
       <div className="my-10">
-        <Card>
+        <Card className="shadow-xl">
           <CardHeader>
             <CardTitle className="text-3xl font-bold mb-2">
               A csapatunkról
@@ -33,7 +33,7 @@ export default function Home() {
               {teamMembers.map((member, index) => (
                 <Card
                   key={index}
-                  className={index !== teamMembers.length - 1 ? 'mr-6' : ''}
+                  className={index !== teamMembers.length - 1 ? 'mr-6' : ' + '}
                 >
                   <CardHeader>
                     <CardTitle>{member.name}</CardTitle>
