@@ -84,12 +84,14 @@ export default function Game({
         className="flex flex-col w-full gap-2"
       >
         <label htmlFor="answer" className="font-medium text-gray-500">
-          Tipp:
+          Megoldás:
         </label>
         <Input
           name="answer"
+          title="megoldás"
           ref={inputRef}
-          className="text-4xl border-blue-600 border-[2px] rounded-lg text-center font-mono uppercase font-bold tracking-widest"
+          placeholder="megoldás"
+          className="text-4xl border-blue-600 border-[2px] rounded-lg text-center font-mono py-8 font-bold tracking-widest placeholder:text-gray-300 ring-0 focus:!ring-[5px] !ring-offset-0 !ring-blue-400"
           value={input}
           type="text"
           onMouseDown={preventCursorMovement}
@@ -124,32 +126,38 @@ export default function Game({
         />
         <Button
           size={'lg'}
-          className="mt-4 group font-mono bg-blue-600 hover:bg-blue-700 font-extrabold text-white text-base disabled:bg-gray-400 disabled:opacity-100 disabled:cursor-not-allowed"
+          className="mt-4 group bg-blue-600 hover:bg-blue-700 font-bold text-white text-base disabled:bg-blue-400 disabled:opacity-100 disabled:cursor-not-allowed"
           disabled={Object.values(letters).some((count) => count > 0)}
         >
           Következő
           <ArrowRight
             className="ml-2 group-hover:translate-x-3 transition-transform"
             weight="bold"
-            size={22}
+            size={18}
           />
         </Button>
       </form>
 
       {/* betűk container-je */}
-      <div className="flex w-fit mx-auto justify-between gap-4 mt-8">
+      <div className="flex flex-col gap-4 items-center font-semibold text-gray-500 mt-6">
         {
-          // render all the letters
-          Object.entries(letters).flatMap(([letter, count]) =>
-            Array.from({ length: count }, (_, index) => (
-              <LetterCard
-                letter={letter}
-                used={false}
-                key={letter + index} // Unique key for each element
-              />
-            ))
-          )
+          //if all letter are used up
         }
+        <span className="">Betűk:</span>
+        <div className="flex w-fit mx-auto justify-between gap-4">
+          {
+            // render all the letters
+            Object.entries(letters).flatMap(([letter, count]) =>
+              Array.from({ length: count }, (_, index) => (
+                <LetterCard
+                  letter={letter}
+                  used={false}
+                  key={letter + index} // Unique key for each element
+                />
+              ))
+            )
+          }
+        </div>
       </div>
     </div>
   );
