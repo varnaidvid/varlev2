@@ -17,6 +17,7 @@ export default function DashboardCard({
   link,
   secondLink,
   secondLinkText,
+  disableCreate,
 }: {
   Icon: any;
   title: string;
@@ -25,9 +26,10 @@ export default function DashboardCard({
   link: string;
   secondLink: string;
   secondLinkText: string;
+  disableCreate?: boolean;
 }) {
   return (
-    <Card className="rounded-md h-[300px] hover:bg-accent hover:shadow-sm transition-all">
+    <Card className="rounded-md h-[300px] hover:shadow-sm transition-all">
       <CardHeader className="h-full flex flex-col justify-between">
         <div className="flex flex-col gap-2">
           <CardTitle>
@@ -38,17 +40,19 @@ export default function DashboardCard({
         </div>
         <div className="flex gap-2">
           <Link href={link} className="w-full">
-            <Button className="w-full font-light">
+            <Button className="w-full font-light" variant={'outline'}>
               <List className="h-6 w-6 mr-1" weight="regular" />
               {buttonText}
             </Button>
           </Link>
-          <Link href={secondLink} className="w-full">
-            <Button className="w-full font-light">
-              <PlusCircle className="h-6 w-6 mr-1" weight="regular" />{' '}
-              {secondLinkText}
-            </Button>
-          </Link>
+          {!disableCreate && (
+            <Link href={secondLink} className="w-full">
+              <Button className="w-full font-light">
+                <PlusCircle className="h-6 w-6 mr-1" weight="regular" />{' '}
+                {secondLinkText}
+              </Button>
+            </Link>
+          )}
         </div>
       </CardHeader>
     </Card>

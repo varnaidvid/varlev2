@@ -31,7 +31,7 @@ const Header = () => {
   const { data: session, status } = useSession();
 
   return (
-    <header className="flex p-4 bg-gray-800/75 text-gray-300 items-center justify-between">
+    <header className="flex p-4 px-8 bg-gray-800/60 text-gray-300 items-center justify-between fixed w-full backdrop-blur-md">
       <div className="flex">
         <Link className="font-bold" href="/">
           VarleV2
@@ -41,39 +41,17 @@ const Header = () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger className="bg-gray-700">
-                Feladatok és Versenyek
-              </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                  <ListItem href="/versenyek" title="Versenyek">
-                    Tekintsdd meg az összes elérhető versenyt...
-                  </ListItem>
-                  <ListItem href="/feladatok" title="Feladatok">
-                    Tégy egy pillantást a Számodra elérhető feladatokra.
-                  </ListItem>
-                  <ListItem href="/tanarok" title="Tanárok">
-                    Nézdd meg a tanárok hosszú listáját!
-                  </ListItem>
-                  <ListItem href="/kurzusok" title="Kurzusok">
-                    Tekintsdd meg az összes elérhető kurzust...
-                  </ListItem>
-                </ul>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <Link href="/vezerlopult" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-700">
-                  Vezérlőpult
+              <Link href="/" legacyBehavior passHref>
+                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-base font-bold transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                  Főoldal
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
               <Link href="/bemutatkozas" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-700">
-                  Bemutatkozás
+                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-base font-bold transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                  Rólunk
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
@@ -82,7 +60,7 @@ const Header = () => {
               (session?.user.role == 'tanar' && (
                 <NavigationMenuItem>
                   <Link href="/vezerlopult" legacyBehavior passHref>
-                    <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-700">
+                    <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-base font-bold transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
                       Vezérlőpult
                     </NavigationMenuLink>
                   </Link>

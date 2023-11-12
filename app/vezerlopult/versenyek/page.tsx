@@ -12,8 +12,13 @@ import {
 import columns from '@/components/datatable/dataTableColumns';
 import { useContext, useEffect, useState } from 'react';
 import { prisma } from '@/prisma/db';
-import { getCompetitions, getTeams, getUsers } from '@/lib/actions';
-import { User } from '@prisma/client';
+import {
+  getCompetitions,
+  getCompetitionsForZsuri,
+  getTeams,
+  getUsers,
+} from '@/lib/actions';
+import { Competition, User } from '@prisma/client';
 import UsersDataTable from '@/components/datatable/usersDataTable';
 import {
   GearSix,
@@ -45,7 +50,11 @@ export default function UserPage() {
     const fetchCompetitions = async () => {
       setIsCompetitionsLoading(true);
 
-      const competitions = await getCompetitions();
+      let competitions: Competition[] = [];
+
+      if (session?.user.role == 'zsuri')
+        competitions = await getCompetitionsForZsuri(session?.user.id);
+      else competitions = await getCompetitions();
 
       if (!competitions) {
         setIsCompetitionsLoading(false);
@@ -56,7 +65,10 @@ export default function UserPage() {
       }
     };
 
-    if (session?.user.role == 'webmester' && !isCompetitionsLoading)
+    if (
+      (session?.user.role == 'webmester' || session?.user.role == 'zsuri') &&
+      !isCompetitionsLoading
+    )
       fetchCompetitions();
   }, [session]);
 
@@ -110,7 +122,10 @@ export default function UserPage() {
             <CardHeader>
               <CardTitle>Versenyek</CardTitle>
               <CardDescription>
-                Jelenleg nincsen verseny az adatbázisban.
+                {session?.user.role == 'webmester' &&
+                  'Jelenleg nincsen verseny az adatbázisban.'}
+                {session?.user.role == 'zsuri' &&
+                  'Jelenleg nincsen verseny, aminek zsűritagja lennél.'}
               </CardDescription>
             </CardHeader>
             <CardContent>
