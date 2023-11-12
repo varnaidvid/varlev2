@@ -3,7 +3,7 @@
 import { Progress } from '@/components/ui/progress';
 import WordCard from './wordCard';
 import LetterCard from './letterCard';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, use } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '../ui/button';
 import { ArrowRight } from '@phosphor-icons/react';
