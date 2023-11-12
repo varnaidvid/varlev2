@@ -38,4 +38,25 @@ export interface vezerloContextType {
     setCompetition: React.Dispatch<React.SetStateAction<Competition | null>>;
     isCompetitionLoading: boolean;
     setIsCompetitionLoading: React.Dispatch<React.SetStateAction<boolean>>;
+
+    juryDraggableItems: string[] | null;
+    setJuryDraggableItems: React.Dispatch<React.SetStateAction<string[] | null>>;
+    juryDroppedItems: string[] | null;
+    setJuryDroppedItems: React.Dispatch<React.SetStateAction<string[] | null>>;
+    isJuryDragging: boolean;
+    setIsJuryDragging: React.Dispatch<React.SetStateAction<boolean>>;
+    isJuryLoading: boolean;
+    setIsJuryLoading: React.Dispatch<React.SetStateAction<boolean>>;
+
+    teamsDraggableItems: string[] | null;
+    setTeamsDraggableItems: React.Dispatch<React.SetStateAction<string[] | null>>;
+    teamsDroppedItems: string[] | null;
+    setTeamsDroppedItems: React.Dispatch<React.SetStateAction<string[] | null>>;
+    isTeamsDragging: boolean;
+    setIsTeamsDragging: React.Dispatch<React.SetStateAction<boolean>>;
+    isTeamsDroppableLoading: boolean;
+    setIsTeamsDroppableLoading: React.Dispatch<React.SetStateAction<boolean>>;
+
+    tasksDataTable: any | null;
+    setTasksDataTable: React.Dispatch<React.SetStateAction<any | null>>;
 }

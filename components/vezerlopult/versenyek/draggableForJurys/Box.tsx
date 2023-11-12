@@ -16,11 +16,11 @@ interface DropResult {
 
 export const Box: FC<BoxProps> = function Box({ name, index }) {
   const {
-    droppedItems,
-    setDroppedItems,
-    draggableItems,
-    setDraggableItems,
-    setIsDragging,
+    juryDraggableItems,
+    setJuryDraggableItems,
+    juryDroppedItems,
+    setJuryDroppedItems,
+    setIsJuryDragging,
   } = useContext(VezerloContext);
 
   const [{ isDragging }, drag] = useDrag(
@@ -31,14 +31,15 @@ export const Box: FC<BoxProps> = function Box({ name, index }) {
         const dropResult = monitor.getDropResult<DropResult>();
 
         if (item && dropResult) {
-          setDraggableItems((prev) => {
-            if (!prev) return [item.name];
-            return prev.filter((i) => i !== item.name);
+          setJuryDraggableItems((prev) => {
+            const newItems = Array.from(prev || []);
+            newItems.splice(index, 1);
+            return newItems;
           });
-
-          setDroppedItems((prev) => {
-            if (!prev) return [item.name];
-            return [...prev, item.name];
+          setJuryDroppedItems((prev) => {
+            const newItems = Array.from(prev || []);
+            newItems.splice(index, 0, item.name);
+            return newItems;
           });
         }
       },
@@ -47,11 +48,11 @@ export const Box: FC<BoxProps> = function Box({ name, index }) {
         handlerId: monitor.getHandlerId(),
       }),
     }),
-    [name, droppedItems, draggableItems]
+    [name, juryDraggableItems, juryDroppedItems]
   );
 
   useEffect(() => {
-    setIsDragging(isDragging);
+    setIsJuryDragging(isDragging);
   }, [isDragging]);
 
   const opacity = isDragging ? 0.4 : 1;

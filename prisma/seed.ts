@@ -184,6 +184,53 @@ async function seedAllRoles() {
     console.log({ webmester, zsuri, tanar, diak, diakCompetitor })
 }
 
+async function seedZsurik() {
+    let userNames = [
+        "Zsuri-Gipsz-Jakab",
+        "Zsuri-Kovács-Béla",
+        "Zsuri-Kiss-Pista",
+        "Zsuri-Nagy-Ferenc",
+        "Zsuri-Lakatos-János",
+        "Zsuri-Szabó-Géza",
+        "Zsuri-Horváth-Gábor",
+        "Zsuri-Varga-László",
+        "Zsuri-Tóth-István",
+        "Zsuri-Kiss-Péter",
+        "Zsuri-Jakab-Gipsz",
+        "Zsuri-Béla-Kovács",
+        "Zsuri-Pista-Kiss",
+        "Zsuri-Ferenc-Nagy",
+        "Zsuri-János-Lakatos",
+        "Zsuri-Géza-Szabó",
+        "Zsuri-Gábor-Horváth",
+        "Zsuri-László-Varga",
+        "Zsuri-István-Tóth",
+        "Zsuri-Péter-Kiss",
+    ]
+
+    let password = "Zsuri-Jelszo"
+
+    let hashedPassword = await hash(password, 10)
+
+    let users = userNames.map((userName) => {
+        return {
+            username: userName,
+            password: hashedPassword,
+            role: "zsuri",
+        }
+    })
+
+    let upsertedUsers = await Promise.all(users.map(async (user) => {
+        return await prisma.user.upsert({
+            where: { username: user.username },
+            update: {},
+            create: user,
+        })
+    }))
+
+    console.log({ upsertedUsers })
+}
+
 
 // medve oroszlán elefánt zsiráf 6
 // hétfő kedd szerda csütörtök 5
@@ -318,25 +365,25 @@ async function seedQuestions() {
 
 async function seedCompetitions() {
     // fetch questions from role "tanr" creators
-    let questions = await prisma.question.findMany({ include: { creator: true } })
-    questions = questions.filter((question) => question.creator.role === "tanar") // webmester feladatai ne legyenek példa versenyben
+    // let questions = await prisma.question.findMany({ include: { creator: true } })
+    // questions = questions.filter((question) => question.creator.role === "tanar") // webmester feladatai ne legyenek példa versenyben
 
-    // filter questions by year: year should be 5. year = questions[0].question.split(" ")[question[0].question.split(" ").length - 1]
-    questions = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "5")
+    // // filter questions by year: year should be 5. year = questions[0].question.split(" ")[question[0].question.split(" ").length - 1]
+    // questions = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "5")
 
-    // sorting the questions in to 3 question packs
-    let questions1 = []
-    let questions2 = []
-    let questions3 = []
-    let i = 0
-    while (i + 3 <= questions.length) {
-        questions1.push(questions[i].id)
-        i++
-        questions2.push(questions[i].id)
-        i++
-        questions3.push(questions[i].id)
-        i++
-    }
+    // // sorting the questions in to 3 question packs
+    // let questions1 = []
+    // let questions2 = []
+    // let questions3 = []
+    // let i = 0
+    // while (i + 3 <= questions.length) {
+    //     questions1.push(questions[i].id)
+    //     i++
+    //     questions2.push(questions[i].id)
+    //     i++
+    //     questions3.push(questions[i].id)
+    //     i++
+    // }
 
     // upsert a competition to db
     const competition = await prisma.competition.upsert({
@@ -346,7 +393,7 @@ async function seedCompetitions() {
             id: "c1",
             name: "Példa verseny",
             description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
-            year: '5',
+            year: "5" as any,
             startDate: new Date("2023-11-11"),
             endDate: new Date("2023-11-13"),
             questions1: questions1,
@@ -355,14 +402,17 @@ async function seedCompetitions() {
         },
     })
 
+    // delete attemts for this competition
+    await prisma.attempt.deleteMany({ where: { competitionId: "c1" } })
     // delete this competition
-    // await prisma.competition.delete({ where: { id: "c1" } })
+    await prisma.competition.delete({ where: { id: "c1" } })
 }
 
 // seedAllRoles()
 // seedStudents()
-// seedQuestions()
-seedCompetitions()
+seedQuestions()
+    // seedZsurik()
+    // seedCompetitions()
     .then(async () => {
         await prisma.$disconnect()
     })
