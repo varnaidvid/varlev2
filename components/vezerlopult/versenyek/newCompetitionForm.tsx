@@ -260,8 +260,6 @@ const NewCompetitionForm = () => {
     setTeamsDroppedItems([]);
   }, []);
   useEffect(() => {
-    setJuryDroppedItems([]);
-    setJuryDraggableItems([]);
     setTeamsDraggableItems([]);
     setTeamsDroppedItems([]);
   }, [year]);
