@@ -184,10 +184,45 @@ async function seedZsurik() {
     console.log({ upsertedUsers })
 }
 
+async function seedTanarok() {
+    let userNames = [
+        "Tanar-Gipsz-Jakab",
+        "Tanar-Kovács-Béla",
+        "Tanar-Kiss-Pista",
+        "Tanar-Nagy-Ferenc",
+        "Tanar-Lakatos-János",
+    ]
+
+    let password = "Tanar-Jelszo"
+
+    let hashedPassword = await hash(password, 10)
+
+    let users = userNames.map((userName) => {
+        return {
+            username: userName,
+            password: hashedPassword,
+            role: "tanar",
+        }
+    })
+
+    let upsertedUsers = await Promise.all(users.map(async (user) => {
+        return await prisma.user.upsert({
+            where: { username: user.username },
+            update: {},
+            create: user,
+        })
+    }))
+
+    console.log({ upsertedUsers })
+}
+
 
 async function seedQuestions() {
     // fetch users with role "tanar"
-    const teachers = await prisma.user.findMany({ where: { role: 'tanar' } })
+    const teachers = await prisma.user.findMany({ where: { role: "tanar" } })
+
+    console.log(teachers)
+    console.log(teachers.length)
 
     const questions = [
         {
@@ -220,7 +255,7 @@ async function seedQuestions() {
         },
         {
             "id": "q8",
-            "question": "óceán tengeri ár sekély vízimalom 8"
+            "question": "óceán tengeri ár sekély 8"
         },
         {
             "id": "q9",
@@ -252,7 +287,7 @@ async function seedQuestions() {
         },
         {
             "id": "q16",
-            "question": "moszkva bécs prága madridi utca 8"
+            "question": "moszkva bécs prága madrid 8"
         },
         {
             "id": "q17",
@@ -288,7 +323,7 @@ async function seedQuestions() {
         },
         {
             "id": "q25",
-            "question": "tél nyár tavasz őszi eső 8"
+            "question": "tél nyár tavasz ősz 8"
         },
         {
             "id": "q26",
@@ -332,7 +367,7 @@ async function seedQuestions() {
         },
         {
             "id": "q36",
-            "question": "párizs london róma berlintorta 5"
+            "question": "párizs london róma berlin 5"
         },
         {
             "id": "q37",
@@ -348,11 +383,11 @@ async function seedQuestions() {
         },
         {
             "id": "q40",
-            "question": "csokoládé vanília eper pisztáciakrém 6"
+            "question": "csokoládé vanília eper pisztácia 6"
         },
         {
             "id": "q41",
-            "question": "kígyó tigris cápa delfinusz 7"
+            "question": "kígyó tigris cápa delfin 7"
         },
         {
             "id": "q42",
@@ -376,7 +411,7 @@ async function seedQuestions() {
         },
         {
             "id": "q47",
-            "question": "fagyasztó mikrohullámú sütő mosogatógép hűtőszekrény 7"
+            "question": "fagyasztó mikrohullámú sütő mosogatógép 7"
         },
         {
             "id": "q48",
@@ -412,7 +447,7 @@ async function seedQuestions() {
         },
         {
             "id": "q56",
-            "question": "tokió sydney kairó new york-i 8"
+            "question": "tokió sydney kairó budapest 8"
         },
         {
             "id": "q57",
@@ -424,7 +459,7 @@ async function seedQuestions() {
         },
         {
             "id": "q59",
-            "question": "március május július novemberi hó 7"
+            "question": "március május július november 7"
         },
         {
             "id": "q60",
@@ -523,16 +558,21 @@ async function seedSiteInfo() {
 
 }
 
-seedAllRoles()
-    // seedStudents()
-    // seedQuestions()
-    // seedZsurik()
-    // seedCompetitions()
-    .then(async () => {
-        await prisma.$disconnect()
-    })
-    .catch(async (e) => {
-        console.error(e)
-        await prisma.$disconnect()
-        process.exit(1)
-    })
+async function seed() {
+    try {
+        await seedSiteInfo();
+        await seedAllRoles();
+        await seedStudents();
+        await seedTanarok();
+        await seedQuestions();
+        await seedZsurik();
+        await seedCompetitions();
+        await prisma.$disconnect();
+    } catch (e) {
+        console.error(e);
+        await prisma.$disconnect();
+        process.exit(1);
+    }
+}
+
+seed();

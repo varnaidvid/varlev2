@@ -30,7 +30,8 @@
     "types/**/*.ts",
     "app/vezerlopult/regisztracio",
     "prisma/seed.ts",
-    "components/SlateEditor.jsx"
+    "components/SlateEditor.jsx",
+    "lib/actions.ts"
   ],
   "exclude": ["node_modules"]
 }

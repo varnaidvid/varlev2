@@ -32,7 +32,9 @@ export default function CompetitionLayout({
     const fetchCompetition = async () => {
       if (!params.name) return;
 
-      const competition = await getCompetitionByName(decodeURI(params.name));
+      const competition = await getCompetitionByName(
+        decodeURIComponent(params.name)
+      );
 
       if (!competition) {
         setIsCompetitionLoading(false);

@@ -7,6 +7,11 @@ import {
   Gauge,
   GearSix,
   Monitor,
+  NumberCircleFive,
+  NumberCircleFour,
+  NumberCircleOne,
+  NumberCircleThree,
+  NumberCircleTwo,
   Pencil,
   PresentationChart,
   Question,
@@ -38,7 +43,10 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import DashboardCard from '@/components/vezerlopult/dashboardCard';
 import { VezerloContext } from './layout';
-import { didUserFinish } from '@/lib/actions';
+import { didUserFinish, getTop5Teachers } from '@/lib/actions';
+import columns from '@/components/datatable/dataTableColumns';
+import UsersDataTable from '@/components/datatable/usersDataTable';
+import { BarList, Bold, Flex, Text, Title } from '@tremor/react';
 
 export function humanizeTime(futureDate: Date) {
   const diff = futureDate.getTime() - new Date().getTime();
@@ -62,13 +70,54 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 
 export default function VezerloHome() {
   const { data: session, status, update } = useSession();
 
+  const [isUserFinished, setIsUserFinished] = useState(false);
+  const [topTeachers, setTopTeachers] = useState<any>();
+  const [isTopTeachersLoading, setIsTopTeachersLoading] = useState(false);
+
   const { competitions } = useContext(VezerloContext);
 
-  const [isUserFinished, setIsUserFinished] = useState(false);
+  useEffect(() => {
+    const fetchUser = async () => {
+      setIsTopTeachersLoading(true);
+
+      const topTeachers = await getTop5Teachers();
+
+      const iconMap: any = {
+        0: NumberCircleOne,
+        1: NumberCircleTwo,
+        2: NumberCircleThree,
+        3: NumberCircleFour,
+        4: NumberCircleFive,
+      };
+
+      if (!topTeachers) {
+        setIsTopTeachersLoading(false);
+        return;
+      } else {
+        const data: any = topTeachers.map((teacher, index) => {
+          return {
+            name: teacher.name,
+            value: teacher.value,
+            href: teacher.href,
+            icon: () => {
+              const Icon = iconMap[index];
+              return <Icon className="h-6 w-6 mr-1" weight="bold" />;
+            },
+          };
+        });
+
+        setTopTeachers(data);
+        setIsTopTeachersLoading(false);
+      }
+    };
+
+    if (session?.user.role == 'webmester' && !isTopTeachersLoading) fetchUser();
+  }, [session]);
 
   useEffect(() => {
     async function checkUser() {
@@ -306,11 +355,34 @@ export default function VezerloHome() {
               secondLink="/vezerlopult/feladatok/letrehozas"
               secondLinkText="Új feladat"
             />
-
-            <Separator className="my-8" />
           </div>
+          <Separator className="my-8" />
+          <h1 className="text-2xl font-semibold tracking-tight mb-2 -mt-1">
+            Legaktívabb tanárok
+          </h1>
+          {isTopTeachersLoading ? (
+            <div className="flex justify-center items-center">
+              <div className="animate-pulse text-2xl font-semibold text-black">
+                Keresés alatt..
+              </div>
+            </div>
+          ) : (
+            <Card className="rounded-md hover:shadow-sm transition-all p-3">
+              <Flex>
+                <Text>
+                  <Bold className="text-gray-800">Név</Bold>
+                </Text>
+                <Text>
+                  <Bold className="text-gray-800">Feladat mennyiség</Bold>
+                </Text>
+              </Flex>
+              <BarList data={topTeachers} className="mt-2" />
+            </Card>
+          )}{' '}
         </div>
       )}
+      <br />
+      <br />
     </>
   );
 }

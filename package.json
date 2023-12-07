@@ -40,6 +40,7 @@
     "@tiptap/pm": "^2.1.12",
     "@tiptap/react": "^2.1.12",
     "@tiptap/starter-kit": "^2.1.12",
+    "@tremor/react": "^3.11.1",
     "@uploadcare/blocks": "0.29.1",
     "@uploadcare/nextjs-loader": "^1.0.0",
     "@uploadcare/react-widget": "^2.4.5",

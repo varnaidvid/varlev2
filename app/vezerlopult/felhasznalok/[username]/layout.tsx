@@ -14,6 +14,12 @@ import {
 import toast from 'react-hot-toast';
 import { VezerloContext } from '../../layout';
 
+export function convertUnicode(input: string) {
+  return input.replace(/\\+u([0-9a-fA-F]{4})/g, (a, b) =>
+    String.fromCharCode(parseInt(b, 16))
+  );
+}
+
 export default function UserLayout({
   params,
   children,
@@ -31,7 +37,7 @@ export default function UserLayout({
     const fetchUser = async () => {
       if (!params.username) return;
 
-      const user = await getUser(params.username);
+      const user = await getUser(decodeURIComponent(params.username));
 
       if (!user) {
         setIsUserLoading(false);
