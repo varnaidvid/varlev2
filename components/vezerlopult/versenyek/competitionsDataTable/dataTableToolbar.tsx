@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ArrowLeft, Trash } from '@phosphor-icons/react';
 import {
-  deleteCompetitions,
+  closeCompetitions,
   deleteQuestion,
   deleteQuestions,
   deleteTeams,
@@ -89,21 +89,21 @@ export function DataTableToolbar<TData>({
                 <AlertDialogDescription>
                   {table.getFilteredSelectedRowModel().rows.length == 1 ? (
                     <div>
-                      Ezzel kifogja törölni{' '}
+                      Ezzel lefogja zárni{' '}
                       <b>
                         {table
                           .getFilteredSelectedRowModel()
                           .rows[0]?.getValue('name')}{' '}
                       </b>
-                      nevű verseynt.
+                      nevű versenyt.
                     </div>
                   ) : (
                     <div>
-                      Ezzel ki kifogja törölni a kiválasztott{' '}
+                      Ezzel ki lefogja zárni a kiválasztott{' '}
                       <b>
                         {table.getFilteredSelectedRowModel().rows.length} db{' '}
                       </b>
-                      verseynt.
+                      versenyt.
                     </div>
                   )}
                 </AlertDialogDescription>
@@ -119,7 +119,7 @@ export function DataTableToolbar<TData>({
                       .getFilteredSelectedRowModel()
                       .rows.map((row) => row.getValue('name'));
 
-                    const res: any = await deleteCompetitions(names);
+                    const res: any = await closeCompetitions(names);
 
                     if (res.status == 500) toast.error(res.message);
                     else {
@@ -130,11 +130,11 @@ export function DataTableToolbar<TData>({
                         );
                       });
                       table.toggleAllPageRowsSelected(false);
-                      toast.success('Sikeres törlés');
+                      toast.success('Sikeres lezárás');
                     }
                   }}
                 >
-                  <Trash className="w-6 h-6 mr-1" /> Törlés
+                  <Trash className="w-6 h-6 mr-1" /> Lezárás
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -142,7 +142,7 @@ export function DataTableToolbar<TData>({
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" className="h-8">
                 <Trash className="w-4 h-4 mr-1.5" />{' '}
-                {table.getFilteredSelectedRowModel().rows.length} törlése
+                {table.getFilteredSelectedRowModel().rows.length} lezárás
               </Button>
             </AlertDialogTrigger>
           </AlertDialog>

@@ -31,7 +31,7 @@ export default function TeamLayout({
     const fetchTeam = async () => {
       if (!params.name) return;
 
-      const team = await getTeam(decodeURI(params.name));
+      const team = await getTeam(decodeURIComponent(params.name));
 
       if (!team) {
         setIsTeamLoading(false);

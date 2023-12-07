@@ -40,6 +40,83 @@ export async function deleteUser(username: string) {
 
   return prisma.user.delete({ where: { username } });
 }
+export async function getTop5Teachers() {
+  const topTeachers = await prisma.user.findMany({
+    include: {
+      questions: true,
+    },
+    orderBy: {
+      questions: {
+        _count: 'desc',
+      },
+    },
+    take: 5,
+  });
+
+  const teachersWithSchema = topTeachers.map((teacher, index) => ({
+    value: teacher.questions.length,
+    name: teacher.username,
+    href: `/vezerlopult/felhasznalok/${teacher.username}`,
+  }));
+
+  return teachersWithSchema;
+}
+export async function teacherStatsByYear(name: string) {
+  // find the teachers every question and group it by year the schema is the following: [
+  // {
+  //   name: "x. year",
+  //   "Feladatok száma": 2488,
+  // },
+  // {
+  //   name: "y. year",
+  //   "Feladatok száma": 1445,
+  // },]
+
+  const teacher = await prisma.user.findUnique({
+    where: { username: name },
+    include: {
+      questions: true,
+    },
+  });
+
+  const questions = teacher!.questions;
+
+  console.log(questions);
+  //       question: 'klarinét trombita fuvola oboafajta 7' is in the following format the last element of every question is the year gropud by that
+
+  const years = questions.map((question) => question.question.split(' ')[4]);
+
+  console.log(years);
+
+  const yearsMap: any = new Map();
+
+  years.forEach((year) => {
+    if (yearsMap.has(year)) {
+      yearsMap.set(year, yearsMap.get(year) + 1);
+    } else {
+      yearsMap.set(year, 1);
+    }
+  });
+
+  const yearsArray = [...yearsMap];
+
+  const yearsWithSchema = yearsArray.map((year, index) => ({
+    name: year[0],
+    'Feladatok száma': year[1],
+  }));
+
+  yearsWithSchema.sort((a, b) => {
+    if (parseInt(a.name) > parseInt(b.name)) {
+      return 1;
+    } else if (parseInt(a.name) < parseInt(b.name)) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+
+  return yearsWithSchema;
+}
 
 export async function createUser(
   username: string,
@@ -461,13 +538,11 @@ export async function getCompetitionById(competitionId: string) {
 export async function getCompetitions() {
   return prisma.competition.findMany();
 }
-export async function deleteCompetitions(names: string[]) {
-  await prisma.team.updateMany({
-    where: { competitionId: { in: names } },
-    data: { competitionId: null },
+export async function closeCompetitions(names: string[]) {
+  return prisma.competition.updateMany({
+    where: { name: { in: names } },
+    data: { endDate: new Date() },
   });
-
-  return prisma.competition.deleteMany({ where: { name: { in: names } } });
 }
 export async function getCompetitionByName(name: string) {
   return prisma.competition.findUnique({ where: { name } });
@@ -728,6 +803,101 @@ export async function getTeamStatsById(teamId: string, competitionId: string) {
     averageTimeTaken,
     points,
   };
+}
+export async function getEveryTeamMembersStatsSeperatelyByTeamId(
+  teamId: string
+) {
+  const competitors = await prisma.competitor.findMany({
+    where: { teamId },
+    include: { user: true },
+  });
+  const competitorIds = competitors.map((competitor) => competitor.id);
+
+  const competitor1_attempts = await prisma.attempt.findMany({
+    where: { competitorId: competitorIds[0] },
+  });
+  const competitor2_attempts = await prisma.attempt.findMany({
+    where: { competitorId: competitorIds[1] },
+  });
+  const competitor3_attempts = await prisma.attempt.findMany({
+    where: { competitorId: competitorIds[2] },
+  });
+
+  const competitor1_correctAttempts = competitor1_attempts.filter(
+    (attempt) => attempt.isCorrect
+  ).length;
+
+  const competitor2_correctAttempts = competitor2_attempts.filter(
+    (attempt) => attempt.isCorrect
+  ).length;
+
+  const competitor3_correctAttempts = competitor3_attempts.filter(
+    (attempt) => attempt.isCorrect
+  ).length;
+
+  const competitor1_totalAttempts = competitor1_attempts.length;
+  const competitor2_totalAttempts = competitor2_attempts.length;
+  const competitor3_totalAttempts = competitor3_attempts.length;
+
+  const competitor1_totalTimeTaken = competitor1_attempts.reduce(
+    (acc, attempt) => acc + attempt.TimeTaken,
+    0
+  );
+  const competitor2_totalTimeTaken = competitor2_attempts.reduce(
+    (acc, attempt) => acc + attempt.TimeTaken,
+    0
+  );
+  const competitor3_totalTimeTaken = competitor3_attempts.reduce(
+    (acc, attempt) => acc + attempt.TimeTaken,
+    0
+  );
+
+  const competitor1_averageTimeTaken =
+    competitor1_totalAttempts > 0
+      ? competitor1_totalTimeTaken / competitor1_totalAttempts
+      : 0;
+  const competitor2_averageTimeTaken =
+    competitor2_totalAttempts > 0
+      ? competitor2_totalTimeTaken / competitor2_totalAttempts
+      : 0;
+  const competitor3_averageTimeTaken =
+    competitor3_totalAttempts > 0
+      ? competitor3_totalTimeTaken / competitor3_totalAttempts
+      : 0;
+
+  const competitor1_points =
+    competitor1_correctAttempts * 100 - competitor1_totalTimeTaken / 1000;
+  const competitor2_points =
+    competitor2_correctAttempts * 100 - competitor2_totalTimeTaken / 1000;
+  const competitor3_points =
+    competitor3_correctAttempts * 100 - competitor3_totalTimeTaken / 1000;
+
+  return [
+    {
+      competitor: competitors[0],
+      username: competitors[0].user.username,
+      totalAttempts: competitor1_totalAttempts,
+      correctAttempts: competitor1_correctAttempts,
+      averageTimeTaken: competitor1_averageTimeTaken,
+      points: competitor1_points,
+    },
+    {
+      competitor: competitors[1],
+      username: competitors[1].user.username,
+      totalAttempts: competitor2_totalAttempts,
+      correctAttempts: competitor2_correctAttempts,
+      averageTimeTaken: competitor2_averageTimeTaken,
+      points: competitor2_points,
+    },
+    {
+      competitor: competitors[2],
+      username: competitors[2].user.username,
+      totalAttempts: competitor3_totalAttempts,
+      correctAttempts: competitor3_correctAttempts,
+      averageTimeTaken: competitor3_averageTimeTaken,
+      points: competitor3_points,
+    },
+  ];
 }
 
 // SiteInfo

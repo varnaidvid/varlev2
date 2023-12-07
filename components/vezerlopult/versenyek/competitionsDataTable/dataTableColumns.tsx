@@ -10,6 +10,7 @@ import {
   PencilSimple,
   Trash,
   ArrowLeft,
+  XSquare,
 } from '@phosphor-icons/react';
 
 import { Button } from '@/components/ui/button';
@@ -45,7 +46,7 @@ import {
 
 import toast from 'react-hot-toast';
 
-import { deleteCompetitions } from '@/lib/actions';
+import { closeCompetitions, deleteCompetitions } from '@/lib/actions';
 import Link from 'next/link';
 import { useContext } from 'react';
 import { useSession } from 'next-auth/react';
@@ -75,12 +76,14 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Csapatnév" />
+      <DataTableColumnHeader column={column} title="Verseny név" />
     ),
     cell: ({ row }) => {
       return (
         <Link href={`/vezerlopult/versenyek/${row.getValue('name')}`}>
-          <span>{row.getValue('name')}</span>
+          <span className="text-center block mx-auto">
+            {row.getValue('name')}
+          </span>
         </Link>
       );
     },
@@ -94,7 +97,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
     cell: ({ row }) => {
       const year = row.original.year;
 
-      return <span>{year}</span>;
+      return <span className="text-center block mx-auto">{year}</span>;
     },
     filterFn: (row: any, id: any, value: any) => {
       return row.original[id] == value;
@@ -103,6 +106,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
   {
     id: 'startDate',
     accessorKey: 'Kezdés',
+
     cell: ({ row }) => {
       const date = new Date(row.original.startDate);
       const formatted = `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -112,12 +116,13 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
         .toString()
         .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-      return <div className="text-right font-medium">{formatted}</div>;
+      return <div className="text-center font-medium">{formatted}</div>;
     },
   },
   {
     id: 'endDate',
     accessorKey: 'Befejezés',
+
     cell: ({ row }) => {
       const date = new Date(row.original.endDate);
       const formatted = `${date.getFullYear()}-${(date.getMonth() + 1)
@@ -127,34 +132,14 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
         .toString()
         .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: 'createdAt',
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        className="text-right"
-        title="Létrehozva"
-      />
-    ),
-    cell: ({ row }) => {
-      const date = new Date(row.getValue('createdAt'));
-      const formatted = `${date.getFullYear()}-${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date
-        .getHours()
-        .toString()
-        .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-
-      return <div className="text-right font-medium">{formatted}</div>;
+      return <div className="text-center font-medium">{formatted}</div>;
     },
   },
   {
     id: 'actions',
     cell: ({ row, table }) => {
       const { competitions, setCompetitions } = useContext(VezerloContext);
+      const isDisabled = row.original.endDate < new Date();
 
       return (
         <AlertDialog>
@@ -164,12 +149,12 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
               <AlertDialogDescription>
                 {table.getFilteredSelectedRowModel().rows.length == 0 ? (
                   <div>
-                    Ezzel kifogja törölni <b>{row.getValue('name')}</b> nevű
+                    Ezzel lefogja zárni <b>{row.getValue('name')}</b> nevű
                     versenyt.
                   </div>
                 ) : table.getFilteredSelectedRowModel().rows.length == 1 ? (
                   <div>
-                    Ezzel kifogja törölni{' '}
+                    Ezzel lefogja zárni{' '}
                     <b>
                       {table
                         .getFilteredSelectedRowModel()
@@ -179,7 +164,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
                   </div>
                 ) : (
                   <div>
-                    Ezzel ki kifogja törölni a kiválasztott{' '}
+                    Ezzel ki lefogod zárni a kiválasztott{' '}
                     <b>{table.getFilteredSelectedRowModel().rows.length} db </b>
                     versenyt.
                   </div>
@@ -203,7 +188,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
                       .rows.map((row) => row.getValue('name'));
                   }
 
-                  const res: any = await deleteCompetitions(names);
+                  const res: any = await closeCompetitions(names);
 
                   if (res.status == 500) toast.error(res.message);
                   else {
@@ -214,17 +199,17 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
                       )!
                     );
                     table.toggleAllPageRowsSelected(false);
-                    toast.success('Sikeres törlés');
+                    toast.success('Sikeres lezárás');
                   }
                 }}
               >
-                <Trash className="w-6 h-6 mr-1" /> Törlés
+                <XSquare className="w-6 h-6 mr-1" /> Lezárás
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
 
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild disabled={isDisabled}>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Menü kinyitása</span>
                 <DotsThree className="h-4 w-4" />
@@ -244,8 +229,8 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
               <AlertDialogTrigger className="w-full">
                 <DropdownMenuItem>
                   <div className="flex justify-between w-full">
-                    Törlés
-                    <Backspace className="w-4 h-4 ml-4" />
+                    Lezárás
+                    <XSquare className="w-4 h-4 ml-4" />
                   </div>
                 </DropdownMenuItem>
               </AlertDialogTrigger>

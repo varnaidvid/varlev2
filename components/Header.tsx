@@ -31,10 +31,10 @@ const Header = () => {
   const { data: session, status } = useSession();
 
   return (
-    <header className="flex p-4 px-8 bg-gray-800/60 text-gray-300 items-center justify-between fixed w-full backdrop-blur-md z-50">
+    <header className="flex p-4 px-8 bg-gray-200/10 text-gray-800 items-center justify-between fixed w-full backdrop-blur-md z-50 border-b-2 border-slate-200">
       <div className="flex">
         <Link className="font-bold" href="/">
-          VarleV2
+          Varle<span className="text-primary">V2</span>
         </Link>
       </div>
       <div>
@@ -141,16 +141,12 @@ const Header = () => {
           <>
             <Button variant={'ghost'}>
               <Link href="/bejelentkezes">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <LogIn />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Bejelentkezés</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <div className="flex">
+                  <span className="mr-2 text-lg">Bejelentkezés</span>
+                  <span className="mt-px">
+                    <LogIn />
+                  </span>
+                </div>
               </Link>
             </Button>
           </>
@@ -162,16 +158,12 @@ const Header = () => {
               signOut({ redirect: true, callbackUrl: '/' });
             }}
           >
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <LogOut />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Kijelentkezés</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <div className="flex">
+              <span className="mr-2 text-lg">Kijelentkezés</span>
+              <span className="mt-px">
+                <LogOut />
+              </span>
+            </div>
           </Button>
         ) : (
           ''

@@ -21,6 +21,7 @@ import UserForm from './userForm';
 import PasswordForm from './passwordForm';
 import { VezerloContext } from '../../layout';
 import { Separator } from '@/components/ui/separator';
+import TanarForm from './tanarForm';
 
 export default function UserPage({ params }: { params: { username: string } }) {
   const router = useRouter();
@@ -72,12 +73,14 @@ export default function UserPage({ params }: { params: { username: string } }) {
 
         <Link
           href={`/vezerlopult/felhasznalok/${
-            user?.username ? user.username : params.username
+            user?.username ? user.username : decodeURIComponent(params.username)
           }`}
         >
           <div className="flex items-center gap-[2px] hover:underline">
             <UserCircle className="h-6 w-6" />{' '}
-            {user?.username ? user.username : params.username}
+            {user?.username
+              ? user.username
+              : decodeURIComponent(params.username)}
           </div>
         </Link>
       </span>
@@ -87,9 +90,17 @@ export default function UserPage({ params }: { params: { username: string } }) {
       <>
         <Tabs defaultValue="account">
           <TabsList className="mb-4">
+            {user?.role == 'tanar' && (
+              <TabsTrigger value="stats">Statisztika</TabsTrigger>
+            )}
             <TabsTrigger value="account">Általános adatok</TabsTrigger>
             <TabsTrigger value="password">Jelszó módosítása</TabsTrigger>
           </TabsList>
+          {user?.role == 'tanar' && (
+            <TabsContent value="stats">
+              <TanarForm />
+            </TabsContent>
+          )}
           <TabsContent value="account">
             <UserForm />
           </TabsContent>

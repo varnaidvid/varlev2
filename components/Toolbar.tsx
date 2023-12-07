@@ -101,7 +101,13 @@ export function Toolbar({ editor }: Props) {
           crop="free, 16:9, 4:3, 5:4, 1:1"
           publicKey="9e050a5302218c1e1d2e"
           clearable
-          onChange={info => editor.chain().focus().setImage({ src: 'https://ucarecdn.com/' + info.uuid + "/" }).run()}
+          onChange={(info) =>
+            editor
+              .chain()
+              .focus()
+              .setImage({ src: 'https://ucarecdn.com/' + info.uuid + '/' })
+              .run()
+          }
         />
       </div>
     </div>
