@@ -485,52 +485,323 @@ async function seedQuestions() {
     console.log(upsertedQuestions)
 
 }
+async function seedTeams() {
+    // fetch users with role "diak"
+    const students = await prisma.user.findMany({ where: { role: "diak" }, select: { id: true, username: true, Competitor: true } })
+
+    let students_5 = students.filter((student) => student.Competitor?.year === 5)
+    let students_6 = students.filter((student) => student.Competitor?.year === 6)
+    let students_7 = students.filter((student) => student.Competitor?.year === 7)
+    let students_8 = students.filter((student) => student.Competitor?.year === 8)
+
+    let teams_5: any = []
+    let teams_6: any = []
+    let teams_7: any = []
+    let teams_8: any = []
+
+    const createTeams = (students: any[], teams: any[]) => {
+        const numTeams = Math.floor(students.length / 3);
+        for (let i = 0; i < numTeams; i++) {
+            const teamMembers = students.splice(0, 3);
+            teams.push(teamMembers);
+        }
+
+        return teams;
+    };
+
+    teams_5 = createTeams(students_5, teams_5);
+    teams_6 = createTeams(students_6, teams_6);
+    teams_7 = createTeams(students_7, teams_7);
+    teams_8 = createTeams(students_8, teams_8);
+
+    // upsert teams to db
+    const teams5Upserted = await Promise.all(
+        teams_5.map(async (team: any) => {
+            console.log(team[0]);
+
+            const teamId = "T" + team[0].id;
+            const teamName = `${team[0].Competitor.year}. ${team[0].Competitor.class}`;
+            const teamDescription = `${team[0].Competitor.year}. évfolyam ${team[0].Competitor.class} osztály csapata, ${team[0].username}, ${team[1].username}, ${team[2].username}`;
+
+            const competitors = team.map((student: any) => ({ id: student.Competitor.id }));
+
+            return await prisma.team.upsert({
+                where: { id: teamId },
+                update: {},
+                create: {
+                    id: teamId,
+                    name: teamName,
+                    description: teamDescription,
+                    year: team[0].Competitor.year,
+                    class: team[0].Competitor.class,
+                    competitors: { connect: competitors },
+                },
+            });
+        })
+    );
+
+    const teams6Upserted = await Promise.all(
+        teams_6.map(async (team: any) => {
+            console.log(team[0]);
+
+            const teamId = "T" + team[0].id;
+            const teamName = `${team[0].Competitor.year}. ${team[0].Competitor.class}`;
+            const teamDescription = `${team[0].Competitor.year}. évfolyam ${team[0].Competitor.class} osztály csapata, ${team[0].username}, ${team[1].username}, ${team[2].username}`;
+
+            const competitors = team.map((student: any) => ({ id: student.Competitor.id }));
+
+            return await prisma.team.upsert({
+                where: { id: teamId },
+                update: {},
+                create: {
+                    id: teamId,
+                    name: teamName,
+                    description: teamDescription,
+                    year: team[0].Competitor.year,
+                    class: team[0].Competitor.class,
+                    competitors: { connect: competitors },
+                },
+            });
+        })
+    );
+
+    const teams7Upserted = await Promise.all(
+        teams_7.map(async (team: any) => {
+            console.log(team[0]);
+
+            const teamId = "T" + team[0].id;
+            const teamName = `${team[0].Competitor.year}. ${team[0].Competitor.class}`;
+            const teamDescription = `${team[0].Competitor.year}. évfolyam ${team[0].Competitor.class} osztály csapata, ${team[0].username}, ${team[1].username}, ${team[2].username}`;
+
+            const competitors = team.map((student: any) => ({ id: student.Competitor.id }));
+
+            return await prisma.team.upsert({
+                where: { id: teamId },
+                update: {},
+                create: {
+                    id: teamId,
+                    name: teamName,
+                    description: teamDescription,
+                    year: team[0].Competitor.year,
+                    class: team[0].Competitor.class,
+                    competitors: { connect: competitors },
+                },
+            });
+        })
+    );
+
+    const teams8Upserted = await Promise.all(
+        teams_8.map(async (team: any) => {
+            console.log(team[0]);
+
+            const teamId = "T" + team[0].id;
+            const teamName = `${team[0].Competitor.year}. ${team[0].Competitor.class}`;
+            const teamDescription = `${team[0].Competitor.year}. évfolyam ${team[0].Competitor.class} osztály csapata, ${team[0].username}, ${team[1].username}, ${team[2].username}`;
+
+            const competitors = team.map((student: any) => ({ id: student.Competitor.id }));
+
+            return await prisma.team.upsert({
+                where: { id: teamId },
+                update: {},
+                create: {
+                    id: teamId,
+                    name: teamName,
+                    description: teamDescription,
+                    year: team[0].Competitor.year,
+                    class: team[0].Competitor.class,
+                    competitors: { connect: competitors },
+                },
+            });
+        })
+    );
+
+    console.log(teams5Upserted);
+    console.log(teams6Upserted);
+    console.log(teams7Upserted);
+    console.log(teams8Upserted);
+}
 
 async function seedCompetitions() {
     // fetch questions from role "tanr" creators
     let questions = await prisma.question.findMany({ include: { creator: true } })
     questions = questions.filter((question) => question.creator.role === "tanar") // webmester feladatai ne legyenek példa versenyben
 
-    // filter questions by year: year should be 5. year = questions[0].question.split(" ")[question[0].question.split(" ").length - 1]
-    questions = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "5")
+    let jurys = await prisma.user.findMany({ where: { role: "zsuri" } })
 
-    // sorting the questions in to 3 question packs
-    let questions1 = []
-    let questions2 = []
-    let questions3 = []
-    let i = 0
-    while (i + 3 <= questions.length) {
-        questions1.push(questions[i])
-        i++
-        questions2.push(questions[i])
-        i++
-        questions3.push(questions[i])
-        i++
+    let teams = await prisma.team.findMany({ include: { competitors: true } })
+    const team_5 = teams.filter((team) => team.competitors[0].year === 5)
+    const team_6 = teams.filter((team) => team.competitors[0].year === 6)
+    const team_7 = teams.filter((team) => team.competitors[0].year === 7)
+    const team_8 = teams.filter((team) => team.competitors[0].year === 8)
+
+    // filter questions by year: year should be 5. year = questions[0].question.split(" ")[question[0].question.split(" ").length - 1]
+
+    function shuffle(array: any[]) {
+        // sorting the questions in to 3 question packs
+        let questions1 = []
+        let questions2 = []
+        let questions3 = []
+        let i = 0
+        while (i + 3 <= array.length) {
+            questions1.push(array[i])
+            i++
+            questions2.push(array[i])
+            i++
+            questions3.push(array[i])
+            i++
+        }
+
+        return [questions1, questions2, questions3]
     }
 
-    // upsert a competition to db
-    const competition = await prisma.competition.upsert({
-        where: { id: "c1" },
+    const questions5 = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "5")
+    const questions6 = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "6")
+    const questions7 = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "7")
+    const questions8 = questions.filter((question) => question.question.split(" ")[question.question.split(" ").length - 1] === "8")
+
+    let [questions5_1, questions5_2, questions5_3] = shuffle(questions5)
+    let [questions6_1, questions6_2, questions6_3] = shuffle(questions6)
+    let [questions7_1, questions7_2, questions7_3] = shuffle(questions7)
+    let [questions8_1, questions8_2, questions8_3] = shuffle(questions8)
+
+    const upsertedCopetition5_1 = await prisma.competition.upsert({
+        where: { id: "c5_1" },
         update: {},
         create: {
-            id: "c1",
-            name: "Példa verseny",
+            id: "c5_1",
+            name: "Példa verseny 5. évfolyam 1. feladatcsomag",
             description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
             year: "5" as any,
             startDate: new Date("2023-11-11"),
             endDate: new Date("2023-11-13"),
-            questions1: { connect: questions1.map((question) => ({ id: question.id })) },
-            questions2: { connect: questions2.map((question) => ({ id: question.id })) },
-            questions3: { connect: questions3.map((question) => ({ id: question.id })) },
+
+            questions1: { connect: questions5_1.map((question) => ({ id: question.id })) },
+            questions2: { connect: questions5_2.map((question) => ({ id: question.id })) },
+            questions3: { connect: questions5_3.map((question) => ({ id: question.id })) },
+
+            teams: { connect: team_5.map((team) => ({ id: team.id })) },
+
+            jurys: { connect: jurys.slice(0, randomInt(0, jurys.length - 1)).map((jury) => ({ id: jury.id })) },
         },
     })
 
-    console.log(competition)
+    const upsertedCopetition6_1 = await prisma.competition.upsert({
+        where: { id: "c6_1" },
+        update: {},
+        create: {
+            id: "c6_1",
+            name: "Példa verseny 6. évfolyam 1. feladatcsomag",
+            description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
+            year: "6" as any,
+            startDate: new Date("2023-11-11"),
+            endDate: new Date("2023-11-20"),
 
-    // delete this competition
-    // await prisma.competition.delete({ where: { id: "c1" } })
+            questions1: { connect: questions6_1.map((question) => ({ id: question.id })) },
+            questions2: { connect: questions6_2.map((question) => ({ id: question.id })) },
+            questions3: { connect: questions6_3.map((question) => ({ id: question.id })) },
+
+            teams: { connect: team_6.map((team) => ({ id: team.id })) },
+
+            jurys: { connect: jurys.slice(0, randomInt(0, jurys.length - 1)).map((jury) => ({ id: jury.id })) },
+        },
+    })
+    const upsertedCopetition7_1 = await prisma.competition.upsert({
+        where: { id: "c7_1" },
+        update: {},
+        create: {
+            id: "c7_1",
+            name: "Példa verseny 7. évfolyam 1. feladatcsomag",
+            description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
+            year: "7" as any,
+            startDate: new Date("2023-12-1"),
+            endDate: new Date("2023-12-10"),
+
+            questions1: { connect: questions7_1.map((question) => ({ id: question.id })) },
+            questions2: { connect: questions7_2.map((question) => ({ id: question.id })) },
+            questions3: { connect: questions7_3.map((question) => ({ id: question.id })) },
+
+            teams: { connect: team_7.map((team) => ({ id: team.id })) },
+
+            jurys: { connect: jurys.slice(0, randomInt(0, jurys.length - 1)).map((jury) => ({ id: jury.id })) },
+        },
+    })
+    const upsertedCopetition8_1 = await prisma.competition.upsert({
+        where: { id: "c8_1" },
+        update: {},
+        create: {
+            id: "c8_1",
+            name: "Példa verseny 8. évfolyam 1. feladatcsomag",
+            description: "Ez egy példa verseny. A 12 feladat van. A verseny 2023.11.11-én kezdődik és 2023.11.13-án ér véget.",
+            year: "8" as any,
+            startDate: new Date("2023-11-11"),
+            endDate: new Date("2023-12-13"),
+
+            questions1: { connect: questions8_1.map((question) => ({ id: question.id })) },
+            questions2: { connect: questions8_2.map((question) => ({ id: question.id })) },
+            questions3: { connect: questions8_3.map((question) => ({ id: question.id })) },
+
+            teams: { connect: team_8.map((team) => ({ id: team.id })) },
+
+            jurys: { connect: jurys.slice(0, randomInt(0, jurys.length - 1)).map((jury) => ({ id: jury.id })) },
+        },
+    })
+
+
+
+    // 5. és 6. évfolyamnak a versenye lett már vége....
+
+    console.log(upsertedCopetition5_1)
+    // console.log(upsertedCopetition6_1)
+    // console.log(upsertedCopetition7_1)
+    // console.log(upsertedCopetition8_1)
 }
+async function seedAttempts() {
+    // fetch every user that is in a team and is a competitor (diak)
+    const competitors = await prisma.competitor.findMany({ include: { user: true, team: true } })
 
+    // fetch every question
+    const questions = await prisma.question.findMany({ include: { compatition1s: true, compatition2s: true, compatition3s: true } })
+
+    // create attempts
+    let attempts: any[] = []
+
+    // for every competitor
+    competitors.forEach((competitor) => {
+        // for every question that is in the competitor's team's competition either in the 1st, 2nd or 3rd question pack
+        console.log(questions[0].compatition1s)
+
+        questions.forEach((question) => {
+            if (question.compatition1s.some((competition) => competition.id === competitor.team?.competitionId) ||
+                question.compatition2s.some((competition) => competition.id === competitor.team?.competitionId) ||
+                question.compatition3s.some((competition) => competition.id === competitor.team?.competitionId)) {
+                // create an attempt
+                attempts.push({
+                    competitor: { connect: { id: competitor.id } },
+                    question: { connect: { id: question.id } },
+                    Competition: { connect: { id: competitor.team?.competitionId } },
+                    answer: " ",
+                    isCorrect: Math.random() < 0.5,
+                    TimeTaken: randomInt(0, 60),
+                })
+            }
+        })
+    })
+
+    console.log(attempts)
+
+    // upsert attempts
+    const upsertedAttempts = await Promise.all(
+        attempts.map(async (attempt, index) => {
+            return await prisma.attempt.upsert({
+                where: { id: index.toString() },
+                update: {},
+                create: attempt,
+            })
+        })
+    )
+
+    console.log(upsertedAttempts)
+}
 
 async function seedSiteInfo() {
     // model SiteInfo {
@@ -566,7 +837,9 @@ async function seed() {
         await seedTanarok();
         await seedQuestions();
         await seedZsurik();
+        await seedTeams();
         await seedCompetitions();
+        await seedAttempts();
         await prisma.$disconnect();
     } catch (e) {
         console.error(e);
