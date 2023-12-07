@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { UploadedQuestions } from '@/components/vezerlopult/feladatok/uploadedQuestionsTable/column';
 import { getCompetitionsForDiak, getUsers } from '@/lib/actions';
 import { AllParsedQuestion, vezerloContextType } from '@/types/vezerloContext';
 import { ArrowClockwise } from '@phosphor-icons/react';
@@ -68,6 +69,9 @@ export const VezerloContext = createContext<vezerloContextType>({
 
   tasksDataTable: null as any,
   setTasksDataTable: () => null as any,
+
+  uploadedQuestions: [] as UploadedQuestions[],
+  setUploadedQuestions: () => null as any,
 });
 
 export default function VezerloLayout({
@@ -129,6 +133,10 @@ export default function VezerloLayout({
     useState<boolean>(false);
 
   const [tasksDataTable, setTasksDataTable] = useState<any[]>([]);
+
+  const [uploadedQuestions, setUploadedQuestions] = useState<
+    UploadedQuestions[]
+  >([]);
 
   useEffect(() => {
     async function getCompetitions() {
@@ -203,6 +211,9 @@ export default function VezerloLayout({
 
           tasksDataTable,
           setTasksDataTable,
+
+          uploadedQuestions,
+          setUploadedQuestions,
         }}
       >
         <main className="mt-24">{children}</main>

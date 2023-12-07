@@ -57,6 +57,7 @@
     "next": "14.0.1",
     "next-auth": "^4.24.4",
     "node": "^18.14.0",
+    "openai": "^4.20.1",
     "radix-ui": "^1.0.1",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
