@@ -148,17 +148,12 @@ export default function Stats() {
   }, [points, memberCounts]);
 
   useEffect(() => {
-    if (!isLoading && teamAttempts.length !== 0) {
-      setTeams((prev) => {
-        return prev.sort((a, b) => {
-          return (
-            (teamAttempts[b.id]?.points || 0) -
-            (teamAttempts[a.id]?.points || 0)
-          );
-        });
+    if (!isLoading && teamAttempts.length > 0) {
+      setTeamAttempts((prev: any) => {
+        return prev.sort((a: any, b: any) => b.points - a.points);
       });
     }
-  }, [isLoading]);
+  }, [isLoading, teamAttempts]);
 
   return (
     <>
