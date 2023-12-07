@@ -728,6 +728,14 @@ export async function updateCompetition(
     throw error;
   }
 }
+export async function getCompetitionsTeamCount(name: string) {
+  const competition = await prisma.competition.findUnique({
+    where: { name },
+    include: { teams: true },
+  });
+
+  return competition!.teams.length;
+}
 export async function getCompetitionData(name: string) {
   const competition = await prisma.competition.findUnique({
     where: { name: name },
@@ -771,33 +779,27 @@ export async function getAttemptsByTeamId(teamId: string) {
 }
 
 export async function getTeamStatsById(teamId: string, competitionId: string) {
-  const teams = await prisma.team.findMany({ where: { competitionId } });
-  const teamIds = teams.map((team) => team.id);
-
-  const competitors = await prisma.competitor.findMany({
-    where: { teamId: { in: teamIds } },
-  });
-  const competitorIds = competitors.map((competitor) => competitor.id);
-
-  const attempts = await prisma.attempt.findMany({
-    where: { competitorId: { in: competitorIds } },
-  });
-
-  const correctAttempts = attempts.filter(
-    (attempt) => attempt.isCorrect
-  ).length;
-  const totalAttempts = attempts.length;
-  const totalTimeTaken = attempts.reduce(
-    (acc, attempt) => acc + attempt.TimeTaken,
-    0
+  const teamMembersData = await getEveryTeamMembersStatsSeperatelyByTeamId(
+    teamId
   );
-  const averageTimeTaken =
-    totalAttempts > 0 ? totalTimeTaken / totalAttempts : 0;
 
-  const points = correctAttempts * 100 - totalTimeTaken / 1000;
+  let totalAttempts = 0;
+  let correctAttempts = 0;
+  let averageTimeTaken = 0;
+  let points = 0;
+
+  teamMembersData.forEach((teamMemberData) => {
+    totalAttempts += teamMemberData.totalAttempts;
+    correctAttempts += teamMemberData.correctAttempts;
+    averageTimeTaken += teamMemberData.averageTimeTaken;
+    points += teamMemberData.points;
+  });
+
+  const team = await prisma.team.findUnique({ where: { id: teamId } });
 
   return {
     teamId,
+    team: team,
     totalAttempts,
     correctAttempts,
     averageTimeTaken,
@@ -865,12 +867,23 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       ? competitor3_totalTimeTaken / competitor3_totalAttempts
       : 0;
 
-  const competitor1_points =
-    competitor1_correctAttempts * 100 - competitor1_totalTimeTaken / 1000;
-  const competitor2_points =
-    competitor2_correctAttempts * 100 - competitor2_totalTimeTaken / 1000;
-  const competitor3_points =
-    competitor3_correctAttempts * 100 - competitor3_totalTimeTaken / 1000;
+  const calculatePoints = (totalAttempts: number, correctAttempts: number, averageTimeTaken: number, totalTimeTaken: number) => {
+    const maxPointsCorrectness = 50; // Maximum possible points for correctness
+    const maxPointsEfficiency = 50; // Maximum possible points for efficiency
+
+    // Calculate correctness score
+    const correctnessScore =
+      (correctAttempts / totalAttempts) * maxPointsCorrectness;
+
+    // Calculate efficiency score
+    const efficiencyScore =
+      (averageTimeTaken / totalTimeTaken) * maxPointsEfficiency;
+
+    // Total points
+    const totalPoints = correctnessScore + efficiencyScore;
+
+    return parseInt(totalPoints.toFixed(2));
+  }
 
   return [
     {
@@ -879,7 +892,7 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       totalAttempts: competitor1_totalAttempts,
       correctAttempts: competitor1_correctAttempts,
       averageTimeTaken: competitor1_averageTimeTaken,
-      points: competitor1_points,
+      points: calculatePoints(competitor1_totalAttempts, competitor1_correctAttempts, competitor1_averageTimeTaken, competitor1_totalTimeTaken),
     },
     {
       competitor: competitors[1],
@@ -887,7 +900,7 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       totalAttempts: competitor2_totalAttempts,
       correctAttempts: competitor2_correctAttempts,
       averageTimeTaken: competitor2_averageTimeTaken,
-      points: competitor2_points,
+      points: calculatePoints(competitor2_totalAttempts, competitor2_correctAttempts, competitor2_averageTimeTaken, competitor2_totalTimeTaken),
     },
     {
       competitor: competitors[2],
@@ -895,7 +908,7 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       totalAttempts: competitor3_totalAttempts,
       correctAttempts: competitor3_correctAttempts,
       averageTimeTaken: competitor3_averageTimeTaken,
-      points: competitor3_points,
+      points: calculatePoints(competitor3_totalAttempts, competitor3_correctAttempts, competitor3_averageTimeTaken, competitor3_totalTimeTaken)
     },
   ];
 }

@@ -76,12 +76,16 @@ export default function UserPage({ params }: { params: { name: string } }) {
 
         <Link
           href={`/vezerlopult/versenyek/${
-            competition?.name ? competition.name : params.name
+            competition?.name
+              ? competition.name
+              : decodeURIComponent(params.name)
           }`}
         >
           <div className="flex items-center gap-[2px] hover:underline">
             <UsersFour className="h-6 w-6" />{' '}
-            {competition?.name ? competition.name : params.name}
+            {competition?.name
+              ? competition.name
+              : decodeURIComponent(params.name)}
           </div>
         </Link>
       </span>
