@@ -271,7 +271,7 @@ export default function Stats() {
                         className="hidden h-8 lg:flex mb-4 hover:cursor-default"
                       >
                         <Clock color="purple" className="mr-2 h-4 w-4" />
-                        {team.averageTimeTaken.toFixed(2)} átlagos idő
+                        {(team.averageTimeTaken / 3).toFixed(2)} mp. átlagos idő
                       </Button>
 
                       <Button
@@ -348,10 +348,10 @@ export default function Stats() {
                         <CategoryBar
                           values={[25, 25, 35, 15]}
                           colors={['rose', 'orange', 'yellow', 'emerald']}
-                          markerValue={team.correctAttempts}
-                          tooltip={`Helyes válaszok: ${
-                            teamAttempts[team.id]?.correctAttempts
-                          }`}
+                          markerValue={
+                            (team.correctAttempts / team.totalAttempts) * 100
+                          }
+                          tooltip={`Helyes válaszok: ${team.correctAttempts}`}
                           showLabels={false}
                           className="mt-5"
                         />
