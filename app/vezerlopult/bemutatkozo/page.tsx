@@ -103,7 +103,7 @@ export default function BemutatkozoPage() {
               )}
             />
             <Button type="submit" className="mb-12">
-              Save
+              Módosítások mentése
             </Button>
           </form>
         </Form>
