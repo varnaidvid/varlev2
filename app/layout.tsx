@@ -12,22 +12,22 @@ import { Metadata } from 'next';
 const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
-  display: 'swap',
-  adjustFontFallback: false,
 });
 
 const customMonoFont = Source_Code_Pro({
   weight: ['400', '700'],
   subsets: ['latin'],
-  display: 'swap',
   variable: '--custom-mono',
-  adjustFontFallback: false,
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className={poppins.className + ' ' + customMonoFont.variable + ' ' + 'bg-gray-50'}>
+    <html>
+      <body
+        className={
+          poppins.className + ' ' + customMonoFont.variable + ' ' + 'bg-gray-50'
+        }
+      >
         <IconContext.Provider
           value={{
             size: 32,
