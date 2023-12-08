@@ -608,12 +608,13 @@ export async function createAttempt({
 }) {
   return prisma.attempt.create({
     data: {
-      competitionId,
-      competitorId,
-      questionId,
       answer,
       isCorrect,
       TimeTaken: timeTaken,
+
+      competitor: { connect: { id: competitorId } },
+      question: { connect: { id: questionId } },
+      Competition: { connect: { id: competitionId } },
     },
   });
 }

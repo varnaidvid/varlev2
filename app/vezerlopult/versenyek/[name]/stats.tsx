@@ -94,6 +94,7 @@ export default function Stats() {
   useEffect(() => {
     async function getData() {
       setIsLoading(true);
+      setTeamAttempts([]);
 
       let temp = await getCompetitionData(competition?.name!);
 
@@ -136,8 +137,8 @@ export default function Stats() {
       setTeamCount(count);
     }
 
-    if (competition) getTeamCount();
-    if (teamCount) getData();
+    if (competition && !isLoading) getTeamCount();
+    if (teamCount && !isLoading && teamAttempts.length == 0) getData();
   }, [competition, teamCount]);
 
   useEffect(() => {
