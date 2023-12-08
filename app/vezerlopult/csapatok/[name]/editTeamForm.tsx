@@ -103,7 +103,6 @@ const EditTeamForm = ({ name }: { name: string }) => {
         teamMembers[0].class
       );
       setYear(teamMembers[0].year);
-
       setClassNumber(teamMembers[0].class);
 
       setDraggableItems(

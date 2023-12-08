@@ -523,7 +523,11 @@ async function seedTeams() {
             const teamName = `${team[0].Competitor.year}. ${team[0].Competitor.class}`;
             const teamDescription = `${team[0].Competitor.year}. évfolyam ${team[0].Competitor.class} osztály csapata, ${team[0].username}, ${team[1].username}, ${team[2].username}`;
 
+
             const competitors = team.map((student: any) => ({ id: student.Competitor.id }));
+
+            console.log(competitors)
+            console.log(teamName)
 
             return await prisma.team.upsert({
                 where: { id: teamId },

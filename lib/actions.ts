@@ -126,9 +126,17 @@ export async function createUser(
   const user = await prisma.user.create({ data: { username, password, role } });
 
   if (role == 'diak') {
-    await prisma.competitor.create({
-      data: { year: year!, class: _class!, userId: user.id },
+    let temp = await prisma.competitor.create({
+      data: {
+        year: year!,
+        class: _class!,
+        user: { connect: { id: user.id } }
+      },
     });
+
+    console.log(temp);
+
+    return temp;
   }
 }
 export async function updateUserPassword(username: string, password: string) {

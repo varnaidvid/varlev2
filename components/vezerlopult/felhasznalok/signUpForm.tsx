@@ -28,7 +28,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -39,6 +41,10 @@ import * as z from 'zod';
 
 const SignUpForm = () => {
   const router = useRouter();
+
+  const [role, setRole] = useState<string>('');
+  const [year, setYear] = useState<number>();
+  const [classNumber, setClassNumber] = useState<string>();
 
   const formSchema: any = z.object({
     username: z.string().refine((data) => data.includes('-'), {
@@ -78,7 +84,13 @@ const SignUpForm = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(values),
+      body: JSON.stringify({
+        username: values.username,
+        password: values.password,
+        role: values.role,
+        year: year,
+        classNumber: classNumber,
+      }),
     });
 
     if (!res.ok) {
@@ -142,7 +154,7 @@ const SignUpForm = () => {
                 <FormItem>
                   <FormLabel>Jelszó</FormLabel>
                   <FormControl>
-                    <Input placeholder="*******" type="password" {...field} />
+                    <Input placeholder="******y*" type="password" {...field} />
                   </FormControl>
                   <FormDescription>
                     Legalább 6 karakter hosszú jelszó
@@ -176,7 +188,10 @@ const SignUpForm = () => {
                   <FormControl>
                     <Select
                       required
-                      onValueChange={(val) => form.setValue('role', val)}
+                      onValueChange={(val) => {
+                        setRole(val);
+                        form.setValue('role', val);
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Válasszon szerepkört" />
@@ -193,6 +208,68 @@ const SignUpForm = () => {
                 </FormItem>
               )}
             />
+
+            {role === 'diak' && (
+              <div className="flex gap-4">
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Évfolyam kiválasztása</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value: string) => {
+                            setYear(parseInt(value));
+                            form.setValue('year', value);
+                          }}
+                          value={year?.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Évfolyam" />
+                          </SelectTrigger>
+                          <SelectContent className="w-2">
+                            <SelectItem value="5">5.</SelectItem>
+                            <SelectItem value="6">6.</SelectItem>
+                            <SelectItem value="7">7.</SelectItem>
+                            <SelectItem value="8">8.</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name=""
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Osztály kiválasztása</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value: string) => {
+                            form.setValue('class', value);
+                            setClassNumber(value);
+                          }}
+                          value={classNumber}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Osztály" />
+                          </SelectTrigger>
+                          <SelectContent className="w-2">
+                            <SelectItem value="A">A</SelectItem>
+                            <SelectItem value="B">B</SelectItem>
+                            <SelectItem value="C">C</SelectItem>
+                            <SelectItem value="D">D</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
 
             <Button disabled={isLoading} className="w-full" type="submit">
               {isLoading && (

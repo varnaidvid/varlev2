@@ -4,11 +4,11 @@ import { prisma } from '@/prisma/db';
 import { createUser } from '@/lib/actions';
 
 export async function POST(request: NextRequest) {
-    const { username, password, role } = await request.json();
+    const { username, password, role, year, classNumber } = await request.json();
     const hashedPassword = await hash(password, 10);
 
     try {
-        await createUser(username, hashedPassword, role);
+        await createUser(username, hashedPassword, role, year, classNumber);
 
         return NextResponse.json({
             status: 'ok',

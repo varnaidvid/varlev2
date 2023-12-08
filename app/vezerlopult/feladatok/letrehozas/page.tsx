@@ -276,12 +276,12 @@ export default function UploadQuestions() {
               <span className="text-zinc-700">vagy</span>
               <h3>Feladatok Generálása AI-al</h3>
             </div>
-            <div className="flex items-end gap-4 justify-center mt-6">
+            <div className="flex items-end gap-4 justify-center mt-6 w-full">
               <FormItem>
                 <FormLabel>Évfolyam</FormLabel>
                 <FormControl>
                   <Select {...form.register('year')}>
-                    <SelectTrigger className="w-[220px]">
+                    <SelectTrigger className="w-[320px]">
                       <SelectValue placeholder="Válassz egy évfolyamot" />
                     </SelectTrigger>
                     <SelectContent>
@@ -301,7 +301,7 @@ export default function UploadQuestions() {
                 <FormLabel>Kérdések száma</FormLabel>
                 <FormControl>
                   <Select {...form.register('questionCount')}>
-                    <SelectTrigger className="w-[220px]">
+                    <SelectTrigger className="w-[320px]">
                       <SelectValue placeholder="Válassz egy számot" />
                     </SelectTrigger>
                     <SelectContent>
@@ -318,7 +318,7 @@ export default function UploadQuestions() {
               <FormItem>
                 <Button
                   onClick={handleAIQuestionGeneration}
-                  className="bg-gradient-to-r from-violet-600 to-blue-500 text-white text-base"
+                  className="bg-gradient-to-r w-[300px] from-violet-600 to-blue-500 text-white text-base"
                 >
                   <Lightning size={20} weight="bold" className="mr-2" /> AI
                   Feladat Generálás
