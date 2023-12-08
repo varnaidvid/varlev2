@@ -115,7 +115,10 @@ export default async function JatekOldal({
 
   return (
     <div>
-      <GameWrapper questions={parseQuestions(questions)}></GameWrapper>
+      <GameWrapper
+        questions={parseQuestions(questions)}
+        questionsWithAllWords={questions}
+      ></GameWrapper>
     </div>
   );
 }

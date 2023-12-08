@@ -9,17 +9,22 @@ import { redirect } from 'next/navigation';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, Question } from '@phosphor-icons/react';
+import type { Question as QuestionType } from '@prisma/client';
 
 export default function GameWrapper({
   questions,
+  questionsWithAllWords,
 }: {
   questions: QuestionWithScrambledWord[];
+  questionsWithAllWords: QuestionType[];
 }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [gameEnded, setGameEnded] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [questionSeconds, setQuestionSeconds] = useState(0);
+  const [hint, setHint] = useState('' as string);
+  const [hintUsed, setHintUsed] = useState(false as boolean);
 
   const { data: session, status } = useSession();
   useEffect(() => {
@@ -100,13 +105,14 @@ export default function GameWrapper({
       return;
     }
     setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setHintUsed(false);
+    setHint('');
   };
 
   return (
     <div className="flex flex-col items-center px-6 py-16 max-w-3xl mx-auto gap-8">
       {!gameEnded ? (
         <>
-          {' '}
           <div className="flex w-full items-center justify-between">
             <span className="text-neutral-500 text-sm font-medium">
               {currentQuestionIndex + 1} / {questions.length} kérdés
@@ -138,18 +144,30 @@ export default function GameWrapper({
           <Button
             className=" bg-gradient-to-r from-violet-600 to-blue-500 hover:scale-[102%] active:scale-95 hover:brightness-105 transition "
             onClick={async () => {
-              // create a string from the current question like this without the number at the end 'narancssárga fekete sötétkék citromsárga'
-              const questionString =
-                questions[currentQuestionIndex].words.join(' ');
-              console.log(questionString);
-              const hint = await getAIHint(questionString);
-              console.log('hint', hint);
-              // const hint = await getAIHint(questions[currentQuestionIndex].words.join(' ').
+              setHintUsed(true);
+              // remove the number from the end of the current question
+              const justWords = questionsWithAllWords[
+                currentQuestionIndex
+              ].question
+                .split(' ')
+                .slice(0, 4)
+                .join(' ');
+              //   console.log(justWords);
+              const hint = await getAIHint(justWords);
+              if (!hint) return;
+              setHint(hint);
             }}
+            disabled={hintUsed}
           >
             <Lightbulb className="w-5 h-5 mr-2" />
             Kérek segítséget
           </Button>
+          {hint && (
+            <p className="flex flex-col gap-2 items-center font-medium text-zinc-700 text-center">
+              Segítség:{' '}
+              <span className="text-lg font-normal text-zinc-900">{hint}</span>
+            </p>
+          )}
         </>
       ) : (
         <div className="w-full items-center flex flex-col text-center gap-8">
