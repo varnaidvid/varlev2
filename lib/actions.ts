@@ -130,7 +130,7 @@ export async function createUser(
       data: {
         year: year!,
         class: _class!,
-        user: { connect: { id: user.id } }
+        user: { connect: { id: user.id } },
       },
     });
 
@@ -280,6 +280,7 @@ export async function generateQuestions(
     }]
 
   `;
+
   const userPrompt = `
     Generálj ${count} darab feladatot a ${year}. évfolyam számára!
   `;
@@ -953,6 +954,49 @@ export async function getHtmlText() {
   const siteInfo = await prisma.siteInfo.findFirst();
 
   return siteInfo?.htmlText;
+}
+
+// AI hint
+
+export async function getAIHint(words: string) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+  const systemPrompt = `Majd kapni fogsz 4 összefüggő szót. Az lesz a feladatod hogy körülírd a 4. szót anélkül, hogy használnád azt a szót. A körülírásod maximum 1 mondat legyen.
+  
+  Itt van egy példa:
+  ===
+  kapot 4 szó: "zsiráf oroszlán hiéna elefánt"
+  körülírás: "Egy nagyon nagy termetű ormányos állat"
+  ===
+  `;
+
+  const userPrompt = `
+      Írd körül a negyedik szót!
+      A szavak: "${words}"
+    `;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-3.5-turbo-1106',
+    messages: [
+      {
+        role: 'system',
+        content: systemPrompt,
+      },
+      {
+        role: 'user',
+        content: userPrompt,
+      },
+    ],
+
+    temperature: 0.6,
+    max_tokens: 100,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  });
+
+  const responseString = response.choices[0].message.content;
+  console.log(responseString);
+  return responseString;
 }
 
 // stats

@@ -1,24 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import GameCore from './gameCore';
-import { type QuestionWithScrambledWord } from './gameCore';
+import GameCore from '@/components/verseny/gameCore';
+import { type QuestionWithScrambledWord } from '@/components/verseny/gameCore';
 import { createAttempt, getAIHint } from '@/lib/actions';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import { Progress } from '../ui/progress';
-import { Button } from '../ui/button';
-import { set } from 'date-fns';
-import { compare } from 'bcryptjs';
-import Link from 'next/link';
-import { Lightbulb } from '@phosphor-icons/react';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Lightbulb, Question } from '@phosphor-icons/react';
 
 export default function GameWrapper({
   questions,
-  competitionId,
 }: {
   questions: QuestionWithScrambledWord[];
-  competitionId: string;
 }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [gameEnded, setGameEnded] = useState(false);
@@ -44,16 +39,16 @@ export default function GameWrapper({
     setMinutes(savedMinutes ? parseInt(savedMinutes) : 0);
 
     //get currentQuestionIndex from local storage
-    const savedQuestionIndex = localStorage.getItem('current_question_index');
+    // const savedQuestionIndex = localStorage.getItem('current_question_index');
 
     // if current_question_index is exists set the state
     // console.log(savedQuestionIndex);
-    if (savedQuestionIndex) {
-      if (parseInt(savedQuestionIndex) + 1 >= questions.length) {
-        return setGameEnded(true);
-      }
-      setCurrentQuestionIndex(parseInt(savedQuestionIndex));
-    }
+    //     if (savedQuestionIndex) {
+    //       if (parseInt(savedQuestionIndex) + 1 >= questions.length) {
+    //         return setGameEnded(true);
+    //       }
+    //       setCurrentQuestionIndex(parseInt(savedQuestionIndex));
+    //     }
   }, []);
 
   useEffect(() => {
@@ -76,13 +71,13 @@ export default function GameWrapper({
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (currentQuestionIndex === 0) return;
-    localStorage.setItem(
-      'current_question_index',
-      currentQuestionIndex.toString()
-    );
-  }, [currentQuestionIndex]);
+  //   useEffect(() => {
+  //     if (currentQuestionIndex === 0) return;
+  //     localStorage.setItem(
+  //       'current_question_index',
+  //       currentQuestionIndex.toString()
+  //     );
+  //   }, [currentQuestionIndex]);
 
   const submitAnswer = (answer: string) => {
     let correct: boolean = false;
@@ -95,22 +90,12 @@ export default function GameWrapper({
       correct = true;
     }
 
-    if (!session?.user.competitorId) return console.log('no competitor id');
-
-    createAttempt({
-      competitionId: competitionId,
-      questionId: questions[currentQuestionIndex].id,
-      competitorId: session?.user.competitorId,
-      isCorrect: correct,
-      timeTaken: questionSeconds,
-      answer: answer,
-    });
     setQuestionSeconds(0);
     if (currentQuestionIndex + 1 >= questions.length) {
-      localStorage.setItem(
-        'current_question_index',
-        (currentQuestionIndex + 1).toString()
-      );
+      //   localStorage.setItem(
+      //     'current_question_index',
+      //     (currentQuestionIndex + 1).toString()
+      //   );
       setGameEnded(true);
       return;
     }
@@ -150,24 +135,27 @@ export default function GameWrapper({
             submitAnswer={submitAnswer}
           />
           {/* AI HINT */}
-          {/* <Button
-            onClick={() => {
+          <Button
+            className=" bg-gradient-to-r from-violet-600 to-blue-500 hover:scale-[102%] active:scale-95 hover:brightness-105 transition "
+            onClick={async () => {
               // create a string from the current question like this without the number at the end 'narancssárga fekete sötétkék citromsárga'
               const questionString =
                 questions[currentQuestionIndex].words.join(' ');
               console.log(questionString);
+              const hint = await getAIHint(questionString);
+              console.log('hint', hint);
               // const hint = await getAIHint(questions[currentQuestionIndex].words.join(' ').
             }}
           >
             <Lightbulb className="w-5 h-5 mr-2" />
             Kérek segítséget
-          </Button> */}
+          </Button>
         </>
       ) : (
         <div className="w-full items-center flex flex-col text-center gap-8">
           <h2 className="text-gray-500 font-medium">Játék vége</h2>
           <h1>Gratulálunk, az összes kérdést megoldottad!</h1>
-          <Link href={'/vezerlopult'}>Vissza a vezérlőpulthoz</Link>
+          <Button>Eredmények megtekintése</Button>
         </div>
       )}
     </div>

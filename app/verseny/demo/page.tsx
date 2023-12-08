@@ -1,14 +1,8 @@
 export const dynamicParams = true;
 
-import GameWrapper from '@/components/verseny/gameWrapper';
+import GameWrapper from './demoGameWrapper';
 import { Competitor, Question } from '@prisma/client';
-import {
-  getCompetitionById,
-  getTeamMembersByCompetitorId,
-} from '@/lib/actions';
 import { combineEventHandlers } from 'recharts/types/util/ChartUtils';
-import { getServerSession } from 'next-auth';
-import authOptions from '@/lib/auth/authOptions';
 
 const scramble = (word: string) => {
   if (word.length <= 2) {
@@ -55,6 +49,44 @@ const scramble = (word: string) => {
   return scrambledWord;
 };
 
+const dummyQuestions: Question[] = [
+  {
+    id: '1',
+    question: 'narancssárga fekete sötétkék citromsárga 6',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    creatorId: 'cr',
+  },
+  {
+    id: '2',
+    question: 'krokodil varánusz leguán kaméleon 6',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    creatorId: 'cr',
+  },
+  {
+    id: '3',
+    question: 'zsiráf oroszlán hiéna elefánt 6',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    creatorId: 'cr',
+  },
+  {
+    id: '4',
+    question: 'csillag bolygó galaxis égitest 6',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    creatorId: 'cr',
+  },
+  {
+    id: '5',
+    question: 'számítógép laptop tablet telefon 6',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    creatorId: 'cr',
+  },
+];
+
 const parseQuestions = (questions: Question[]) => {
   const parsedQuestions = questions.map((question) => {
     const questionWords = question.question.split(' ').splice(0, 4);
@@ -75,50 +107,15 @@ export default async function JatekOldal({
 }: {
   params: { id: string };
 }) {
-  const session = await getServerSession(authOptions);
-  const competition = await getCompetitionById(params.id);
-  // console.log(competition);
-
-  //get team members
-  const team = await getTeamMembersByCompetitorId(
-    session?.user.competitorId as string
-  );
-  const teamMembers = team?.competitors.map(
-    (competitor: Competitor) => competitor.id
-  );
-
-  //sort team members abc order
-  const sortedTeamMembers = teamMembers?.sort((a: string, b: string) =>
-    a.localeCompare(b)
-  );
-
-  //find if competitor is the 1st, 2nd or 3rd member in sorterTeamMembers
-  const competitorIndex = sortedTeamMembers?.indexOf(
-    session?.user.competitorId as string
-  );
-
   // choose the correct questions from questions1 or questions2 and questions3 based on the competitorIndex
-  let questions: Question[] = [];
-  // console.log(competitorIndex);
-  if (competitorIndex === 0) {
-    questions = competition?.questions1 as Question[];
-  }
-  if (competitorIndex === 1) {
-    questions = competition?.questions2 as Question[];
-  }
-  if (competitorIndex === 2) {
-    questions = competition?.questions3 as Question[];
-  }
+  let questions: Question[] = dummyQuestions;
 
   // console.log(questions);
   // console.log(parseQuestions(questions));
 
   return (
     <div>
-      <GameWrapper
-        questions={parseQuestions(questions)}
-        competitionId={competition?.id!}
-      ></GameWrapper>
+      <GameWrapper questions={parseQuestions(questions)}></GameWrapper>
     </div>
   );
 }
