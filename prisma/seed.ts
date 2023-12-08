@@ -299,7 +299,7 @@ async function seedQuestions() {
         },
         {
             "id": "q19",
-            "question": "április június szeptember októberi eső 7"
+            "question": "április június szeptember októberi 7"
         },
         {
             "id": "q20",
@@ -756,20 +756,13 @@ async function seedCompetitions() {
     // console.log(upsertedCopetition8_1)
 }
 async function seedAttempts() {
-    // fetch every user that is in a team and is a competitor (diak)
     const competitors = await prisma.competitor.findMany({ include: { user: true, team: true } })
 
-    // fetch every question
     const questions = await prisma.question.findMany({ include: { compatition1s: true, compatition2s: true, compatition3s: true } })
 
-    // create attempts
     let attempts: any[] = []
 
-    // for every competitor
     competitors.forEach((competitor) => {
-        // for every question that is in the competitor's team's competition either in the 1st, 2nd or 3rd question pack
-        console.log(questions[0].compatition1s)
-
         questions.forEach((question) => {
             if (question.compatition1s.some((competition) => competition.id === competitor.team?.competitionId) ||
                 question.compatition2s.some((competition) => competition.id === competitor.team?.competitionId) ||

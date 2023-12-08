@@ -35,9 +35,7 @@ export function DataTableColumnHeader<TData, TValue>({
   return (
     <div
       className={
-        className
-          ? className + ' -mr-5'
-          : cn('flex items-center justify-center space-x-2')
+        className ? className + ' -mr-5' : cn('flex items-center space-x-2')
       }
     >
       <DropdownMenu>

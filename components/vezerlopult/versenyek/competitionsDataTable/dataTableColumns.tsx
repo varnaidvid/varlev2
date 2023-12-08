@@ -46,7 +46,7 @@ import {
 
 import toast from 'react-hot-toast';
 
-import { closeCompetitions, deleteCompetitions } from '@/lib/actions';
+import { closeCompetitions } from '@/lib/actions';
 import Link from 'next/link';
 import { useContext } from 'react';
 import { useSession } from 'next-auth/react';
@@ -81,9 +81,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
     cell: ({ row }) => {
       return (
         <Link href={`/vezerlopult/versenyek/${row.getValue('name')}`}>
-          <span className="text-center block mx-auto">
-            {row.getValue('name')}
-          </span>
+          <span className="">{row.getValue('name')}</span>
         </Link>
       );
     },
@@ -97,7 +95,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
     cell: ({ row }) => {
       const year = row.original.year;
 
-      return <span className="text-center block mx-auto">{year}</span>;
+      return <span className="">{year}</span>;
     },
     filterFn: (row: any, id: any, value: any) => {
       return row.original[id] == value;
@@ -116,7 +114,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
         .toString()
         .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-      return <div className="text-center font-medium">{formatted}</div>;
+      return <div className="font-medium">{formatted}</div>;
     },
   },
   {
@@ -132,7 +130,7 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
         .toString()
         .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-      return <div className="text-center font-medium">{formatted}</div>;
+      return <div className="font-medium">{formatted}</div>;
     },
   },
   {

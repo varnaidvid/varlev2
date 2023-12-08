@@ -322,7 +322,9 @@ export default function VezerloHome() {
             <DashboardCard
               Icon={UserCircle}
               title="Felhasználók"
-              description="Itt található a felhasználók kezelő felülete, ahol új felhasználókat hozhat létre, illetve meglévőket módosíthat."
+              description="Itt található a felhasználók kezelő 
+              felülete, ahol új felhasználókat hozhat létre, 
+              illetve meglévőket módosíthat."
               buttonText="Felhasználók"
               link="/vezerlopult/felhasznalok"
               secondLink="/vezerlopult/regisztracio"

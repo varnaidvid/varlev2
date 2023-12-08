@@ -138,20 +138,12 @@ export default function UserPage() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>Versenyek</CardTitle>
-              <CardDescription>Itt tudod kezelni a csapatokat.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {competitions && (
-                <CompetitionsDataTable
-                  columns={CompetitionsColumns}
-                  data={competitions}
-                />
-              )}
-            </CardContent>
-          </Card>
+          competitions && (
+            <CompetitionsDataTable
+              columns={CompetitionsColumns}
+              data={competitions}
+            />
+          )
         )}
       </>
     </>

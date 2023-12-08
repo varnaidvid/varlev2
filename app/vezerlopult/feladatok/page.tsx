@@ -181,6 +181,7 @@ export default function UserPage() {
           </TabsContent>
         </Tabs>
       </div>
+      <br />
     </main>
   );
 }

@@ -103,6 +103,7 @@ const EditTeamForm = ({ name }: { name: string }) => {
         teamMembers[0].class
       );
       setYear(teamMembers[0].year);
+
       setClassNumber(teamMembers[0].class);
 
       setDraggableItems(
@@ -178,7 +179,6 @@ const EditTeamForm = ({ name }: { name: string }) => {
   useEffect(() => {
     async function fetchNewCompetitors() {
       setDraggableItems([]);
-      setDroppedItems([]);
 
       const competitors = await getCompetitorsByYearAndClass(
         year!,
@@ -205,10 +205,6 @@ const EditTeamForm = ({ name }: { name: string }) => {
   }, [year, classNumber]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    console.log(draggableItems);
-  }, [draggableItems]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);

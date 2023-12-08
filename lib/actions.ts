@@ -53,13 +53,11 @@ export async function getTop5Teachers() {
     take: 5,
   });
 
-  const teachersWithSchema = topTeachers.map((teacher, index) => ({
+  return topTeachers.map((teacher) => ({
     value: teacher.questions.length,
     name: teacher.username,
     href: `/vezerlopult/felhasznalok/${teacher.username}`,
   }));
-
-  return teachersWithSchema;
 }
 export async function teacherStatsByYear(name: string) {
   // find the teachers every question and group it by year the schema is the following: [
