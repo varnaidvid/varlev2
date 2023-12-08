@@ -167,10 +167,6 @@ export default function Stats() {
           <h2 className="p-6 animate-pulse">Adatok betöltése folyamatban...</h2>
         ))}
 
-      <Button onClick={() => console.log(teamAttempts)}>teamAttempts</Button>
-      <Button onClick={() => console.log(isLoading)}>isLoading</Button>
-      <Button onClick={() => console.log(teamCount)}>teamCount</Button>
-
       {!isLoading &&
         teamAttempts != undefined &&
         teamCount != undefined &&
