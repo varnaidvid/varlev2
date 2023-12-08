@@ -585,8 +585,8 @@ export async function didUserFinish(
     where: { competitorId: competitorId, competitionId: competitionId },
   });
 
-  console.log("attempts.length", attempts.length)
-  console.log("questions.length", questions.length)
+  console.log('attempts.length', attempts.length);
+  console.log('questions.length', questions.length);
 
   return attempts.length === questions.length / 3;
 }
@@ -606,9 +606,8 @@ export async function createAttempt({
   isCorrect: boolean;
   timeTaken: number;
 }) {
-  console.log("competitiorId", competitorId)
-  console.log("competitionId", competitionId)
-
+  console.log('competitiorId', competitorId);
+  console.log('competitionId', competitionId);
 
   return prisma.attempt.create({
     data: {
@@ -944,6 +943,12 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       ),
     },
   ];
+}
+
+export async function getAttemptCountOfCompetitor(competitorId: string) {
+  return prisma.attempt.count({
+    where: { competitorId },
+  });
 }
 
 // SiteInfo
