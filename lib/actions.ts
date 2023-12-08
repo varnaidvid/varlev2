@@ -582,13 +582,13 @@ export async function didUserFinish(
   ];
 
   const attempts = await prisma.attempt.findMany({
-    where: {
-      competitorId,
-      questionId: { in: questions.map((question) => question.id) },
-    },
+    where: { competitorId: competitorId, competitionId: competitionId },
   });
 
-  return attempts.length === questions.length;
+  console.log("attempts.length", attempts.length)
+  console.log("questions.length", questions.length)
+
+  return attempts.length === questions.length / 3;
 }
 
 export async function createAttempt({
@@ -606,6 +606,10 @@ export async function createAttempt({
   isCorrect: boolean;
   timeTaken: number;
 }) {
+  console.log("competitiorId", competitorId)
+  console.log("competitionId", competitionId)
+
+
   return prisma.attempt.create({
     data: {
       answer,
