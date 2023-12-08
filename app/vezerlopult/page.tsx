@@ -210,7 +210,7 @@ export default function VezerloHome() {
                   className="hidden h-8 lg:flex mb-4 hover:cursor-default"
                 >
                   <Clock color="blue" className="mr-2 h-4 w-4" />
-                  {humanizeTime(competitions[0].endDate)} kitöltésig
+                  {humanizeTime(competitions[0].startDate)} kitöltésig
                 </Button>
 
                 {isUserFinished ? (
@@ -262,9 +262,9 @@ export default function VezerloHome() {
 
               {/* if date is between startDate and endDate */}
               {new Date().getTime() >
-                new Date(competitions[0].startDate).getTime() &&
+                new Date(competitions[0].endDate).getTime() &&
               new Date().getTime() <
-                new Date(competitions[0].endDate).getTime() ? (
+                new Date(competitions[0].startDate).getTime() ? (
                 <div className="mt-4">
                   <Link href={`/verseny/${competitions[0].id}`}>
                     <Button className="flex gap-2">
