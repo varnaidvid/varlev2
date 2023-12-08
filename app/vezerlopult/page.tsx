@@ -121,7 +121,10 @@ export default function VezerloHome() {
 
   useEffect(() => {
     async function checkUser() {
-      const temp = await didUserFinish(competitions![0].id, session!.user.id);
+      const temp = await didUserFinish(
+        competitions![0].id,
+        session!.user.competitorId!
+      );
 
       setIsUserFinished(temp);
     }
@@ -203,15 +206,17 @@ export default function VezerloHome() {
               <h3 className="text-lg mb-4">{competitions[0].name}</h3>
 
               <div className="flex gap-4">
-                <Button
-                  variant="outline"
-                  type="button"
-                  size="sm"
-                  className="hidden h-8 lg:flex mb-4 hover:cursor-default"
-                >
-                  <Clock color="blue" className="mr-2 h-4 w-4" />
-                  {humanizeTime(competitions[0].endDate)} kitöltésig
-                </Button>
+                {!isUserFinished && (
+                  <Button
+                    variant="outline"
+                    type="button"
+                    size="sm"
+                    className="hidden h-8 lg:flex mb-4 hover:cursor-default"
+                  >
+                    <Clock color="blue" className="mr-2 h-4 w-4" />
+                    {humanizeTime(competitions[0].endDate)} kitöltésig
+                  </Button>
+                )}
 
                 {isUserFinished ? (
                   <Button
@@ -261,7 +266,8 @@ export default function VezerloHome() {
               </div>
 
               {/* if date is between startDate and endDate */}
-              {new Date().getTime() >
+              {!isUserFinished &&
+              new Date().getTime() >
                 new Date(competitions[0].startDate).getTime() &&
               new Date().getTime() <
                 new Date(competitions[0].endDate).getTime() ? (
@@ -275,8 +281,9 @@ export default function VezerloHome() {
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Megjegyzés: amennyiben kezdésen belül vagy és nem jelenik meg
-                  a kitöltés gomb, frissíts rá az oldalra!
+                  Megjegyzés: amennyiben kezdésen belül vagy és még nem
+                  töltötted ki és nem jelenik meg a kitöltés gomb, frissíts rá
+                  az oldalra!
                 </p>
               )}
             </>
