@@ -36,7 +36,6 @@ const SignInPage = () => {
 
   useEffect(() => {
     if (session?.user.username) {
-      toast.error('Már be vagy jelentkezve!');
       router.push('/');
     }
   }, [session]);
