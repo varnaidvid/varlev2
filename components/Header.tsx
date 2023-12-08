@@ -42,7 +42,7 @@ const Header = () => {
           <NavigationMenuList>
             <NavigationMenuItem>
               <Link href="/" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-lg font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
                   Főoldal
                 </NavigationMenuLink>
               </Link>
@@ -51,7 +51,7 @@ const Header = () => {
             {session?.user.role == 'webmester' && (
               <NavigationMenuItem>
                 <Link href="/vezerlopult" legacyBehavior passHref>
-                  <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-lg font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                  <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
                     Vezérlőpult
                   </NavigationMenuTrigger>
                 </Link>
@@ -84,7 +84,7 @@ const Header = () => {
             {session?.user.role == 'tanar' && (
               <NavigationMenuItem>
                 <Link href="/vezerlopult" legacyBehavior passHref>
-                  <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-lg font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                  <NavigationMenuTrigger className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2  font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
                     Vezérlőpult
                   </NavigationMenuTrigger>
                 </Link>
@@ -127,7 +127,7 @@ const Header = () => {
 
             <NavigationMenuItem>
               <Link href="/bemutatkozas" legacyBehavior passHref>
-                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-lg font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
+                <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2  font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 bg-gray-800/0">
                   Rólunk
                 </NavigationMenuLink>
               </Link>
@@ -139,10 +139,10 @@ const Header = () => {
       <div className="flex">
         {!session && status != 'loading' ? (
           <>
-            <Button variant={'ghost'}>
+            <Button variant={'outline'}>
               <Link href="/bejelentkezes">
-                <div className="flex">
-                  <span className="mr-2 text-lg">Bejelentkezés</span>
+                <div className="flex items-center">
+                  <span className="mr-2 text">Bejelentkezés</span>
                   <span className="mt-px">
                     <LogIn />
                   </span>
@@ -152,14 +152,14 @@ const Header = () => {
           </>
         ) : status != 'loading' ? (
           <Button
-            variant={'ghost'}
+            variant={'outline'}
             onClick={() => {
               toast.success('Sikeres kijelentkezés');
               signOut({ redirect: true, callbackUrl: '/' });
             }}
           >
-            <div className="flex">
-              <span className="mr-2 text-lg">Kijelentkezés</span>
+            <div className="flex items-center">
+              <span className="mr-2">Kijelentkezés</span>
               <span className="mt-px">
                 <LogOut />
               </span>

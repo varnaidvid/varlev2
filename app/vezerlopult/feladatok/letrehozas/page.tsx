@@ -9,6 +9,8 @@ import {
   Question,
   CaretRight,
   Gauge,
+  Lightning,
+  UserList,
 } from '@phosphor-icons/react';
 import { Separator } from '@/components/ui/separator';
 import Dropzone from 'react-dropzone';
@@ -47,6 +49,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { set } from 'date-fns';
 
 const formSchema = z.object({
   questions: z.array(
@@ -88,6 +91,89 @@ export default function UploadQuestions() {
     setIsGenerating(false);
   };
 
+  const handleFileDrop = (acceptedFiles: File[]) => {
+    setUploadedQuestions([]);
+    const file = acceptedFiles[0];
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = () => {
+      const content = reader.result;
+      // create an array of strings from the file contents each line, the white spaces should be removed from the beginning and the end of the string
+      const allLines = content
+        ?.toString()
+        .split('\n')
+        .map((line) => line.trim());
+      //   console.log(allLines);
+
+      if (!allLines || allLines.length === 0) {
+        toast.error('A feltöltött fájl nem tartalmaz feladatokat!');
+        return;
+      }
+
+      let lines = []; // the array of lines that are valid
+      // iterate over the allLines and check if the line is valid. conditions: the line contains 4 words and a number at the end which could be only 5, 6, 7 or 8, the words and the number should be separated by a single space. also each of the words should be at least 5 charachters or longer
+      for (let i = 0; i < allLines.length; i++) {
+        const line = allLines[i];
+        const words = line.split(' ');
+        if (
+          words.length === 5 &&
+          words[0].length >= 5 &&
+          words[1].length >= 5 &&
+          words[2].length >= 5 &&
+          words[3].length >= 5 &&
+          (words[4] === '5' ||
+            words[4] === '6' ||
+            words[4] === '7' ||
+            words[4] === '8')
+        ) {
+          lines.push(line);
+        }
+      }
+
+      //   console.log(lines);
+      // set the uploaded questions
+      setUploadedQuestions(
+        lines.map((line) => {
+          const words = line.split(' ');
+          return {
+            word1: words[0],
+            word2: words[1],
+            word3: words[2],
+            word4: words[3],
+            year: parseInt(words[4]),
+          };
+        })
+      );
+
+      // toast
+      toast.success('A feladatok betöltöttek!');
+    };
+  };
+
+  const handleInsertQuestions = () => {
+    if (uploadedQuestions.length === 0) {
+      toast.error('Nincsenek feltöltött feladatok!');
+      return;
+    }
+
+    // create the questions
+    createQuestions(parseQuestions(uploadedQuestions)).then((res) => {
+      if (res) {
+        toast.success('A feladatok sikeresen feltöltve!');
+        setUploadedQuestions([]);
+      } else {
+        toast.error('A feladatok feltöltése sikertelen!');
+      }
+    });
+  };
+
+  const parseQuestions = (questions: UploadedQuestions[]) => {
+    // return each questions as a single string: "word1 word2 word3 word4 year"
+    return questions.map((question) => {
+      return `${question.word1} ${question.word2} ${question.word3} ${question.word4} ${question.year}`;
+    });
+  };
+
   return (
     <>
       <title>VarléV2 - Új feladat létrehozása</title>
@@ -99,9 +185,9 @@ export default function UploadQuestions() {
         </h1>
 
         <div className="flex items-center gap-4">
-          <Link href="/vezerlopult">
+          <Link href="/vezerlopult/feladatok">
             <span className="text-sm hover:underline">
-              Vissza a vezérlőpulthoz
+              Vissza a feladatokhoz
             </span>
           </Link>
 
@@ -118,6 +204,14 @@ export default function UploadQuestions() {
         <Link href="/vezerlopult">
           <div className="flex items-center gap-[2px] hover:underline">
             <Gauge className="h-6 w-6" /> Vezérlőpult
+          </div>
+        </Link>
+
+        <CaretRight className="mx-1 h-4 w-4" />
+
+        <Link href="/vezerlopult/feladatok/">
+          <div className="flex items-center gap-[2px] hover:underline">
+            <UserList className="h-6 w-6" /> Feladatok
           </div>
         </Link>
 
@@ -140,23 +234,22 @@ export default function UploadQuestions() {
             }}
           >
             <FormItem>
-              {/* <Dropzone
+              <FormLabel>Feladatok feltöltése file-ból</FormLabel>
+              <Dropzone
                 accept={{
                   'text/plain': ['.txt'],
                 }}
                 multiple={false}
                 maxSize={20000000}
                 onDrop={(acceptedFiles) => {
-                  const file = acceptedFiles[0];
-                  form.setValue('file', file);
-                  form.handleSubmit(onSubmit)();
+                  handleFileDrop(acceptedFiles);
                 }}
               >
                 {({ getRootProps, getInputProps }) => (
                   <div
                     {...getRootProps({
                       className: cn(
-                        'p-3 mb-4 flex flex-col items-center justify-center w-full rounded-xl cursor-pointer border-[2px] border-border border-dashed'
+                        'p-3 mb-4 flex hover:bg-zinc-100 flex-col items-center justify-center w-full rounded-xl cursor-pointer border-[2px] border-border border-dashed'
                       ),
                     })}
                   >
@@ -164,109 +257,122 @@ export default function UploadQuestions() {
                       <FileText
                         size={64}
                         weight="light"
-                        className="text-neutral-400"
+                        className="text-zinc-400"
                       />
                       <FormLabel className="font-semibold text-center leading-tight text-muted-foreground">
                         Kattintson a böngészéshez
-                        <br /> húzzon ide egy TXT fájlt!
+                        <br />
+                        vagy húzzon ide egy TXT fájlt!
                         <input {...getInputProps()} />
                       </FormLabel>
                       <span className="text-xs text-neutral-400">TXT</span>
                     </div>
                   </div>
                 )}
-              </Dropzone> */}
+              </Dropzone>
             </FormItem>
             {/* AI Generálás */}
-            <FormItem>
-              <FormLabel>Évfolyam</FormLabel>
-              <FormControl>
-                <Select {...form.register('year')}>
-                  <SelectTrigger className="w-fit">
-                    <SelectValue placeholder="Válassz egy évfolyamot" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Évfolyamok</SelectLabel>
-                      <SelectItem value="5">5. évfolyam</SelectItem>
-                      <SelectItem value="6">6. évfolyam</SelectItem>
-                      <SelectItem value="7">7. évfolyam</SelectItem>
-                      <SelectItem value="8">8. évfolyam</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-            </FormItem>
+            <div className="flex flex-col items-center mt-4 gap-4">
+              <span className="text-zinc-700">vagy</span>
+              <h3>Feladatok Generálása AI-al</h3>
+            </div>
+            <div className="flex items-end gap-4 justify-center mt-6">
+              <FormItem>
+                <FormLabel>Évfolyam</FormLabel>
+                <FormControl>
+                  <Select {...form.register('year')}>
+                    <SelectTrigger className="w-[220px]">
+                      <SelectValue placeholder="Válassz egy évfolyamot" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Évfolyamok</SelectLabel>
+                        <SelectItem value="5">5. évfolyam</SelectItem>
+                        <SelectItem value="6">6. évfolyam</SelectItem>
+                        <SelectItem value="7">7. évfolyam</SelectItem>
+                        <SelectItem value="8">8. évfolyam</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
 
-            <FormItem>
-              <FormLabel>Kérdések száma</FormLabel>
-              <FormControl>
-                <Select {...form.register('questionCount')}>
-                  <SelectTrigger className="w-fit">
-                    <SelectValue placeholder="Válassz egy számot" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Mennyiség</SelectLabel>
-                      <SelectItem value="10">10 kérdés</SelectItem>
-                      <SelectItem value="20">20 kérdés</SelectItem>
-                      <SelectItem value="30">30 kérdés</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-            </FormItem>
-            <FormItem>
-              <Button onClick={handleAIQuestionGeneration}>
-                AI Feladat Generálás
-              </Button>
-            </FormItem>
+              <FormItem>
+                <FormLabel>Kérdések száma</FormLabel>
+                <FormControl>
+                  <Select {...form.register('questionCount')}>
+                    <SelectTrigger className="w-[220px]">
+                      <SelectValue placeholder="Válassz egy számot" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Mennyiség</SelectLabel>
+                        <SelectItem value="10">~10 kérdés</SelectItem>
+                        <SelectItem value="20">~20 kérdés</SelectItem>
+                        <SelectItem value="30">~30 kérdés</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+              <FormItem>
+                <Button
+                  onClick={handleAIQuestionGeneration}
+                  className="bg-gradient-to-r from-violet-600 to-blue-500 text-white text-base"
+                >
+                  <Lightning size={20} weight="bold" className="mr-2" /> AI
+                  Feladat Generálás
+                </Button>
+              </FormItem>
+            </div>
           </form>
         </Form>
 
         {isGenerating && (
           <div className="flex flex-col gap-2">
-            <span>Feladatok generálása...</span>
+            <span>Generálás...</span>
             <Progress value={progress} />
           </div>
         )}
 
-        <div className="flex flex-col items-center gap-8 w-full">
-          <div className="flex justify-between w-full">
-            <h3>
-              Beimportált feladatok{' '}
-              <span className="text-muted-foreground">(előnézet)</span>
-            </h3>
+        {uploadedQuestions.length > 0 && (
+          <div className="flex flex-col items-center gap-8 w-full">
+            <div className="flex justify-between w-full">
+              <h3>
+                Beimportált feladatok{' '}
+                <span className="text-muted-foreground">(előnézet)</span>
+              </h3>
 
+              <Button
+                size={'lg'}
+                disabled={uploadedQuestions.length === 0}
+                onClick={handleInsertQuestions}
+              >
+                Feladatok feltöltése
+                <CloudArrowUp size={20} weight="bold" className="ml-3" />
+              </Button>
+            </div>
+            {/* map the uploaded questions into a table */}
+            {/* <UploadedQuestionsTable columns={uploadedQuestions} /> */}
+            <div className="w-full">
+              <UploadedQuestionsTable
+                columns={uploadedQuestionsColumns}
+                data={uploadedQuestions}
+              />
+            </div>
             <Button
+              className={uploadedQuestions.length === 0 ? 'hidden' : ''}
               size={'lg'}
+              onClick={handleInsertQuestions}
               disabled={uploadedQuestions.length === 0}
-              //   onClick={insertQuestions} // TODO: it should insert the questions using the action
+              // onClick={insertQuestions} // TODO: it should insert the questions using the action
             >
               Feladatok feltöltése
               <CloudArrowUp size={20} weight="bold" className="ml-3" />
             </Button>
           </div>
-          {/* map the uploaded questions into a table */}
-          {/* <UploadedQuestionsTable columns={uploadedQuestions} /> */}
-          <div className="w-full">
-            <UploadedQuestionsTable
-              columns={uploadedQuestionsColumns}
-              data={uploadedQuestions}
-            />
-          </div>
-          <Button
-            className={uploadedQuestions.length === 0 ? 'hidden' : ''}
-            size={'lg'}
-            disabled={uploadedQuestions.length === 0}
-            // onClick={insertQuestions} // TODO: it should insert the questions using the action
-          >
-            Feladatok feltöltése
-            <CloudArrowUp size={20} weight="bold" className="ml-3" />
-          </Button>
-        </div>
+        )}
       </div>
-      <></>
     </>
   );
 }

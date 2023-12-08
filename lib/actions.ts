@@ -229,6 +229,7 @@ export async function createQuestions(questionsTextArray: string[]) {
   if (!session || !session.user) {
     throw new Error('Unauthorized');
   }
+  console.log(session.user);
   if (session.user.role !== 'webmester' && session.user.role !== 'tanar') {
     throw new Error('Forbidden');
   }
@@ -867,7 +868,12 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       ? competitor3_totalTimeTaken / competitor3_totalAttempts
       : 0;
 
-  const calculatePoints = (totalAttempts: number, correctAttempts: number, averageTimeTaken: number, totalTimeTaken: number) => {
+  const calculatePoints = (
+    totalAttempts: number,
+    correctAttempts: number,
+    averageTimeTaken: number,
+    totalTimeTaken: number
+  ) => {
     const maxPointsCorrectness = 50; // Maximum possible points for correctness
     const maxPointsEfficiency = 50; // Maximum possible points for efficiency
 
@@ -883,7 +889,7 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
     const totalPoints = correctnessScore + efficiencyScore;
 
     return parseInt(totalPoints.toFixed(2));
-  }
+  };
 
   return [
     {
@@ -892,7 +898,12 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       totalAttempts: competitor1_totalAttempts,
       correctAttempts: competitor1_correctAttempts,
       averageTimeTaken: competitor1_averageTimeTaken,
-      points: calculatePoints(competitor1_totalAttempts, competitor1_correctAttempts, competitor1_averageTimeTaken, competitor1_totalTimeTaken),
+      points: calculatePoints(
+        competitor1_totalAttempts,
+        competitor1_correctAttempts,
+        competitor1_averageTimeTaken,
+        competitor1_totalTimeTaken
+      ),
     },
     {
       competitor: competitors[1],
@@ -900,7 +911,12 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       totalAttempts: competitor2_totalAttempts,
       correctAttempts: competitor2_correctAttempts,
       averageTimeTaken: competitor2_averageTimeTaken,
-      points: calculatePoints(competitor2_totalAttempts, competitor2_correctAttempts, competitor2_averageTimeTaken, competitor2_totalTimeTaken),
+      points: calculatePoints(
+        competitor2_totalAttempts,
+        competitor2_correctAttempts,
+        competitor2_averageTimeTaken,
+        competitor2_totalTimeTaken
+      ),
     },
     {
       competitor: competitors[2],
@@ -908,7 +924,12 @@ export async function getEveryTeamMembersStatsSeperatelyByTeamId(
       totalAttempts: competitor3_totalAttempts,
       correctAttempts: competitor3_correctAttempts,
       averageTimeTaken: competitor3_averageTimeTaken,
-      points: calculatePoints(competitor3_totalAttempts, competitor3_correctAttempts, competitor3_averageTimeTaken, competitor3_totalTimeTaken)
+      points: calculatePoints(
+        competitor3_totalAttempts,
+        competitor3_correctAttempts,
+        competitor3_averageTimeTaken,
+        competitor3_totalTimeTaken
+      ),
     },
   ];
 }
