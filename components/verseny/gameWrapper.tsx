@@ -11,20 +11,31 @@ import { Button } from '../ui/button';
 import { set } from 'date-fns';
 import { compare } from 'bcryptjs';
 import Link from 'next/link';
-import { Lightbulb } from '@phosphor-icons/react';
+import { CircleNotch, Lightbulb } from '@phosphor-icons/react';
+import { getAttemptCountOfCompetitor } from '@/lib/actions';
+import { useStopwatch } from 'react-timer-hook';
+import { Question } from '@prisma/client';
 
 export default function GameWrapper({
   questions,
   competitionId,
+  questionsWithAllWords,
 }: {
   questions: QuestionWithScrambledWord[];
   competitionId: string;
+  questionsWithAllWords: Question[];
 }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [gameEnded, setGameEnded] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [minutes, setMinutes] = useState(0);
-  const [questionSeconds, setQuestionSeconds] = useState(0);
+  //   const [questionSeconds, setQuestionSeconds] = useState(0);
+
+  const [hint, setHint] = useState('' as string);
+  const [hintUsed, setHintUsed] = useState(false as boolean);
+
+  const { seconds, minutes } = useStopwatch({ autoStart: true });
+
+  const { totalSeconds: questionSeconds, reset: resetQuestionSeconds } =
+    useStopwatch({ autoStart: true });
 
   const { data: session, status } = useSession();
   useEffect(() => {
@@ -34,55 +45,20 @@ export default function GameWrapper({
       return redirect('/vezerlopult/');
     }
 
+    // console.log(session?.user.competitorId);
+    getAttemptCountOfCompetitor(session?.user.competitorId as string).then(
+      (count) => {
+        // console.log('attemt count:', count);
+        if (count >= questions.length) {
+          setGameEnded(true);
+          return;
+        }
+        setCurrentQuestionIndex(count);
+      }
+    );
+
     // console.log('session', session);
   }, [status]);
-
-  useEffect(() => {
-    const savedSeconds = sessionStorage.getItem('seconds');
-    const savedMinutes = sessionStorage.getItem('minutes');
-    setSeconds(savedSeconds ? parseInt(savedSeconds) : 0);
-    setMinutes(savedMinutes ? parseInt(savedMinutes) : 0);
-
-    //get currentQuestionIndex from local storage
-    const savedQuestionIndex = localStorage.getItem('current_question_index');
-
-    // if current_question_index is exists set the state
-    // console.log(savedQuestionIndex);
-    if (savedQuestionIndex) {
-      if (parseInt(savedQuestionIndex) + 1 >= questions.length) {
-        return setGameEnded(true);
-      }
-      setCurrentQuestionIndex(parseInt(savedQuestionIndex));
-    }
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((prevSeconds) => {
-        const newSeconds = prevSeconds === 59 ? 0 : prevSeconds + 1;
-        sessionStorage.setItem('seconds', newSeconds.toString());
-        return newSeconds;
-      });
-      setMinutes((prevMinutes) => {
-        if (prevMinutes === 59) {
-          const newMinutes = prevMinutes + 1;
-          sessionStorage.setItem('minutes', newMinutes.toString());
-          return newMinutes;
-        }
-        return prevMinutes;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (currentQuestionIndex === 0) return;
-    localStorage.setItem(
-      'current_question_index',
-      currentQuestionIndex.toString()
-    );
-  }, [currentQuestionIndex]);
 
   const submitAnswer = (answer: string) => {
     let correct: boolean = false;
@@ -104,17 +80,17 @@ export default function GameWrapper({
       isCorrect: correct,
       timeTaken: questionSeconds,
       answer: answer,
+    }).then((res) => {
+      //   console.log(res);
     });
-    setQuestionSeconds(0);
+    resetQuestionSeconds();
     if (currentQuestionIndex + 1 >= questions.length) {
-      localStorage.setItem(
-        'current_question_index',
-        (currentQuestionIndex + 1).toString()
-      );
       setGameEnded(true);
       return;
     }
     setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setHintUsed(false);
+    setHint('');
   };
 
   return (
@@ -150,18 +126,40 @@ export default function GameWrapper({
             submitAnswer={submitAnswer}
           />
           {/* AI HINT */}
-          {/* <Button
-            onClick={() => {
-              // create a string from the current question like this without the number at the end 'narancssárga fekete sötétkék citromsárga'
-              const questionString =
-                questions[currentQuestionIndex].words.join(' ');
-              console.log(questionString);
-              // const hint = await getAIHint(questions[currentQuestionIndex].words.join(' ').
+          <Button
+            className=" bg-gradient-to-r from-violet-700 to-blue-600 hover:scale-[102%] active:scale-95 hover:brightness-105 transition "
+            onClick={async () => {
+              setHintUsed(true);
+              // remove the number from the end of the current question
+              const justWords = questionsWithAllWords[
+                currentQuestionIndex
+              ].question
+                .split(' ')
+                .slice(0, 4)
+                .join(' ');
+              //   console.log(justWords);
+              const hint = await getAIHint(justWords);
+              if (!hint) return;
+              setHint(hint);
             }}
+            disabled={hintUsed}
           >
-            <Lightbulb className="w-5 h-5 mr-2" />
+            {hintUsed && hint === '' ? (
+              <CircleNotch
+                className="w-5 h-5 mr-2 animate-spin"
+                weight="bold"
+              />
+            ) : (
+              <Lightbulb className="w-5 h-5 mr-2" weight="bold" />
+            )}
             Kérek segítséget
-          </Button> */}
+          </Button>
+          {hint && (
+            <p className="flex flex-col gap-2 items-center font-medium text-zinc-700 text-center">
+              Segítség:{' '}
+              <span className="text-lg font-normal text-zinc-900">{hint}</span>
+            </p>
+          )}
         </>
       ) : (
         <div className="w-full items-center flex flex-col text-center gap-8">
