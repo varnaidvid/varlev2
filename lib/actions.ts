@@ -606,10 +606,6 @@ export async function createAttempt({
   isCorrect: boolean;
   timeTaken: number;
 }) {
-  console.log("competitiorId", competitorId)
-  console.log("competitionId", competitionId)
-
-
   return prisma.attempt.create({
     data: {
       answer,

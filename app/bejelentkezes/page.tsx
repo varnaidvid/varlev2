@@ -36,7 +36,7 @@ const SignInPage = () => {
 
   useEffect(() => {
     if (session?.user.username) {
-      router.push('/');
+      router.push('/vezerlopult');
     }
   }, [session]);
 
@@ -88,7 +88,7 @@ const SignInPage = () => {
           id: 'signin',
         });
 
-        router.push('/');
+        router.push('/vezerlopult');
         router.refresh();
       }
     });
