@@ -190,12 +190,6 @@ const CompetitionsColumns: ColumnDef<Competition>[] = [
 
                   if (res.status == 500) toast.error(res.message);
                   else {
-                    setCompetitions(
-                      competitions?.filter(
-                        (competition: any) =>
-                          !competitions.includes(competition.name)
-                      )!
-                    );
                     table.toggleAllPageRowsSelected(false);
                     toast.success('Sikeres lezárás');
                   }
