@@ -267,10 +267,7 @@ export default function VezerloHome() {
 
               {/* if date is between startDate and endDate */}
               {!isUserFinished &&
-              new Date().getTime() >
-                new Date(competitions[0].startDate).getTime() &&
-              new Date().getTime() <
-                new Date(competitions[0].endDate).getTime() ? (
+              new Date() < new Date(competitions[0].endDate) ? (
                 <div className="mt-4">
                   <Link href={`/verseny/${competitions[0].id}`}>
                     <Button className="flex gap-2">
