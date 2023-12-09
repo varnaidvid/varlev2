@@ -123,12 +123,6 @@ export function DataTableToolbar<TData>({
 
                     if (res.status == 500) toast.error(res.message);
                     else {
-                      setCompetitions((prevCompetitions) => {
-                        if (!prevCompetitions) return null;
-                        return prevCompetitions.filter(
-                          (competition) => !names.includes(competition.name)
-                        );
-                      });
                       table.toggleAllPageRowsSelected(false);
                       toast.success('Sikeres lezárás');
                     }
